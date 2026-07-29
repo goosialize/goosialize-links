@@ -1,0 +1,47 @@
+# Operating systems
+.DS_Store
+Thumbs.db
+
+# Editors and IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Environment and local secrets
+.env
+.env.*
+!.env.example
+*.local
+
+# Dependencies and build output
+vendor/
+node_modules/
+build/
+dist/
+coverage/
+
+# Runtime and temporary files
+.cache/
+tmp/
+temp/
+logs/
+*.log
+*.pid
+
+# Generated packages
+*.zip
+*.tar
+*.tar.gz
+
+# Local Grav installations or mounts
+www/
+grav/
+runtime/
+
+# Testing artifacts
+.phpunit.cache/
+.phpunit.result.cache
+playwright-report/
+test-results/
