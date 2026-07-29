@@ -1,0 +1,33 @@
+name: Goosialize Links
+slug: goosialize-links
+type: plugin
+version: 0.1.0
+description: 'Self-hosted Link in Bio plugin for Grav CMS.'
+icon: link
+author:
+  name: Goosialize Ltd
+  email: agency@goosialize.com
+  url: https://goosialize.com
+homepage: https://goosialize.com
+keywords: grav, plugin, link in bio, self-hosted
+dependencies:
+  - name: grav
+    version: '>=2.0.0'
+compatibility:
+  grav:
+    - '2.0'
+
+form:
+  validation: strict
+  fields:
+    enabled:
+      type: toggle
+      label: PLUGIN_GOOSIALIZE_LINKS.STATUS
+      help: PLUGIN_GOOSIALIZE_LINKS.STATUS_HELP
+      highlight: 1
+      default: 1
+      options:
+        1: PLUGIN_GOOSIALIZE_LINKS.ENABLED
+        0: PLUGIN_GOOSIALIZE_LINKS.DISABLED
+      validate:
+        type: bool

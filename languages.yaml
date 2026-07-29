@@ -1,0 +1,17 @@
+en:
+  PLUGIN_GOOSIALIZE_LINKS:
+    NAME: Goosialize Links
+    DESCRIPTION: Self-hosted Link in Bio plugin for Grav CMS.
+    STATUS: Plugin status
+    STATUS_HELP: Enable or disable Goosialize Links.
+    ENABLED: Enabled
+    DISABLED: Disabled
+
+el:
+  PLUGIN_GOOSIALIZE_LINKS:
+    NAME: Goosialize Links
+    DESCRIPTION: Αυτοφιλοξενούμενο Link in Bio plugin για το Grav CMS.
+    STATUS: Κατάσταση plugin
+    STATUS_HELP: Ενεργοποιήστε ή απενεργοποιήστε το Goosialize Links.
+    ENABLED: Ενεργό
+    DISABLED: Ανενεργό

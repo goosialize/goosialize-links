@@ -1,0 +1,23 @@
+{
+    "name": "goosialize/grav-plugin-goosialize-links",
+    "type": "grav-plugin",
+    "description": "Self-hosted Link in Bio plugin for Grav CMS.",
+    "keywords": [
+        "grav",
+        "grav-plugin",
+        "link-in-bio",
+        "self-hosted"
+    ],
+    "homepage": "https://goosialize.com",
+    "authors": [
+        {
+            "name": "Goosialize Ltd",
+            "email": "agency@goosialize.com",
+            "homepage": "https://goosialize.com",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "email": "agency@goosialize.com"
+    }
+}
