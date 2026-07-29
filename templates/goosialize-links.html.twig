@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="{{ grav.language.language|default('en')|e('html_attr') }}">
+<head>
+    <meta charset="utf-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+    <meta name="color-scheme" content="light">
+
+    <title>
+        {{- goosialize_links.page_title|e -}}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url('plugin://goosialize-links/assets/css/goosialize-links.css')|e('html_attr') }}"
+    >
+</head>
+<body>
+    <main
+        class="goosialize-links"
+        data-goosialize-links-page
+    >
+        <section
+            class="goosialize-links__profile"
+            aria-labelledby="goosialize-links-name"
+        >
+            <div
+                class="goosialize-links__avatar"
+                aria-hidden="true"
+            >
+                {{ goosialize_links.profile.initial|e }}
+            </div>
+
+            {% if goosialize_links.profile.name %}
+                <h1
+                    id="goosialize-links-name"
+                    class="goosialize-links__name"
+                >
+                    {{ goosialize_links.profile.name|e }}
+                </h1>
+            {% endif %}
+
+            {% if goosialize_links.profile.title %}
+                <p class="goosialize-links__title">
+                    {{ goosialize_links.profile.title|e }}
+                </p>
+            {% endif %}
+
+            {% if goosialize_links.profile.description %}
+                <p class="goosialize-links__description">
+                    {{ goosialize_links.profile.description|e|nl2br }}
+                </p>
+            {% endif %}
+
+            {% if goosialize_links.profile.website_url %}
+                <a
+                    class="goosialize-links__website"
+                    href="{{ goosialize_links.profile.website_url|e('html_attr') }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Website
+                </a>
+            {% endif %}
+        </section>
+
+        {% if goosialize_links.links %}
+            <nav
+                class="goosialize-links__list"
+                aria-label="Links"
+            >
+                {% for link in goosialize_links.links %}
+                    <a
+                        class="goosialize-links__link"
+                        data-goosialize-link
+                        data-link-id="{{ link.id|e('html_attr') }}"
+                        href="{{ link.url|e('html_attr') }}"
+                        {% if link.new_tab %}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        {% endif %}
+                    >
+                        <span>
+                            {{- link.title|e -}}
+                        </span>
+
+                        <span
+                            class="goosialize-links__arrow"
+                            aria-hidden="true"
+                        >
+                            {% if link.new_tab %}
+                                ↗
+                            {% else %}
+                                →
+                            {% endif %}
+                        </span>
+                    </a>
+                {% endfor %}
+            </nav>
+        {% endif %}
+
+        <footer class="goosialize-links__footer">
+            <a
+                class="goosialize-links__powered"
+                data-goosialize-links-powered-by
+                href="{{ goosialize_links.powered_by.url|e('html_attr') }}"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                {{ goosialize_links.powered_by.label|e }}
+            </a>
+        </footer>
+    </main>
+</body>
+</html>
