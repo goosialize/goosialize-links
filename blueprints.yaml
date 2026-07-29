@@ -31,3 +31,100 @@ form:
         0: PLUGIN_GOOSIALIZE_LINKS.DISABLED
       validate:
         type: bool
+
+    route:
+      type: text
+      label: PLUGIN_GOOSIALIZE_LINKS.ICU.ROUTE
+      help: PLUGIN_GOOSIALIZE_LINKS.ICU.ROUTE_HELP
+      default: /bio
+      placeholder: /bio
+      validate:
+        required: true
+        pattern: '^/[a-z0-9]+(?:/[a-z0-9][a-z0-9-]*)*$'
+
+    profile_section:
+      type: section
+      title: PLUGIN_GOOSIALIZE_LINKS.ICU.PROFILE_SECTION
+      underline: true
+      fields:
+        profile.name:
+          type: text
+          label: PLUGIN_GOOSIALIZE_LINKS.ICU.PROFILE_NAME
+          help: PLUGIN_GOOSIALIZE_LINKS.ICU.PROFILE_NAME_HELP
+          maxlength: 120
+
+        profile.title:
+          type: text
+          label: PLUGIN_GOOSIALIZE_LINKS.ICU.PROFILE_TITLE
+          help: PLUGIN_GOOSIALIZE_LINKS.ICU.PROFILE_TITLE_HELP
+          maxlength: 160
+
+        profile.description:
+          type: textarea
+          label: PLUGIN_GOOSIALIZE_LINKS.ICU.PROFILE_DESCRIPTION
+          help: PLUGIN_GOOSIALIZE_LINKS.ICU.PROFILE_DESCRIPTION_HELP
+          maxlength: 500
+          rows: 5
+
+        profile.website_url:
+          type: url
+          label: PLUGIN_GOOSIALIZE_LINKS.ICU.PROFILE_WEBSITE_URL
+          help: PLUGIN_GOOSIALIZE_LINKS.ICU.PROFILE_WEBSITE_URL_HELP
+          placeholder: https://example.com
+
+    links_section:
+      type: section
+      title: PLUGIN_GOOSIALIZE_LINKS.ICU.LINKS_SECTION
+      underline: true
+      fields:
+        links:
+          type: list
+          label: PLUGIN_GOOSIALIZE_LINKS.ICU.LINKS
+          help: PLUGIN_GOOSIALIZE_LINKS.ICU.LINKS_HELP
+          style: vertical
+          collapsed: true
+          controls: both
+          placement: bottom
+          btnLabel: PLUGIN_GOOSIALIZE_LINKS.ICU.ADD_LINK
+          fields:
+            .id:
+              type: hidden
+
+            .enabled:
+              type: toggle
+              label: PLUGIN_GOOSIALIZE_LINKS.ICU.LINK_ENABLED
+              highlight: 1
+              default: 1
+              options:
+                1: PLUGIN_GOOSIALIZE_LINKS.ENABLED
+                0: PLUGIN_GOOSIALIZE_LINKS.DISABLED
+              validate:
+                type: bool
+
+            .title:
+              type: text
+              label: PLUGIN_GOOSIALIZE_LINKS.ICU.LINK_TITLE
+              help: PLUGIN_GOOSIALIZE_LINKS.ICU.LINK_TITLE_HELP
+              maxlength: 120
+              validate:
+                required: true
+
+            .url:
+              type: url
+              label: PLUGIN_GOOSIALIZE_LINKS.ICU.LINK_URL
+              help: PLUGIN_GOOSIALIZE_LINKS.ICU.LINK_URL_HELP
+              placeholder: https://example.com
+              validate:
+                required: true
+
+            .new_tab:
+              type: toggle
+              label: PLUGIN_GOOSIALIZE_LINKS.ICU.LINK_NEW_TAB
+              help: PLUGIN_GOOSIALIZE_LINKS.ICU.LINK_NEW_TAB_HELP
+              highlight: 1
+              default: 1
+              options:
+                1: PLUGIN_GOOSIALIZE_LINKS.ENABLED
+                0: PLUGIN_GOOSIALIZE_LINKS.DISABLED
+              validate:
+                type: bool

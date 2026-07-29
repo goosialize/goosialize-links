@@ -6,6 +6,29 @@ en:
     STATUS_HELP: Enable or disable Goosialize Links.
     ENABLED: Enabled
     DISABLED: Disabled
+    ICU:
+      ROUTE: Public route
+      ROUTE_HELP: Choose the URL path for the single public Link in Bio page.
+      PROFILE_SECTION: Profile
+      PROFILE_NAME: Name or brand
+      PROFILE_NAME_HELP: The primary name displayed at the top of the page.
+      PROFILE_TITLE: Title
+      PROFILE_TITLE_HELP: A short line displayed below the name or brand.
+      PROFILE_DESCRIPTION: Description
+      PROFILE_DESCRIPTION_HELP: A short introduction displayed on the public page.
+      PROFILE_WEBSITE_URL: Website URL
+      PROFILE_WEBSITE_URL_HELP: An optional link to the primary website.
+      LINKS_SECTION: Links
+      LINKS: Page links
+      LINKS_HELP: Add, remove and reorder links, with up to eight active links in the FREE edition.
+      ADD_LINK: Add link
+      LINK_ENABLED: Active
+      LINK_TITLE: Link title
+      LINK_TITLE_HELP: The text displayed on the public link button.
+      LINK_URL: Link URL
+      LINK_URL_HELP: The absolute HTTP or HTTPS destination.
+      LINK_NEW_TAB: Open in new tab
+      LINK_NEW_TAB_HELP: Open the destination in a separate browser tab.
 
 el:
   PLUGIN_GOOSIALIZE_LINKS:
@@ -15,3 +38,26 @@ el:
     STATUS_HELP: Ενεργοποιήστε ή απενεργοποιήστε το Goosialize Links.
     ENABLED: Ενεργό
     DISABLED: Ανενεργό
+    ICU:
+      ROUTE: Δημόσια διαδρομή
+      ROUTE_HELP: Επιλέξτε τη διαδρομή URL της μοναδικής δημόσιας Link in Bio σελίδας.
+      PROFILE_SECTION: Προφίλ
+      PROFILE_NAME: Όνομα ή brand
+      PROFILE_NAME_HELP: Το βασικό όνομα που εμφανίζεται στην κορυφή της σελίδας.
+      PROFILE_TITLE: Τίτλος
+      PROFILE_TITLE_HELP: Μία σύντομη γραμμή κάτω από το όνομα ή το brand.
+      PROFILE_DESCRIPTION: Περιγραφή
+      PROFILE_DESCRIPTION_HELP: Μία σύντομη εισαγωγή για τη δημόσια σελίδα.
+      PROFILE_WEBSITE_URL: URL ιστοσελίδας
+      PROFILE_WEBSITE_URL_HELP: Προαιρετικός σύνδεσμος προς την κύρια ιστοσελίδα.
+      LINKS_SECTION: Σύνδεσμοι
+      LINKS: Σύνδεσμοι σελίδας
+      LINKS_HELP: Προσθέστε, αφαιρέστε και ταξινομήστε συνδέσμους, με έως οκτώ ενεργούς συνδέσμους στη FREE έκδοση.
+      ADD_LINK: Προσθήκη συνδέσμου
+      LINK_ENABLED: Ενεργός
+      LINK_TITLE: Τίτλος συνδέσμου
+      LINK_TITLE_HELP: Το κείμενο που εμφανίζεται στο κουμπί του συνδέσμου.
+      LINK_URL: URL συνδέσμου
+      LINK_URL_HELP: Ο πλήρης προορισμός HTTP ή HTTPS.
+      LINK_NEW_TAB: Άνοιγμα σε νέα καρτέλα
+      LINK_NEW_TAB_HELP: Άνοιγμα του προορισμού σε ξεχωριστή καρτέλα.

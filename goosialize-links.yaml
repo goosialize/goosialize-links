@@ -1,1 +1,8 @@
 enabled: true
+route: /bio
+profile:
+  name: ''
+  title: ''
+  description: ''
+  website_url: ''
+links: []
