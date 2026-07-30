@@ -6,7 +6,7 @@
         name="viewport"
         content="width=device-width, initial-scale=1"
     >
-    <meta name="color-scheme" content="light">
+    <meta name="color-scheme" content="light dark">
 
     <title>
         {{- goosialize_links.page_title|e -}}
@@ -17,20 +17,34 @@
         href="{{ url('plugin://goosialize-links/assets/css/goosialize-links.css')|e('html_attr') }}"
     >
 </head>
-<body>
+<body
+    data-theme="{{ goosialize_links.appearance.theme|e('html_attr') }}"
+    data-accent="{{ goosialize_links.appearance.accent|e('html_attr') }}"
+>
     <main
         class="goosialize-links"
         data-goosialize-links-page
+        data-theme="{{ goosialize_links.appearance.theme|e('html_attr') }}"
+        data-accent="{{ goosialize_links.appearance.accent|e('html_attr') }}"
+        data-button-shape="{{ goosialize_links.appearance.button_shape|e('html_attr') }}"
     >
         <section
             class="goosialize-links__profile"
             aria-labelledby="goosialize-links-name"
         >
-            <div
-                class="goosialize-links__avatar"
-                aria-hidden="true"
-            >
-                {{ goosialize_links.profile.initial|e }}
+            <div class="goosialize-links__avatar">
+                {% if goosialize_links.profile.image_stream %}
+                    <img
+                        class="goosialize-links__avatar-image"
+                        data-goosialize-links-profile-image
+                        src="{{ url(goosialize_links.profile.image_stream)|e('html_attr') }}"
+                        alt=""
+                    >
+                {% else %}
+                    <span aria-hidden="true">
+                        {{- goosialize_links.profile.initial|e -}}
+                    </span>
+                {% endif %}
             </div>
 
             {% if goosialize_links.profile.name %}
@@ -65,6 +79,30 @@
                 </a>
             {% endif %}
         </section>
+
+        {% if goosialize_links.actions %}
+            <nav
+                class="goosialize-links__actions"
+                aria-label="Social and contact actions"
+            >
+                {% for action in goosialize_links.actions %}
+                    <a
+                        class="goosialize-links__action"
+                        data-goosialize-action
+                        data-action-id="{{ action.id|e('html_attr') }}"
+                        data-action-type="{{ action.type|e('html_attr') }}"
+                        href="{{ action.href|e('html_attr') }}"
+                        aria-label="{{ action.label|e('html_attr') }}"
+                        {% if action.new_tab %}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        {% endif %}
+                    >
+                        {{- action.label|e -}}
+                    </a>
+                {% endfor %}
+            </nav>
+        {% endif %}
 
         {% if goosialize_links.links %}
             <nav

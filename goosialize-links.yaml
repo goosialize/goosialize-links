@@ -1,8 +1,14 @@
 enabled: true
 route: /bio
 profile:
+  image: []
   name: ''
   title: ''
   description: ''
   website_url: ''
+appearance:
+  theme: light
+  accent: yellow
+  button_shape: rounded
+actions: []
 links: []

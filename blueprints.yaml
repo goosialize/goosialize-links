@@ -47,6 +47,20 @@ form:
       title: PLUGIN_GOOSIALIZE_LINKS.ICU.PROFILE_SECTION
       underline: true
       fields:
+        profile.image:
+          type: file
+          label: PLUGIN_GOOSIALIZE_LINKS.ICU.PROFILE_IMAGE
+          help: PLUGIN_GOOSIALIZE_LINKS.ICU.PROFILE_IMAGE_HELP
+          destination: user/media/goosialize-links/profile
+          multiple: false
+          limit: 1
+          random_name: true
+          avoid_overwriting: true
+          accept:
+            - image/jpeg
+            - image/png
+            - image/webp
+
         profile.name:
           type: text
           label: PLUGIN_GOOSIALIZE_LINKS.ICU.PROFILE_NAME
@@ -71,6 +85,101 @@ form:
           label: PLUGIN_GOOSIALIZE_LINKS.ICU.PROFILE_WEBSITE_URL
           help: PLUGIN_GOOSIALIZE_LINKS.ICU.PROFILE_WEBSITE_URL_HELP
           placeholder: https://example.com
+
+    appearance_section:
+      type: section
+      title: PLUGIN_GOOSIALIZE_LINKS.ICU.APPEARANCE_SECTION
+      underline: true
+      fields:
+        appearance.theme:
+          type: select
+          label: PLUGIN_GOOSIALIZE_LINKS.ICU.THEME
+          help: PLUGIN_GOOSIALIZE_LINKS.ICU.THEME_HELP
+          default: light
+          options:
+            light: PLUGIN_GOOSIALIZE_LINKS.ICU.THEME_LIGHT
+            dark: PLUGIN_GOOSIALIZE_LINKS.ICU.THEME_DARK
+            sunrise: PLUGIN_GOOSIALIZE_LINKS.ICU.THEME_SUNRISE
+
+        appearance.accent:
+          type: select
+          label: PLUGIN_GOOSIALIZE_LINKS.ICU.ACCENT
+          help: PLUGIN_GOOSIALIZE_LINKS.ICU.ACCENT_HELP
+          default: yellow
+          options:
+            yellow: PLUGIN_GOOSIALIZE_LINKS.ICU.ACCENT_YELLOW
+            blue: PLUGIN_GOOSIALIZE_LINKS.ICU.ACCENT_BLUE
+            coral: PLUGIN_GOOSIALIZE_LINKS.ICU.ACCENT_CORAL
+            green: PLUGIN_GOOSIALIZE_LINKS.ICU.ACCENT_GREEN
+            purple: PLUGIN_GOOSIALIZE_LINKS.ICU.ACCENT_PURPLE
+
+        appearance.button_shape:
+          type: select
+          label: PLUGIN_GOOSIALIZE_LINKS.ICU.BUTTON_SHAPE
+          help: PLUGIN_GOOSIALIZE_LINKS.ICU.BUTTON_SHAPE_HELP
+          default: rounded
+          options:
+            square: PLUGIN_GOOSIALIZE_LINKS.ICU.BUTTON_SQUARE
+            rounded: PLUGIN_GOOSIALIZE_LINKS.ICU.BUTTON_ROUNDED
+            pill: PLUGIN_GOOSIALIZE_LINKS.ICU.BUTTON_PILL
+
+    actions_section:
+      type: section
+      title: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTIONS_SECTION
+      underline: true
+      fields:
+        actions:
+          type: list
+          label: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTIONS
+          help: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTIONS_HELP
+          style: vertical
+          collapsed: true
+          controls: both
+          placement: bottom
+          btnLabel: PLUGIN_GOOSIALIZE_LINKS.ICU.ADD_ACTION
+          fields:
+            .id:
+              type: hidden
+
+            .enabled:
+              type: toggle
+              label: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_ENABLED
+              highlight: 1
+              default: 1
+              options:
+                1: PLUGIN_GOOSIALIZE_LINKS.ENABLED
+                0: PLUGIN_GOOSIALIZE_LINKS.DISABLED
+              validate:
+                type: bool
+
+            .type:
+              type: select
+              label: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_TYPE
+              default: website
+              options:
+                website: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_WEBSITE
+                instagram: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_INSTAGRAM
+                facebook: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_FACEBOOK
+                tiktok: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_TIKTOK
+                youtube: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_YOUTUBE
+                linkedin: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_LINKEDIN
+                x: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_X
+                email: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_EMAIL
+                phone: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_PHONE
+                whatsapp: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_WHATSAPP
+
+            .value:
+              type: text
+              label: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_VALUE
+              help: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_VALUE_HELP
+              validate:
+                required: true
+
+            .label:
+              type: text
+              label: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_LABEL
+              help: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_LABEL_HELP
+              maxlength: 80
 
     links_section:
       type: section

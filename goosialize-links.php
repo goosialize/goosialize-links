@@ -9,6 +9,7 @@ use Grav\Common\Page\Page;
 use Grav\Common\Page\Pages;
 use Grav\Common\Plugin;
 use Goosialize\Links\LinkPageConfigNormalizer;
+use Goosialize\Links\PublicPageExperienceNormalizer;
 use Goosialize\Links\PublicPageViewModelFactory;
 use InvalidArgumentException;
 use SplFileInfo;
@@ -16,6 +17,9 @@ use Throwable;
 
 require_once __DIR__ . '/classes/LinkCollectionNormalizer.php';
 require_once __DIR__ . '/classes/LinkPageConfigNormalizer.php';
+require_once __DIR__ . '/classes/SocialActionNormalizer.php';
+require_once __DIR__ . '/classes/PublicPageExperienceNormalizer.php';
+require_once __DIR__ . '/classes/ProfileImageResolver.php';
 require_once __DIR__ . '/classes/PublicPageViewModelFactory.php';
 
 final class GoosializeLinksPlugin extends Plugin
@@ -68,9 +72,15 @@ final class GoosializeLinksPlugin extends Plugin
         }
 
         try {
-            $normalizedConfig =
+            $baseConfig =
                 (new LinkPageConfigNormalizer())->normalize(
                     $rawConfig
+                );
+
+            $normalizedConfig =
+                (new PublicPageExperienceNormalizer())->normalize(
+                    $rawConfig,
+                    $baseConfig
                 );
         } catch (InvalidArgumentException $exception) {
             $this->logRuntimeFailure($exception);
