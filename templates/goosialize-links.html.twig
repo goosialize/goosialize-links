@@ -91,7 +91,7 @@
                         data-goosialize-action
                         data-action-id="{{ action.id|e('html_attr') }}"
                         data-action-type="{{ action.type|e('html_attr') }}"
-                        href="{{ action.href|e('html_attr') }}"
+                        href="{{ action.tracked_url|e('html_attr') }}"
                         aria-label="{{ action.label|e('html_attr') }}"
                         {% if action.new_tab %}
                             target="_blank"
@@ -114,7 +114,7 @@
                         class="goosialize-links__link"
                         data-goosialize-link
                         data-link-id="{{ link.id|e('html_attr') }}"
-                        href="{{ link.url|e('html_attr') }}"
+                        href="{{ link.tracked_url|e('html_attr') }}"
                         {% if link.new_tab %}
                             target="_blank"
                             rel="noopener noreferrer"

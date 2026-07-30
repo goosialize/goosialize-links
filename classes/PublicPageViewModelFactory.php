@@ -9,7 +9,10 @@ final class PublicPageViewModelFactory
     public function __construct(
         private readonly ProfileImageResolver
             $profileImageResolver =
-                new ProfileImageResolver()
+                new ProfileImageResolver(),
+        private readonly TrackingRouteResolver
+            $trackingRouteResolver =
+                new TrackingRouteResolver()
     ) {
     }
 
@@ -31,6 +34,10 @@ final class PublicPageViewModelFactory
         )
             ? $normalizedConfig['appearance']
             : [];
+
+        $publicRoute = (string) (
+            $normalizedConfig['route'] ?? '/bio'
+        );
 
         $name = trim(
             (string) ($profile['name'] ?? '')
@@ -71,16 +78,21 @@ final class PublicPageViewModelFactory
                 continue;
             }
 
+            $id = (string) (
+                $link['id'] ?? ''
+            );
+
             $links[] = [
-                'id' => (string) (
-                    $link['id'] ?? ''
-                ),
+                'id' => $id,
                 'title' => (string) (
                     $link['title'] ?? ''
                 ),
-                'url' => (string) (
-                    $link['url'] ?? ''
-                ),
+                'tracked_url' =>
+                    $this->trackingRouteResolver
+                        ->linkUrl(
+                            $publicRoute,
+                            $id
+                        ),
                 'new_tab' => (bool) (
                     $link['new_tab'] ?? true
                 ),
@@ -101,19 +113,24 @@ final class PublicPageViewModelFactory
                 continue;
             }
 
+            $id = (string) (
+                $action['id'] ?? ''
+            );
+
             $actions[] = [
-                'id' => (string) (
-                    $action['id'] ?? ''
-                ),
+                'id' => $id,
                 'type' => (string) (
                     $action['type'] ?? ''
                 ),
                 'label' => (string) (
                     $action['label'] ?? ''
                 ),
-                'href' => (string) (
-                    $action['href'] ?? ''
-                ),
+                'tracked_url' =>
+                    $this->trackingRouteResolver
+                        ->actionUrl(
+                            $publicRoute,
+                            $id
+                        ),
                 'new_tab' => (bool) (
                     $action['new_tab'] ?? false
                 ),

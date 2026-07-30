@@ -13,3 +13,4 @@ All notable changes to Goosialize Links will be documented in this file.
 - Native Admin2 configuration fields for the public route, profile, and links.
 - Public Link in Bio route, standalone Twig template, responsive styles, route-collision protection, and mandatory attribution.
 - Three public themes, five accent colors, three button shapes, safe profile images, and social/contact actions.
+- Anonymous daily analytics storage with tracked link and action redirects.
