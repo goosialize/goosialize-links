@@ -68,8 +68,8 @@
 
 - Durable FREE identifier `qr_primary`
 - Internal tracked route `/<public-route>/qr/qr_primary`
-- PNG endpoint `/<public-route>/qr/qr_primary.png`
-- SVG endpoint `/<public-route>/qr/qr_primary.svg`
+- PNG endpoint `/<public-route>/qr/qr_primary/png`
+- SVG endpoint `/<public-route>/qr/qr_primary/svg`
 - `qr_visit`
 - Backward-compatible analytics schema extension
 - Native Admin2 QR page

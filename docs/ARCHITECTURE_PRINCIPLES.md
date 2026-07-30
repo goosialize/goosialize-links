@@ -120,8 +120,12 @@ public route.
 
 The QR image endpoints are:
 
-- `/<public-route>/qr/qr_primary.png`
-- `/<public-route>/qr/qr_primary.svg`
+- `/<public-route>/qr/qr_primary/png`
+- `/<public-route>/qr/qr_primary/svg`
+
+The format is expressed as a path segment rather than a filename extension so
+dynamic QR responses remain routable through common web-server static-file
+rules. Responses still use the correct image MIME type and download filename.
 
 Fetching a PNG or SVG image must not record a QR visit. Only a request to the
 tracked QR route records `qr_visit`.

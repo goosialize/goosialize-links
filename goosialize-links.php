@@ -9,6 +9,8 @@ use Grav\Common\Plugin;
 use Grav\Framework\Psr7\Response;
 use Goosialize\Links\AnalyticsReportAggregator;
 use Goosialize\Links\AnalyticsStore;
+use Goosialize\Links\QrCodeGenerator;
+use Goosialize\Links\QrRouteResolver;
 use Goosialize\Links\LinkPageConfigNormalizer;
 use Goosialize\Links\PublicPageExperienceNormalizer;
 use Goosialize\Links\PublicPageViewModelFactory;
@@ -18,6 +20,15 @@ use RuntimeException;
 use SplFileInfo;
 use Throwable;
 use RocketTheme\Toolbox\Event\Event;
+
+$composerAutoload =
+    __DIR__ . '/vendor/autoload.php';
+
+if (is_file($composerAutoload)) {
+    require_once $composerAutoload;
+}
+
+unset($composerAutoload);
 
 require_once __DIR__ .
     '/classes/LinkCollectionNormalizer.php';
@@ -39,6 +50,12 @@ require_once __DIR__ .
 
 require_once __DIR__ .
     '/classes/AnalyticsStore.php';
+
+require_once __DIR__ .
+    '/classes/QrRouteResolver.php';
+
+require_once __DIR__ .
+    '/classes/QrCodeGenerator.php';
 
 require_once __DIR__ .
     '/classes/AnalyticsReportAggregator.php';
@@ -136,6 +153,10 @@ final class GoosializeLinksPlugin extends Plugin
                 GRAV_ROOT .
                 '/user/data/goosialize-links/analytics'
             );
+
+        if ($this->handleQrRequest()) {
+            return;
+        }
 
         if ($this->handleTrackingRequest()) {
             return;
@@ -345,6 +366,159 @@ final class GoosializeLinksPlugin extends Plugin
         $event['reports'] = $reports;
     }
 
+
+    private function handleQrRequest(): bool
+    {
+        if (
+            $this->normalizedConfig === null ||
+            $this->analyticsStore === null
+        ) {
+            return false;
+        }
+
+        $method = strtoupper(
+            (string) (
+                $_SERVER['REQUEST_METHOD'] ??
+                'GET'
+            )
+        );
+
+        if ($method !== 'GET') {
+            return false;
+        }
+
+        try {
+            $request =
+                (new QrRouteResolver())
+                    ->resolve(
+                        $this->currentPath(),
+                        (string) (
+                            $this->normalizedConfig['route'] ??
+                            ''
+                        )
+                    );
+        } catch (InvalidArgumentException) {
+            return false;
+        }
+
+        if ($request === null) {
+            return false;
+        }
+
+        $publicRoute =
+            (string) (
+                $this->normalizedConfig['route'] ??
+                ''
+            );
+
+        if ($request['kind'] === 'track') {
+            $this->recordAnalytics(
+                'qr_visit',
+                $request['id']
+            );
+
+            $this->grav->close(
+                new Response(
+                    302,
+                    [
+                        'Location' => $publicRoute,
+                        'Cache-Control' =>
+                            'no-store, max-age=0',
+                        'Referrer-Policy' =>
+                            'no-referrer',
+                        'X-Content-Type-Options' =>
+                            'nosniff',
+                    ]
+                )
+            );
+
+            return true;
+        }
+
+        try {
+            $trackedUrl =
+                $this->absoluteUrl(
+                    $publicRoute .
+                    '/qr/' .
+                    $request['id']
+                );
+
+            $generator =
+                new QrCodeGenerator();
+
+            if ($request['kind'] === 'png') {
+                $content =
+                    $generator->generatePng(
+                        $trackedUrl
+                    );
+
+                $contentType = 'image/png';
+                $filename =
+                    'goosialize-links-qr.png';
+            } else {
+                $content =
+                    $generator->generateSvg(
+                        $trackedUrl
+                    );
+
+                $contentType =
+                    'image/svg+xml; charset=UTF-8';
+
+                $filename =
+                    'goosialize-links-qr.svg';
+            }
+        } catch (Throwable $exception) {
+            $this->grav['log']->error(
+                'plugin.goosialize-links: ' .
+                'QR generation failed: ' .
+                $exception->getMessage()
+            );
+
+            $this->grav->close(
+                new Response(
+                    503,
+                    [
+                        'Content-Type' =>
+                            'text/plain; charset=UTF-8',
+                        'Cache-Control' =>
+                            'no-store, max-age=0',
+                        'X-Content-Type-Options' =>
+                            'nosniff',
+                    ],
+                    'QR code is temporarily unavailable.'
+                )
+            );
+
+            return true;
+        }
+
+        $this->grav->close(
+            new Response(
+                200,
+                [
+                    'Content-Type' =>
+                        $contentType,
+                    'Content-Disposition' =>
+                        sprintf(
+                            'inline; filename="%s"',
+                            $filename
+                        ),
+                    'Cache-Control' =>
+                        'no-store, max-age=0',
+                    'Referrer-Policy' =>
+                        'no-referrer',
+                    'X-Content-Type-Options' =>
+                        'nosniff',
+                    'Content-Length' =>
+                        (string) strlen($content),
+                ],
+                $content
+            )
+        );
+
+        return true;
+    }
+
     private function handleTrackingRequest(): bool
     {
         if (
@@ -515,6 +689,16 @@ final class GoosializeLinksPlugin extends Plugin
             ) {
                 $this->analyticsStore
                     ->recordActionClick($id);
+
+                return;
+            }
+
+            if (
+                $event === 'qr_visit' &&
+                $id !== null
+            ) {
+                $this->analyticsStore
+                    ->recordQrVisit($id);
             }
         } catch (Throwable $exception) {
             $this->grav['log']->error(
@@ -526,6 +710,33 @@ final class GoosializeLinksPlugin extends Plugin
                 )
             );
         }
+    }
+
+    private function absoluteUrl(
+        string $path
+    ): string {
+        $rootUrl = rtrim(
+            (string) $this->grav['uri']
+                ->rootUrl(true),
+            '/'
+        );
+
+        if (
+            $rootUrl === '' ||
+            filter_var(
+                $rootUrl,
+                FILTER_VALIDATE_URL
+            ) === false
+        ) {
+            throw new RuntimeException(
+                'Unable to resolve the absolute site URL.'
+            );
+        }
+
+        return
+            $rootUrl .
+            '/' .
+            ltrim($path, '/');
     }
 
     private function currentPath(): string

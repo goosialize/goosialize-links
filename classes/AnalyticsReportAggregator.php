@@ -104,18 +104,40 @@ final class AnalyticsReportAggregator
             ];
         }
 
+        $detailItems[] = [
+            'kind' => 'qr',
+            'id' => 'qr_primary',
+            'label' => 'Primary QR Code',
+            'visits' =>
+                $snapshot['qrs']['qr_primary'] ?? 0,
+        ];
+
         usort(
             $detailItems,
             static function (
                 array $left,
                 array $right
             ): int {
-                $clickComparison =
-                    $right['clicks'] <=>
-                    $left['clicks'];
+                $leftCount =
+                    (int) (
+                        $left['clicks'] ??
+                        $left['visits'] ??
+                        0
+                    );
 
-                if ($clickComparison !== 0) {
-                    return $clickComparison;
+                $rightCount =
+                    (int) (
+                        $right['clicks'] ??
+                        $right['visits'] ??
+                        0
+                    );
+
+                $countComparison =
+                    $rightCount <=>
+                    $leftCount;
+
+                if ($countComparison !== 0) {
+                    return $countComparison;
                 }
 
                 $kindComparison = strcmp(
@@ -157,6 +179,13 @@ final class AnalyticsReportAggregator
                 'label' => 'Total Clicks',
                 'value' =>
                     $snapshot['total_clicks'],
+            ],
+            [
+                'kind' => 'summary',
+                'metric' => 'qr_visits',
+                'label' => 'Total QR Visits',
+                'value' =>
+                    $snapshot['qr_visits'],
             ],
             ...$detailItems,
         ];
@@ -225,6 +254,8 @@ final class AnalyticsReportAggregator
                     $snapshot['page_views'],
                 'total_clicks' =>
                     $snapshot['total_clicks'],
+                'qr_visits' =>
+                    $snapshot['qr_visits'],
                 'valid_days' =>
                     $snapshot['valid_days'],
                 'date_from' =>
@@ -256,8 +287,10 @@ final class AnalyticsReportAggregator
             'page_views' => 0,
             'link_clicks' => 0,
             'action_clicks' => 0,
+            'qr_visits' => 0,
             'links' => [],
             'actions' => [],
+            'qrs' => [],
         ];
 
         $dates = [];
@@ -362,11 +395,18 @@ final class AnalyticsReportAggregator
                 $data['actions']
             );
 
+        $dailyQrTotal =
+            $this->sumCounters(
+                $data['qrs']
+            );
+
         if (
             $dailyLinkTotal !==
                 $data['totals']['link_clicks'] ||
             $dailyActionTotal !==
-                $data['totals']['action_clicks']
+                $data['totals']['action_clicks'] ||
+            $dailyQrTotal !==
+                $data['totals']['qr_visits']
         ) {
             throw new RuntimeException(
                 'Analytics daily totals do not match item counters.'
@@ -393,6 +433,12 @@ final class AnalyticsReportAggregator
                 $data['totals']['action_clicks']
             );
 
+        $next['qr_visits'] =
+            $this->safeAdd(
+                $next['qr_visits'],
+                $data['totals']['qr_visits']
+            );
+
         foreach (
             $data['links'] as
             $id => $count
@@ -411,6 +457,17 @@ final class AnalyticsReportAggregator
             $next['actions'][$id] =
                 $this->safeAdd(
                     $next['actions'][$id] ?? 0,
+                    $count
+                );
+        }
+
+        foreach (
+            $data['qrs'] as
+            $id => $count
+        ) {
+            $next['qrs'][$id] =
+                $this->safeAdd(
+                    $next['qrs'][$id] ?? 0,
                     $count
                 );
         }
@@ -485,6 +542,11 @@ final class AnalyticsReportAggregator
             SORT_STRING
         );
 
+        ksort(
+            $aggregate['qrs'],
+            SORT_STRING
+        );
+
         return [
             'page_views' =>
                 $aggregate['page_views'],
@@ -497,6 +559,10 @@ final class AnalyticsReportAggregator
                 $aggregate['links'],
             'actions' =>
                 $aggregate['actions'],
+            'qr_visits' =>
+                $aggregate['qr_visits'],
+            'qrs' =>
+                $aggregate['qrs'],
             'valid_days' =>
                 count($dates),
             'date_from' =>

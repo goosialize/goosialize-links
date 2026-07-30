@@ -13,13 +13,15 @@ use Throwable;
 
 final class AnalyticsStore
 {
-    private const VERSION = 1;
+    private const VERSION = 2;
 
     private const EVENT_PAGE_VIEW = 'page_view';
 
     private const EVENT_LINK_CLICK = 'link_click';
 
     private const EVENT_ACTION_CLICK = 'action_click';
+
+    private const EVENT_QR_VISIT = 'qr_visit';
 
     public function __construct(
         private readonly string $directory
@@ -72,6 +74,19 @@ final class AnalyticsStore
         $this->record(
             self::EVENT_ACTION_CLICK,
             $actionId,
+            $now
+        );
+    }
+
+    public function recordQrVisit(
+        string $qrId = 'qr_primary',
+        ?DateTimeImmutable $now = null
+    ): void {
+        $this->assertQrId($qrId);
+
+        $this->record(
+            self::EVENT_QR_VISIT,
+            $qrId,
             $now
         );
     }
@@ -187,6 +202,19 @@ final class AnalyticsStore
                     $this->increment(
                         $data['actions'][$id] ?? 0
                     );
+            } elseif (
+                $event === self::EVENT_QR_VISIT &&
+                $id !== null
+            ) {
+                $data['totals']['qr_visits'] =
+                    $this->increment(
+                        $data['totals']['qr_visits']
+                    );
+
+                $data['qrs'][$id] =
+                    $this->increment(
+                        $data['qrs'][$id] ?? 0
+                    );
             } else {
                 throw new InvalidArgumentException(
                     'Unsupported analytics event.'
@@ -198,6 +226,7 @@ final class AnalyticsStore
 
             ksort($data['links']);
             ksort($data['actions']);
+            ksort($data['qrs']);
 
             $this->writeAtomically(
                 $path,
@@ -361,9 +390,16 @@ final class AnalyticsStore
             );
         }
 
+        $version =
+            $parsed['version'] ?? null;
+
         if (
-            ($parsed['version'] ?? null) !==
-            self::VERSION
+            !is_int($version) ||
+            !in_array(
+                $version,
+                [1, self::VERSION],
+                true
+            )
         ) {
             throw new RuntimeException(
                 'Unsupported analytics data version.'
@@ -391,11 +427,17 @@ final class AnalyticsStore
         $actions =
             $parsed['actions'] ?? null;
 
+        $qrs =
+            $version === 1
+                ? []
+                : ($parsed['qrs'] ?? null);
+
         if (
             !is_string($updatedAt) ||
             !is_array($totals) ||
             !is_array($links) ||
-            !is_array($actions)
+            !is_array($actions) ||
+            !is_array($qrs)
         ) {
             throw new RuntimeException(
                 'Analytics data structure is invalid.'
@@ -415,6 +457,12 @@ final class AnalyticsStore
                 $this->normalizeCounter(
                     $totals['action_clicks'] ?? null
                 ),
+            'qr_visits' =>
+                $version === 1
+                    ? 0
+                    : $this->normalizeCounter(
+                        $totals['qr_visits'] ?? null
+                    ),
         ];
 
         $normalizedLinks =
@@ -429,6 +477,9 @@ final class AnalyticsStore
                 'action'
             );
 
+        $normalizedQrs =
+            $this->normalizeQrCounters($qrs);
+
         return [
             'version' => self::VERSION,
             'date' => $expectedDate,
@@ -436,6 +487,7 @@ final class AnalyticsStore
             'totals' => $normalizedTotals,
             'links' => $normalizedLinks,
             'actions' => $normalizedActions,
+            'qrs' => $normalizedQrs,
         ];
     }
 
@@ -461,6 +513,34 @@ final class AnalyticsStore
                 $id,
                 $prefix
             );
+
+            $normalized[$id] =
+                $this->normalizeCounter($count);
+        }
+
+        ksort($normalized);
+
+        return $normalized;
+    }
+
+    /**
+     * @param array<mixed> $values
+     *
+     * @return array<string, int>
+     */
+    private function normalizeQrCounters(
+        array $values
+    ): array {
+        $normalized = [];
+
+        foreach ($values as $id => $count) {
+            if (!is_string($id)) {
+                throw new RuntimeException(
+                    'QR analytics ID must be a string.'
+                );
+            }
+
+            $this->assertQrId($id);
 
             $normalized[$id] =
                 $this->normalizeCounter($count);
@@ -518,6 +598,16 @@ final class AnalyticsStore
                     'Invalid %s analytics ID.',
                     $prefix
                 )
+            );
+        }
+    }
+
+    private function assertQrId(
+        string $id
+    ): void {
+        if ($id !== 'qr_primary') {
+            throw new InvalidArgumentException(
+                'Invalid QR analytics ID.'
             );
         }
     }
@@ -588,9 +678,11 @@ final class AnalyticsStore
                 'page_views' => 0,
                 'link_clicks' => 0,
                 'action_clicks' => 0,
+                'qr_visits' => 0,
             ],
             'links' => [],
             'actions' => [],
+            'qrs' => [],
         ];
     }
 }

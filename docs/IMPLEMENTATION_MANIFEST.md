@@ -373,8 +373,13 @@ No user-created QR identifiers are supported.
 The approved public routes are:
 
 - `/<public-route>/qr/qr_primary`
-- `/<public-route>/qr/qr_primary.png`
-- `/<public-route>/qr/qr_primary.svg`
+- `/<public-route>/qr/qr_primary/png`
+- `/<public-route>/qr/qr_primary/svg`
+
+The PNG and SVG formats use path segments instead of filename extensions so
+dynamic image responses are not intercepted by common static-file routing
+rules. The responses retain their correct MIME types and `.png` or `.svg`
+download filenames.
 
 The tracked route redirects only to the plugin's normalized active public
 route. It must ignore and reject request-provided redirect destinations.

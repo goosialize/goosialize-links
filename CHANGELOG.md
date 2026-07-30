@@ -15,3 +15,4 @@ All notable changes to Goosialize Links will be documented in this file.
 - Three public themes, five accent colors, three button shapes, safe profile images, and social/contact actions.
 - Anonymous daily analytics storage with tracked link and action redirects.
 - Add privacy-preserving analytics aggregation and native Admin2 Reports integration.
+- Add tracked QR visits with PNG and SVG generation.
