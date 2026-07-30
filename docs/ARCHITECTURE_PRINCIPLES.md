@@ -151,3 +151,57 @@ The QR feature must not introduce:
 - campaign parameters;
 - query-controlled redirects;
 - visitor profiling.
+
+## Admin2 QR Page Architecture Decision
+
+The QR management page uses the native Admin2 plugin-page extension contract.
+
+The selected architecture is a constrained component plugin page:
+
+- native Admin2 plugin-page shell;
+- dedicated plugin-page blueprint;
+- page-level JavaScript loaded through the supported Admin2 plugin-page
+  mechanism;
+- authenticated and permission-gated Grav API endpoints;
+- native Admin2 typography, spacing, buttons, notices, loading states, and
+  error states.
+
+Blueprint-only mode is not sufficient for the locked QR page because the page
+must display a generated image preview and provide binary PNG and SVG
+downloads.
+
+The page-level component is limited to orchestration and rendering of the QR
+preview. It must not introduce:
+
+- custom form controls that imitate Admin2;
+- Shadow DOM;
+- an independent component or design system;
+- custom configuration persistence;
+- client-controlled QR destinations;
+- client-controlled redirect targets;
+- unauthenticated administration data.
+
+The page reads a server-generated view model containing only:
+
+- the tracked QR URL;
+- the PNG preview URL;
+- the PNG download URL;
+- the SVG download URL;
+- the aggregate `qr_primary` visit count.
+
+The API remains authoritative for permissions, URL construction, analytics
+data, and download responses. Preview and download requests do not record
+`qr_visit`.
+
+The dedicated QR administration permission is:
+
+- `api.goosialize-links.qr.read`.
+
+This permission controls the sidebar item, the page-data endpoint, and both
+download endpoints. No QR write permission is created because the Phase 7
+Admin2 page is read-only.
+
+The Admin2 plugin-page blueprint endpoint separately requires the platform
+permission `api.config.read`. That platform permission is a prerequisite for
+loading the native plugin-page blueprint, but it does not replace the dedicated
+Goosialize Links QR permission.

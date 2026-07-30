@@ -444,3 +444,120 @@ The source repository commits `composer.lock`.
 
 The development repository does not commit generated `vendor/` contents.
 Production dependencies are installed and included during release packaging.
+
+### Admin2 QR Page Implementation Decision
+
+Phase 7 uses the following exact Admin2 architecture:
+
+- sidebar event: `onApiSidebarItems`;
+- plugin-page blueprint context: `onApiBlueprintResolved`;
+- API route registration: `onApiRegisterRoutes`;
+- blueprint path:
+  `admin/blueprints/goosialize-links.yaml`;
+- page script path:
+  `admin-next/pages/goosialize-links.js`;
+- Admin2 route:
+  `/admin/plugin/goosialize-links`.
+
+The page is a constrained component plugin page rather than a blueprint-only
+page because the locked requirements include an image preview and binary PNG
+and SVG downloads.
+
+The implementation may add:
+
+- one read-only QR page-data API endpoint;
+- one permission-gated PNG download endpoint;
+- one permission-gated SVG download endpoint;
+- one API controller dedicated to the QR Admin2 surface;
+- one native plugin-page blueprint;
+- one Admin2 page script.
+
+The page-data response may expose only:
+
+- `qr_id`;
+- `tracked_url`;
+- `preview_url`;
+- `png_download_url`;
+- `svg_download_url`;
+- `qr_visits`.
+
+The implementation must not add:
+
+- save or mutation endpoints;
+- user-defined QR identifiers;
+- custom QR destinations;
+- custom QR styling;
+- custom HTML form controls;
+- Shadow DOM;
+- Goosialize Leads dependencies.
+
+All page and API access must be authenticated and permission-gated.
+
+#### Permission Contract
+
+The dedicated plugin permission is:
+
+- `api.goosialize-links.qr.read`.
+
+The sidebar item's `authorize` value and all three custom controller methods
+must use this exact permission.
+
+The standard API permission `api.config.read` remains required by the installed
+API plugin for:
+
+- `GET /blueprints/plugins/goosialize-links/pages/goosialize-links`.
+
+The two permissions have different responsibilities:
+
+- `api.config.read` allows the native Admin2 blueprint to load;
+- `api.goosialize-links.qr.read` allows access to Goosialize Links QR data and
+  downloads.
+
+No QR create, update, delete, style, destination, or campaign permission is
+created.
+
+#### Exact API Route Inventory
+
+The plugin registers exactly these collector-relative routes through
+`onApiRegisterRoutes`:
+
+- `GET /goosialize-links/qr`;
+- `GET /goosialize-links/qr/download/png`;
+- `GET /goosialize-links/qr/download/svg`.
+
+The routes have the following fixed responsibilities:
+
+1. `GET /goosialize-links/qr`
+   returns the read-only QR page view model.
+2. `GET /goosialize-links/qr/download/png`
+   returns a generated PNG download.
+3. `GET /goosialize-links/qr/download/svg`
+   returns a generated SVG download.
+
+No `POST`, `PUT`, `PATCH`, or `DELETE` QR route is allowed.
+
+The page-data endpoint returns exactly:
+
+- `qr_id`;
+- `tracked_url`;
+- `preview_url`;
+- `png_download_url`;
+- `svg_download_url`;
+- `qr_visits`.
+
+The fixed values and URL responsibilities are:
+
+- `qr_id` is always `qr_primary`;
+- `tracked_url` points to
+  `/<public-route>/qr/qr_primary`;
+- `preview_url` points to the existing non-tracking public PNG endpoint
+  `/<public-route>/qr/qr_primary/png`;
+- `png_download_url` identifies
+  `/goosialize-links/qr/download/png`;
+- `svg_download_url` identifies
+  `/goosialize-links/qr/download/svg`;
+- `qr_visits` is the aggregate `qrs.qr_primary` count.
+
+The controller constructs all URLs server-side. No route accepts a QR
+identifier, destination URL, redirect URL, output style, campaign, filename, or
+filesystem path from request input.
