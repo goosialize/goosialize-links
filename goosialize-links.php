@@ -7,6 +7,7 @@ namespace Grav\Plugin;
 use Grav\Common\Page\Page;
 use Grav\Common\Plugin;
 use Grav\Framework\Psr7\Response;
+use Goosialize\Links\AnalyticsReportAggregator;
 use Goosialize\Links\AnalyticsStore;
 use Goosialize\Links\LinkPageConfigNormalizer;
 use Goosialize\Links\PublicPageExperienceNormalizer;
@@ -16,6 +17,7 @@ use InvalidArgumentException;
 use RuntimeException;
 use SplFileInfo;
 use Throwable;
+use RocketTheme\Toolbox\Event\Event;
 
 require_once __DIR__ .
     '/classes/LinkCollectionNormalizer.php';
@@ -37,6 +39,9 @@ require_once __DIR__ .
 
 require_once __DIR__ .
     '/classes/AnalyticsStore.php';
+
+require_once __DIR__ .
+    '/classes/AnalyticsReportAggregator.php';
 
 require_once __DIR__ .
     '/classes/PublicPageViewModelFactory.php';
@@ -62,6 +67,10 @@ final class GoosializeLinksPlugin extends Plugin
     public static function getSubscribedEvents(): array
     {
         return [
+            'onApiGenerateReports' => [
+                'onApiGenerateReports',
+                0,
+            ],
             'onPluginsInitialized' => [
                 'onPluginsInitialized',
                 0,
@@ -252,6 +261,88 @@ final class GoosializeLinksPlugin extends Plugin
         $this->grav['twig']
             ->twig_vars['goosialize_links'] =
                 $this->publicViewModel;
+    }
+
+    public function onApiGenerateReports(
+        Event $event
+    ): void {
+        $reports =
+            $event['reports'] ?? null;
+
+        if (!is_array($reports)) {
+            return;
+        }
+
+        foreach ($reports as $report) {
+            if (
+                is_array($report) &&
+                ($report['id'] ?? null) ===
+                    'goosialize-links-analytics'
+            ) {
+                return;
+            }
+        }
+
+        try {
+            $rawConfig = $this->config->get(
+                'plugins.goosialize-links',
+                []
+            );
+
+            if (!is_array($rawConfig)) {
+                throw new RuntimeException(
+                    'Configuration must be an array.'
+                );
+            }
+
+            $baseConfig =
+                (new LinkPageConfigNormalizer())
+                    ->normalize($rawConfig);
+
+            $normalizedConfig =
+                (new PublicPageExperienceNormalizer())
+                    ->normalize(
+                        $rawConfig,
+                        $baseConfig
+                    );
+
+            if (
+                !($normalizedConfig['enabled'] ?? false)
+            ) {
+                return;
+            }
+
+            $report =
+                (new AnalyticsReportAggregator(
+                    GRAV_ROOT .
+                    '/user/data/goosialize-links/analytics'
+                ))->createReport(
+                    $normalizedConfig
+                );
+        } catch (Throwable $exception) {
+            $this->grav['log']->error(
+                'plugin.goosialize-links: ' .
+                'analytics report generation failed: ' .
+                $exception->getMessage()
+            );
+
+            $report = [
+                'id' =>
+                    'goosialize-links-analytics',
+                'title' =>
+                    'Goosialize Links Analytics',
+                'provider' =>
+                    'goosialize-links',
+                'component' => null,
+                'status' => 'error',
+                'message' =>
+                    'Analytics data is currently unavailable.',
+                'items' => [],
+            ];
+        }
+
+        $reports[] = $report;
+        $event['reports'] = $reports;
     }
 
     private function handleTrackingRequest(): bool
