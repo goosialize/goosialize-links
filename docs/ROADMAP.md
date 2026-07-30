@@ -66,12 +66,15 @@
 
 ## Phase 7 — QR Code
 
-- One internal QR tracking route
+- Durable FREE identifier `qr_primary`
+- Internal tracked route `/<public-route>/qr/qr_primary`
+- PNG endpoint `/<public-route>/qr/qr_primary.png`
+- SVG endpoint `/<public-route>/qr/qr_primary.svg`
 - `qr_visit`
-- QR generation
-- PNG output
-- SVG output
-- Admin preview
+- Backward-compatible analytics schema extension
+- Native Admin2 QR page
+- QR preview
+- PNG and SVG downloads
 - Safe redirect tests
 - Aggregate QR-visits reporting
 

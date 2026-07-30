@@ -101,3 +101,49 @@ designed so they can be tested independently from the visual interface.
 
 Architecture must serve the locked FREE v1 product rather than speculative SaaS
 or multi-tenant requirements.
+
+## QR Code Contract
+
+The FREE edition provides one QR code with the durable identifier
+`qr_primary`.
+
+The QR code must encode the plugin-owned tracked URL:
+
+- `/<public-route>/qr/qr_primary`
+
+The QR code must never encode a destination supplied through a query string,
+form value, or other request-controlled redirect parameter.
+
+The tracked QR route resolves the active public Goosialize Links route
+server-side, records one `qr_visit`, and returns a temporary redirect to that
+public route.
+
+The QR image endpoints are:
+
+- `/<public-route>/qr/qr_primary.png`
+- `/<public-route>/qr/qr_primary.svg`
+
+Fetching a PNG or SVG image must not record a QR visit. Only a request to the
+tracked QR route records `qr_visit`.
+
+QR generation is locked to:
+
+- `endroid/qr-code` `6.0.9`;
+- `bacon/bacon-qr-code` `3.1.1`;
+- `dasprid/enum` `1.0.7`;
+- PHP platform `8.3.0`;
+- the GD extension for PNG output.
+
+`composer.lock` is committed for reproducibility. Development source does not
+commit generated `vendor/` files. The final distributable plugin package must
+include production Composer dependencies.
+
+The QR feature must not introduce:
+
+- multiple QR codes;
+- custom QR payloads;
+- logos embedded in the QR image;
+- styling controls;
+- campaign parameters;
+- query-controlled redirects;
+- visitor profiling.

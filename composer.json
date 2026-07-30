@@ -24,5 +24,14 @@
         "psr-4": {
             "Goosialize\\Links\\": "classes/"
         }
+    },
+    "require": {
+        "endroid/qr-code": "6.0.9"
+    },
+    "config": {
+        "platform": {
+            "php": "8.3.0"
+        },
+        "sort-packages": true
     }
 }

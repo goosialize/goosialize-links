@@ -63,20 +63,27 @@ Not included:
 
 ## QR Code
 
-- One QR code for the public page
-- Admin preview
-- PNG download
-- SVG download
-- Internal tracked redirect
-- One aggregate QR-visits metric
+The FREE edition includes one QR code for the active public Link in Bio page.
+
+Included:
+
+- one durable QR identifier: `qr_primary`;
+- tracked QR visits;
+- PNG output;
+- SVG output;
+- native Admin2 preview;
+- PNG download;
+- SVG download;
+- total QR visits in the analytics report.
 
 Not included:
 
-- multiple QR codes
-- campaign QR codes
-- QR-specific funnels
-- custom embedded logos
-- advanced QR styling
+- multiple QR codes;
+- campaigns;
+- custom destinations;
+- QR logos;
+- custom QR colors or shapes;
+- advanced QR analytics.
 
 ## Analytics
 

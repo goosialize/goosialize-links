@@ -357,3 +357,85 @@ Before the relevant phase, do not introduce:
 Any new top-level directory, runtime dependency, external service, analytics
 event, public route, or cross-plugin dependency requires an explicit manifest
 review before implementation.
+
+## Locked Phase 7 QR Implementation Contract
+
+### Identity
+
+The FREE QR identity is fixed to:
+
+- `qr_primary`
+
+No user-created QR identifiers are supported.
+
+### Public routes
+
+The approved public routes are:
+
+- `/<public-route>/qr/qr_primary`
+- `/<public-route>/qr/qr_primary.png`
+- `/<public-route>/qr/qr_primary.svg`
+
+The tracked route redirects only to the plugin's normalized active public
+route. It must ignore and reject request-provided redirect destinations.
+
+PNG and SVG image requests do not count as QR visits.
+
+### Analytics
+
+Phase 7 extends the daily analytics schema with:
+
+- `totals.qr_visits`;
+- `qrs.qr_primary`;
+- event identity `qr_visit`.
+
+Existing analytics schema version 1 files must remain readable and must resolve
+missing QR counters to zero.
+
+The native Admin2 analytics report adds:
+
+- Total QR Visits;
+- Primary QR Code visits.
+
+No visitor, device, location, referrer, UTM, campaign, or unique-user data is
+recorded.
+
+### QR generation
+
+The approved generator is `endroid/qr-code` version `6.0.9`.
+
+The locked production dependency graph is:
+
+- `endroid/qr-code` `6.0.9`;
+- `bacon/bacon-qr-code` `3.1.1`;
+- `dasprid/enum` `1.0.7`.
+
+The minimum Composer resolution platform is PHP `8.3.0`.
+
+### Native Admin2 surface
+
+The QR management surface uses the Grav API and Admin2 extension contracts:
+
+- `onApiSidebarItems`;
+- plugin-page blueprint context through `onApiBlueprintResolved`;
+- `admin/blueprints/goosialize-links.yaml`;
+- `admin-next/pages/goosialize-links.js`.
+
+The page must use native Admin2 form and design-system components. It may render
+the generated QR image, but it must not replace native fields with imitated
+custom HTML controls or use Shadow DOM.
+
+The Admin2 surface provides:
+
+- public tracked QR URL;
+- QR preview;
+- PNG download;
+- SVG download;
+- current aggregate QR visit count.
+
+### Release packaging
+
+The source repository commits `composer.lock`.
+
+The development repository does not commit generated `vendor/` contents.
+Production dependencies are installed and included during release packaging.
