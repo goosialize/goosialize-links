@@ -41,31 +41,41 @@
 - Mobile-first Twig rendering
 - Profile header
 - Link rendering
-- Social actions
 - Accessibility
 - Required FREE branding
 
-## Phase 5 — QR Code
+## Phase 5 — Public Experience Completion
 
-- Internal QR tracking route
-- QR generation
-- PNG output
-- SVG output
-- Admin preview
-- Safe redirect tests
+- Profile image
+- Three predefined themes
+- Accent and button-shape options
+- Social and contact actions
+- Durable action identifiers
+- Public-page presentation regression
 
 ## Phase 6 — Basic Analytics
 
 - `page_view`
 - `link_click`
-- `qr_visit`
+- `action_click`
 - Total page views
-- Total clicks
-- Clicks per link
-- QR visits
+- Total link and action clicks
+- Clicks per link or action button
+- Native Admin2 Reports integration
 - Minimal privacy controls
 
-## Phase 7 — Leads Adapter
+## Phase 7 — QR Code
+
+- One internal QR tracking route
+- `qr_visit`
+- QR generation
+- PNG output
+- SVG output
+- Admin preview
+- Safe redirect tests
+- Aggregate QR-visits reporting
+
+## Phase 8 — Leads Adapter
 
 - Capability detection
 - Basic contact form
@@ -76,7 +86,7 @@
 This phase begins only after the Goosialize Leads integration contract is
 stable.
 
-## Phase 8 — Release Readiness
+## Phase 9 — Release Readiness
 
 - Security review
 - Permission review

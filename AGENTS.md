@@ -43,9 +43,16 @@ Goosialize Links must:
 The FREE edition exposes only:
 
 1. total page views;
-2. total link clicks;
-3. clicks per link or button;
+2. total link and action clicks;
+3. clicks per link or action button;
 4. QR visits.
+
+The approved event identities are:
+
+- `page_view`;
+- `link_click`;
+- `action_click`;
+- `qr_visit`.
 
 The FREE edition must not expose advanced visitor profiling, device reports,
 country reports, referrers, UTM reporting, funnels, or complex comparisons.

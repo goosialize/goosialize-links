@@ -83,14 +83,15 @@ Not included:
 The FREE dashboard contains only:
 
 - Total Page Views
-- Total Link Clicks
-- Clicks per Link/Button
+- Total Link and Action Clicks
+- Clicks per Link/Action Button
 - QR Visits
 
 Required events:
 
 - `page_view`
 - `link_click`
+- `action_click`
 - `qr_visit`
 
 Not included:

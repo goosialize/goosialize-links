@@ -155,13 +155,14 @@ Only the following event identities are approved:
 
 - `page_view`
 - `link_click`
+- `action_click`
 - `qr_visit`
 
 Only the following FREE reports are approved:
 
 - total page views;
-- total link clicks;
-- clicks per link or button;
+- total link and action clicks;
+- clicks per link or action button;
 - total QR visits.
 
 No advanced analytics path should be created during the FREE implementation
@@ -250,27 +251,38 @@ Expected concerns:
 - FREE branding;
 - accessibility.
 
-### Phase 5 — QR Code
+### Phase 5 — Public Experience Completion
+
+Expected concerns:
+
+- profile image;
+- predefined themes;
+- social and contact actions;
+- durable action identifiers;
+- public-page accessibility and presentation polish.
+
+### Phase 6 — Basic Analytics
+
+Expected concerns:
+
+- approved `page_view`, `link_click`, and `action_click` recording;
+- approved aggregate counters;
+- clicks per durable link or action ID;
+- native Admin2 analytics report;
+- privacy controls.
+
+### Phase 7 — QR Code
 
 Expected concerns:
 
 - QR library decision;
 - QR generation;
 - PNG and SVG output;
-- internal tracking route;
-- safe redirect behavior.
+- internal `qr_visit` tracking route;
+- safe redirect behavior;
+- aggregate QR-visits reporting.
 
-### Phase 6 — Basic Analytics
-
-Expected concerns:
-
-- approved event recording;
-- approved aggregate counters;
-- clicks per durable link ID;
-- basic Admin2 analytics view;
-- privacy controls.
-
-### Phase 7 — Leads Adapter
+### Phase 8 — Leads Adapter
 
 Expected concerns:
 
@@ -281,7 +293,7 @@ Expected concerns:
 
 This phase remains blocked until the Leads public contract is stable.
 
-### Phase 8 — Release Readiness
+### Phase 9 — Release Readiness
 
 Expected concerns:
 
