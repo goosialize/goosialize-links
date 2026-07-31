@@ -1,0 +1,7 @@
+form:
+  validation: loose
+  fields:
+    qr_page:
+      type: section
+      title: PLUGIN_GOOSIALIZE_LINKS.ICU.QR_ADMIN_TITLE
+      underline: true

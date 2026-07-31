@@ -16,3 +16,4 @@ All notable changes to Goosialize Links will be documented in this file.
 - Anonymous daily analytics storage with tracked link and action redirects.
 - Add privacy-preserving analytics aggregation and native Admin2 Reports integration.
 - Add tracked QR visits with PNG and SVG generation.
+- Add a permission-gated native Admin2 QR preview with PNG and SVG downloads.

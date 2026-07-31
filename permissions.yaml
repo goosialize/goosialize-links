@@ -1,0 +1,16 @@
+# Permission: api.goosialize-links.qr.read
+api:
+  type: access
+  label: API
+  children:
+    goosialize-links:
+      type: access
+      label: PLUGIN_GOOSIALIZE_LINKS.NAME
+      children:
+        qr:
+          type: access
+          label: PLUGIN_GOOSIALIZE_LINKS.ICU.QR_ADMIN_TITLE
+          children:
+            read:
+              type: access
+              label: PLUGIN_GOOSIALIZE_LINKS.ICU.QR_PERMISSION_READ

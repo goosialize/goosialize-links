@@ -70,6 +70,17 @@ en:
       LINK_NEW_TAB: Open in new tab
       LINK_NEW_TAB_HELP: Open the destination in a separate browser tab.
 
+      QR_ADMIN_TITLE: QR Code
+      QR_ADMIN_DESCRIPTION: Preview the tracked QR code and download PNG or SVG files.
+      QR_PERMISSION_READ: View QR code administration
+      QR_ID: QR identifier
+      QR_TRACKED_URL: Tracked URL
+      QR_VISITS: QR visits
+      QR_DOWNLOAD_PNG: Download PNG
+      QR_DOWNLOAD_SVG: Download SVG
+      QR_LOADING: Loading QR code...
+      QR_ERROR: QR code data could not be loaded.
+
 el:
   PLUGIN_GOOSIALIZE_LINKS:
     NAME: Goosialize Links
@@ -141,3 +152,13 @@ el:
       LINK_URL_HELP: Ο πλήρης προορισμός HTTP ή HTTPS.
       LINK_NEW_TAB: Άνοιγμα σε νέα καρτέλα
       LINK_NEW_TAB_HELP: Άνοιγμα του προορισμού σε ξεχωριστή καρτέλα.
+      QR_ADMIN_TITLE: Κωδικός QR
+      QR_ADMIN_DESCRIPTION: Προεπισκόπηση του tracked QR code και λήψη αρχείων PNG ή SVG.
+      QR_PERMISSION_READ: Προβολή διαχείρισης κωδικού QR
+      QR_ID: Αναγνωριστικό QR
+      QR_TRACKED_URL: Tracked URL
+      QR_VISITS: Επισκέψεις μέσω QR
+      QR_DOWNLOAD_PNG: Λήψη PNG
+      QR_DOWNLOAD_SVG: Λήψη SVG
+      QR_LOADING: Φόρτωση κωδικού QR...
+      QR_ERROR: Δεν ήταν δυνατή η φόρτωση των δεδομένων QR.

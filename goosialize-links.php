@@ -6,9 +6,12 @@ namespace Grav\Plugin;
 
 use Grav\Common\Page\Page;
 use Grav\Common\Plugin;
+use Grav\Framework\Acl\PermissionsReader;
+use Grav\Framework\Acl\PermissionsRegisterEvent;
 use Grav\Framework\Psr7\Response;
 use Goosialize\Links\AnalyticsReportAggregator;
 use Goosialize\Links\AnalyticsStore;
+use Goosialize\Links\QrAdminController;
 use Goosialize\Links\QrCodeGenerator;
 use Goosialize\Links\QrRouteResolver;
 use Goosialize\Links\LinkPageConfigNormalizer;
@@ -84,6 +87,26 @@ final class GoosializeLinksPlugin extends Plugin
     public static function getSubscribedEvents(): array
     {
         return [
+            PermissionsRegisterEvent::class => [
+                'onRegisterPermissions',
+                1000,
+            ],
+            'onApiRegisterRoutes' => [
+                'onApiRegisterRoutes',
+                0,
+            ],
+            'onApiSidebarItems' => [
+                'onApiSidebarItems',
+                0,
+            ],
+            'onApiPluginPageInfo' => [
+                'onApiPluginPageInfo',
+                0,
+            ],
+            'onApiBlueprintResolved' => [
+                'onApiBlueprintResolved',
+                0,
+            ],
             'onApiGenerateReports' => [
                 'onApiGenerateReports',
                 0,
@@ -97,6 +120,211 @@ final class GoosializeLinksPlugin extends Plugin
                 0,
             ],
         ];
+    }
+
+
+    public function onRegisterPermissions(
+        PermissionsRegisterEvent $event
+    ): void {
+        $actions = PermissionsReader::fromYaml(
+            "plugin://{$this->name}/permissions.yaml"
+        );
+
+        $event->permissions->addActions($actions);
+    }
+
+    public function onApiRegisterRoutes(
+        Event $event
+    ): void {
+        require_once __DIR__ .
+            '/classes/QrAdminController.php';
+
+        $routes = $event['routes'] ?? null;
+
+        if (
+            !is_object($routes) ||
+            !method_exists($routes, 'get')
+        ) {
+            return;
+        }
+
+        $routes->get(
+            '/goosialize-links/qr',
+            [
+                QrAdminController::class,
+                'pageData',
+            ]
+        );
+
+        $routes->get(
+            '/goosialize-links/qr/download/png',
+            [
+                QrAdminController::class,
+                'downloadPng',
+            ]
+        );
+
+        $routes->get(
+            '/goosialize-links/qr/download/svg',
+            [
+                QrAdminController::class,
+                'downloadSvg',
+            ]
+        );
+    }
+
+    public function onApiSidebarItems(
+        Event $event
+    ): void {
+        if (!$this->qrAdminEnabled()) {
+            return;
+        }
+
+        $user = $event['user'] ?? null;
+
+        if (!$this->qrAdminAllowed($user)) {
+            return;
+        }
+
+        $items = $event['items'] ?? [];
+
+        if (!is_array($items)) {
+            $items = [];
+        }
+
+        $items[] = [
+            'id' => 'goosialize-links',
+            'plugin' => 'goosialize-links',
+            'label' =>
+                'PLUGIN_GOOSIALIZE_LINKS.ICU.QR_ADMIN_TITLE',
+            'icon' => 'fa-qrcode',
+            'route' => '/plugin/goosialize-links',
+            'priority' => 19,
+            'authorize' =>
+                'api.goosialize-links.qr.read',
+        ];
+
+        $event['items'] = $items;
+    }
+
+    public function onApiPluginPageInfo(
+        Event $event
+    ): void {
+        if (
+            ($event['plugin'] ?? null) !==
+                'goosialize-links' ||
+            !$this->qrAdminEnabled()
+        ) {
+            return;
+        }
+
+        $user = $event['user'] ?? null;
+
+        if (!$this->qrAdminAllowed($user)) {
+            return;
+        }
+
+        $event['definition'] = [
+            'id' => 'goosialize-links',
+            'plugin' => 'goosialize-links',
+            'title' =>
+                'PLUGIN_GOOSIALIZE_LINKS.ICU.QR_ADMIN_TITLE',
+            'icon' => 'fa-qrcode',
+            'page_type' => 'component',
+            'actions' => [
+                [
+                    'id' => 'download-png',
+                    'label' =>
+                        'PLUGIN_GOOSIALIZE_LINKS.ICU.QR_DOWNLOAD_PNG',
+                    'icon' => 'fa-download',
+                    'endpoint' =>
+                        '/goosialize-links/qr/download/png',
+                    'download' => true,
+                ],
+                [
+                    'id' => 'download-svg',
+                    'label' =>
+                        'PLUGIN_GOOSIALIZE_LINKS.ICU.QR_DOWNLOAD_SVG',
+                    'icon' => 'fa-download',
+                    'endpoint' =>
+                        '/goosialize-links/qr/download/svg',
+                    'download' => true,
+                ],
+            ],
+        ];
+    }
+
+    public function onApiBlueprintResolved(
+        Event $event
+    ): void {
+        if (
+            ($event['context'] ?? null) !==
+                'plugin-page' ||
+            ($event['plugin'] ?? null) !==
+                'goosialize-links' ||
+            ($event['page_id'] ?? null) !==
+                'goosialize-links'
+        ) {
+            return;
+        }
+
+        if (
+            !$this->qrAdminAllowed(
+                $event['user'] ?? null
+            )
+        ) {
+            $event['fields'] = [];
+        }
+    }
+
+    private function qrAdminEnabled(): bool
+    {
+        return (bool) $this->grav['config']->get(
+            'plugins.goosialize-links.enabled',
+            true
+        );
+    }
+
+    private function qrAdminAllowed(
+        mixed $user
+    ): bool {
+        if (!is_object($user)) {
+            return false;
+        }
+
+        try {
+            if (method_exists($user, 'get')) {
+                foreach (
+                    [
+                        'access.admin.super',
+                        'access.api.super',
+                        'access.api.goosialize-links.qr.read',
+                    ] as $path
+                ) {
+                    if ((bool) $user->get($path)) {
+                        return true;
+                    }
+                }
+            }
+
+            if (method_exists($user, 'authorize')) {
+                foreach (
+                    [
+                        'admin.super',
+                        'api.super',
+                        'api.goosialize-links.qr.read',
+                    ] as $permission
+                ) {
+                    if ((bool) $user->authorize($permission)) {
+                        return true;
+                    }
+                }
+            }
+        } catch (Throwable) {
+            return false;
+        }
+
+        return false;
     }
 
     public function onPluginsInitialized(): void
