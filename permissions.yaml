@@ -9,8 +9,8 @@ api:
       children:
         qr:
           type: access
-          label: PLUGIN_GOOSIALIZE_LINKS.ICU.QR_ADMIN_TITLE
+          label: PLUGIN_GOOSIALIZE_LINKS.QR_ADMIN_TITLE
           children:
             read:
               type: access
-              label: PLUGIN_GOOSIALIZE_LINKS.ICU.QR_PERMISSION_READ
+              label: PLUGIN_GOOSIALIZE_LINKS.QR_PERMISSION_READ

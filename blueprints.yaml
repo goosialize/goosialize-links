@@ -34,8 +34,8 @@ form:
 
     route:
       type: text
-      label: PLUGIN_GOOSIALIZE_LINKS.ICU.ROUTE
-      help: PLUGIN_GOOSIALIZE_LINKS.ICU.ROUTE_HELP
+      label: PLUGIN_GOOSIALIZE_LINKS.ROUTE
+      help: PLUGIN_GOOSIALIZE_LINKS.ROUTE_HELP
       default: /bio
       placeholder: /bio
       validate:
@@ -44,13 +44,13 @@ form:
 
     profile_section:
       type: section
-      title: PLUGIN_GOOSIALIZE_LINKS.ICU.PROFILE_SECTION
+      title: PLUGIN_GOOSIALIZE_LINKS.PROFILE_SECTION
       underline: true
       fields:
         profile.image:
           type: file
-          label: PLUGIN_GOOSIALIZE_LINKS.ICU.PROFILE_IMAGE
-          help: PLUGIN_GOOSIALIZE_LINKS.ICU.PROFILE_IMAGE_HELP
+          label: PLUGIN_GOOSIALIZE_LINKS.PROFILE_IMAGE
+          help: PLUGIN_GOOSIALIZE_LINKS.PROFILE_IMAGE_HELP
           destination: user/media/goosialize-links/profile
           multiple: false
           limit: 1
@@ -63,87 +63,87 @@ form:
 
         profile.name:
           type: text
-          label: PLUGIN_GOOSIALIZE_LINKS.ICU.PROFILE_NAME
-          help: PLUGIN_GOOSIALIZE_LINKS.ICU.PROFILE_NAME_HELP
+          label: PLUGIN_GOOSIALIZE_LINKS.PROFILE_NAME
+          help: PLUGIN_GOOSIALIZE_LINKS.PROFILE_NAME_HELP
           maxlength: 120
 
         profile.title:
           type: text
-          label: PLUGIN_GOOSIALIZE_LINKS.ICU.PROFILE_TITLE
-          help: PLUGIN_GOOSIALIZE_LINKS.ICU.PROFILE_TITLE_HELP
+          label: PLUGIN_GOOSIALIZE_LINKS.PROFILE_TITLE
+          help: PLUGIN_GOOSIALIZE_LINKS.PROFILE_TITLE_HELP
           maxlength: 160
 
         profile.description:
           type: textarea
-          label: PLUGIN_GOOSIALIZE_LINKS.ICU.PROFILE_DESCRIPTION
-          help: PLUGIN_GOOSIALIZE_LINKS.ICU.PROFILE_DESCRIPTION_HELP
+          label: PLUGIN_GOOSIALIZE_LINKS.PROFILE_DESCRIPTION
+          help: PLUGIN_GOOSIALIZE_LINKS.PROFILE_DESCRIPTION_HELP
           maxlength: 500
           rows: 5
 
         profile.website_url:
           type: url
-          label: PLUGIN_GOOSIALIZE_LINKS.ICU.PROFILE_WEBSITE_URL
-          help: PLUGIN_GOOSIALIZE_LINKS.ICU.PROFILE_WEBSITE_URL_HELP
+          label: PLUGIN_GOOSIALIZE_LINKS.PROFILE_WEBSITE_URL
+          help: PLUGIN_GOOSIALIZE_LINKS.PROFILE_WEBSITE_URL_HELP
           placeholder: https://example.com
 
     appearance_section:
       type: section
-      title: PLUGIN_GOOSIALIZE_LINKS.ICU.APPEARANCE_SECTION
+      title: PLUGIN_GOOSIALIZE_LINKS.APPEARANCE_SECTION
       underline: true
       fields:
         appearance.theme:
           type: select
-          label: PLUGIN_GOOSIALIZE_LINKS.ICU.THEME
-          help: PLUGIN_GOOSIALIZE_LINKS.ICU.THEME_HELP
+          label: PLUGIN_GOOSIALIZE_LINKS.THEME
+          help: PLUGIN_GOOSIALIZE_LINKS.THEME_HELP
           default: light
           options:
-            light: PLUGIN_GOOSIALIZE_LINKS.ICU.THEME_LIGHT
-            dark: PLUGIN_GOOSIALIZE_LINKS.ICU.THEME_DARK
-            sunrise: PLUGIN_GOOSIALIZE_LINKS.ICU.THEME_SUNRISE
+            light: PLUGIN_GOOSIALIZE_LINKS.THEME_LIGHT
+            dark: PLUGIN_GOOSIALIZE_LINKS.THEME_DARK
+            sunrise: PLUGIN_GOOSIALIZE_LINKS.THEME_SUNRISE
 
         appearance.accent:
           type: select
-          label: PLUGIN_GOOSIALIZE_LINKS.ICU.ACCENT
-          help: PLUGIN_GOOSIALIZE_LINKS.ICU.ACCENT_HELP
+          label: PLUGIN_GOOSIALIZE_LINKS.ACCENT
+          help: PLUGIN_GOOSIALIZE_LINKS.ACCENT_HELP
           default: yellow
           options:
-            yellow: PLUGIN_GOOSIALIZE_LINKS.ICU.ACCENT_YELLOW
-            blue: PLUGIN_GOOSIALIZE_LINKS.ICU.ACCENT_BLUE
-            coral: PLUGIN_GOOSIALIZE_LINKS.ICU.ACCENT_CORAL
-            green: PLUGIN_GOOSIALIZE_LINKS.ICU.ACCENT_GREEN
-            purple: PLUGIN_GOOSIALIZE_LINKS.ICU.ACCENT_PURPLE
+            yellow: PLUGIN_GOOSIALIZE_LINKS.ACCENT_YELLOW
+            blue: PLUGIN_GOOSIALIZE_LINKS.ACCENT_BLUE
+            coral: PLUGIN_GOOSIALIZE_LINKS.ACCENT_CORAL
+            green: PLUGIN_GOOSIALIZE_LINKS.ACCENT_GREEN
+            purple: PLUGIN_GOOSIALIZE_LINKS.ACCENT_PURPLE
 
         appearance.button_shape:
           type: select
-          label: PLUGIN_GOOSIALIZE_LINKS.ICU.BUTTON_SHAPE
-          help: PLUGIN_GOOSIALIZE_LINKS.ICU.BUTTON_SHAPE_HELP
+          label: PLUGIN_GOOSIALIZE_LINKS.BUTTON_SHAPE
+          help: PLUGIN_GOOSIALIZE_LINKS.BUTTON_SHAPE_HELP
           default: rounded
           options:
-            square: PLUGIN_GOOSIALIZE_LINKS.ICU.BUTTON_SQUARE
-            rounded: PLUGIN_GOOSIALIZE_LINKS.ICU.BUTTON_ROUNDED
-            pill: PLUGIN_GOOSIALIZE_LINKS.ICU.BUTTON_PILL
+            square: PLUGIN_GOOSIALIZE_LINKS.BUTTON_SQUARE
+            rounded: PLUGIN_GOOSIALIZE_LINKS.BUTTON_ROUNDED
+            pill: PLUGIN_GOOSIALIZE_LINKS.BUTTON_PILL
 
     actions_section:
       type: section
-      title: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTIONS_SECTION
+      title: PLUGIN_GOOSIALIZE_LINKS.ACTIONS_SECTION
       underline: true
       fields:
         actions:
           type: list
-          label: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTIONS
-          help: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTIONS_HELP
+          label: PLUGIN_GOOSIALIZE_LINKS.ACTIONS
+          help: PLUGIN_GOOSIALIZE_LINKS.ACTIONS_HELP
           style: vertical
           collapsed: true
           controls: both
           placement: bottom
-          btnLabel: PLUGIN_GOOSIALIZE_LINKS.ICU.ADD_ACTION
+          btnLabel: PLUGIN_GOOSIALIZE_LINKS.ADD_ACTION
           fields:
             .id:
               type: hidden
 
             .enabled:
               type: toggle
-              label: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_ENABLED
+              label: PLUGIN_GOOSIALIZE_LINKS.ACTION_ENABLED
               highlight: 1
               default: 1
               options:
@@ -154,54 +154,54 @@ form:
 
             .type:
               type: select
-              label: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_TYPE
+              label: PLUGIN_GOOSIALIZE_LINKS.ACTION_TYPE
               default: website
               options:
-                website: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_WEBSITE
-                instagram: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_INSTAGRAM
-                facebook: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_FACEBOOK
-                tiktok: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_TIKTOK
-                youtube: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_YOUTUBE
-                linkedin: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_LINKEDIN
-                x: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_X
-                email: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_EMAIL
-                phone: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_PHONE
-                whatsapp: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_WHATSAPP
+                website: PLUGIN_GOOSIALIZE_LINKS.ACTION_WEBSITE
+                instagram: PLUGIN_GOOSIALIZE_LINKS.ACTION_INSTAGRAM
+                facebook: PLUGIN_GOOSIALIZE_LINKS.ACTION_FACEBOOK
+                tiktok: PLUGIN_GOOSIALIZE_LINKS.ACTION_TIKTOK
+                youtube: PLUGIN_GOOSIALIZE_LINKS.ACTION_YOUTUBE
+                linkedin: PLUGIN_GOOSIALIZE_LINKS.ACTION_LINKEDIN
+                x: PLUGIN_GOOSIALIZE_LINKS.ACTION_X
+                email: PLUGIN_GOOSIALIZE_LINKS.ACTION_EMAIL
+                phone: PLUGIN_GOOSIALIZE_LINKS.ACTION_PHONE
+                whatsapp: PLUGIN_GOOSIALIZE_LINKS.ACTION_WHATSAPP
 
             .value:
               type: text
-              label: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_VALUE
-              help: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_VALUE_HELP
+              label: PLUGIN_GOOSIALIZE_LINKS.ACTION_VALUE
+              help: PLUGIN_GOOSIALIZE_LINKS.ACTION_VALUE_HELP
               validate:
                 required: true
 
             .label:
               type: text
-              label: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_LABEL
-              help: PLUGIN_GOOSIALIZE_LINKS.ICU.ACTION_LABEL_HELP
+              label: PLUGIN_GOOSIALIZE_LINKS.ACTION_LABEL
+              help: PLUGIN_GOOSIALIZE_LINKS.ACTION_LABEL_HELP
               maxlength: 80
 
     links_section:
       type: section
-      title: PLUGIN_GOOSIALIZE_LINKS.ICU.LINKS_SECTION
+      title: PLUGIN_GOOSIALIZE_LINKS.LINKS_SECTION
       underline: true
       fields:
         links:
           type: list
-          label: PLUGIN_GOOSIALIZE_LINKS.ICU.LINKS
-          help: PLUGIN_GOOSIALIZE_LINKS.ICU.LINKS_HELP
+          label: PLUGIN_GOOSIALIZE_LINKS.LINKS
+          help: PLUGIN_GOOSIALIZE_LINKS.LINKS_HELP
           style: vertical
           collapsed: true
           controls: both
           placement: bottom
-          btnLabel: PLUGIN_GOOSIALIZE_LINKS.ICU.ADD_LINK
+          btnLabel: PLUGIN_GOOSIALIZE_LINKS.ADD_LINK
           fields:
             .id:
               type: hidden
 
             .enabled:
               type: toggle
-              label: PLUGIN_GOOSIALIZE_LINKS.ICU.LINK_ENABLED
+              label: PLUGIN_GOOSIALIZE_LINKS.LINK_ENABLED
               highlight: 1
               default: 1
               options:
@@ -212,24 +212,24 @@ form:
 
             .title:
               type: text
-              label: PLUGIN_GOOSIALIZE_LINKS.ICU.LINK_TITLE
-              help: PLUGIN_GOOSIALIZE_LINKS.ICU.LINK_TITLE_HELP
+              label: PLUGIN_GOOSIALIZE_LINKS.LINK_TITLE
+              help: PLUGIN_GOOSIALIZE_LINKS.LINK_TITLE_HELP
               maxlength: 120
               validate:
                 required: true
 
             .url:
               type: url
-              label: PLUGIN_GOOSIALIZE_LINKS.ICU.LINK_URL
-              help: PLUGIN_GOOSIALIZE_LINKS.ICU.LINK_URL_HELP
+              label: PLUGIN_GOOSIALIZE_LINKS.LINK_URL
+              help: PLUGIN_GOOSIALIZE_LINKS.LINK_URL_HELP
               placeholder: https://example.com
               validate:
                 required: true
 
             .new_tab:
               type: toggle
-              label: PLUGIN_GOOSIALIZE_LINKS.ICU.LINK_NEW_TAB
-              help: PLUGIN_GOOSIALIZE_LINKS.ICU.LINK_NEW_TAB_HELP
+              label: PLUGIN_GOOSIALIZE_LINKS.LINK_NEW_TAB
+              help: PLUGIN_GOOSIALIZE_LINKS.LINK_NEW_TAB_HELP
               highlight: 1
               default: 1
               options:

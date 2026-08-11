@@ -1,0 +1,87 @@
+PLUGIN_GOOSIALIZE_LINKS:
+  NAME: Goosialize Links
+  DESCRIPTION: Self-hosted Link in Bio plugin for Grav CMS.
+  STATUS: Plugin status
+  STATUS_HELP: Enable or disable Goosialize Links.
+  ENABLED: Enabled
+  DISABLED: Disabled
+ICU:
+  PLUGIN_GOOSIALIZE_LINKS:
+    ROUTE: Public route
+    ROUTE_HELP: Choose the URL path for the single public Link in Bio page.
+    PROFILE_SECTION: Profile
+    PROFILE_IMAGE: Profile image
+    PROFILE_IMAGE_HELP: Upload one JPEG, PNG or WebP image. SVG files are not accepted.
+    PROFILE_NAME: Name or brand
+    PROFILE_NAME_HELP: The primary name displayed at the top of the page.
+    PROFILE_TITLE: Title
+    PROFILE_TITLE_HELP: A short line displayed below the name or brand.
+    PROFILE_DESCRIPTION: Description
+    PROFILE_DESCRIPTION_HELP: A short introduction displayed on the public page.
+    PROFILE_WEBSITE_URL: Website URL
+    PROFILE_WEBSITE_URL_HELP: An optional link to the primary website.
+    APPEARANCE_SECTION: Appearance
+    THEME: Theme
+    THEME_HELP: Select one of the three included FREE themes.
+    THEME_LIGHT: Light
+    THEME_DARK: Dark
+    THEME_SUNRISE: Sunrise
+    ACCENT: Accent color
+    ACCENT_HELP: Select the accent used for the avatar, actions and focus states.
+    ACCENT_YELLOW: Yellow
+    ACCENT_BLUE: Blue
+    ACCENT_CORAL: Coral
+    ACCENT_GREEN: Green
+    ACCENT_PURPLE: Purple
+    BUTTON_SHAPE: Button shape
+    BUTTON_SHAPE_HELP: Select the shape used for primary link buttons.
+    BUTTON_SQUARE: Square
+    BUTTON_ROUNDED: Rounded
+    BUTTON_PILL: Pill
+    ACTIONS_SECTION: Social and contact actions
+    ACTIONS: Actions
+    ACTIONS_HELP: Add social profiles and direct contact actions.
+    ADD_ACTION: Add action
+    ACTION_ENABLED: Active
+    ACTION_TYPE: Action type
+    ACTION_VALUE: URL, email or phone
+    ACTION_VALUE_HELP: Enter an HTTP or HTTPS URL, email address, telephone number or WhatsApp number that matches the selected type.
+    ACTION_LABEL: Custom label
+    ACTION_LABEL_HELP: Leave empty to use the standard platform label.
+    ACTION_WEBSITE: Website
+    ACTION_INSTAGRAM: Instagram
+    ACTION_FACEBOOK: Facebook
+    ACTION_TIKTOK: TikTok
+    ACTION_YOUTUBE: YouTube
+    ACTION_LINKEDIN: LinkedIn
+    ACTION_X: X
+    ACTION_EMAIL: Email
+    ACTION_PHONE: Phone
+    ACTION_WHATSAPP: WhatsApp
+    LINKS_SECTION: Links
+    LINKS: Page links
+    LINKS_HELP: Add, remove and reorder links, with up to eight active links in the FREE edition.
+    ADD_LINK: Add link
+    LINK_ENABLED: Active
+    LINK_TITLE: Link title
+    LINK_TITLE_HELP: The text displayed on the public link button.
+    LINK_URL: Link URL
+    LINK_URL_HELP: The absolute HTTP or HTTPS destination.
+    LINK_NEW_TAB: Open in new tab
+    LINK_NEW_TAB_HELP: Open the destination in a separate browser tab.
+    QR_ADMIN_TITLE: QR Code
+    QR_ADMIN_DESCRIPTION: Preview the tracked QR code and download PNG or SVG files.
+    QR_PERMISSION_READ: View QR code administration
+    QR_ID: QR identifier
+    QR_TRACKED_URL: Tracked URL
+    QR_VISITS: QR visits
+    QR_DOWNLOAD_PNG: Download PNG
+    QR_DOWNLOAD_SVG: Download SVG
+    QR_LOADING: Loading QR code...
+    QR_ERROR: QR code data could not be loaded.
+    QR_PREVIEW_ALT: QR code for the tracked Goosialize Links URL.
+    PAGE_VIEWS: Page Views
+    TOTAL_CLICKS: Total Clicks
+    PERFORMANCE_OVER_TIME: Performance over time
+    TOP_LINKS: Top Links
+    TOP_ACTIONS: Top Actions

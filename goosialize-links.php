@@ -156,6 +156,11 @@ final class GoosializeLinksPlugin extends Plugin
             ]
         );
 
+$routes->get(
+    '/goosialize-links/dashboard',
+    [QrAdminController::class, 'dashboardData']
+);
+
         $routes->get(
             '/goosialize-links/qr/download/png',
             [
@@ -196,7 +201,10 @@ final class GoosializeLinksPlugin extends Plugin
             'id' => 'goosialize-links',
             'plugin' => 'goosialize-links',
             'label' =>
-                'PLUGIN_GOOSIALIZE_LINKS.ICU.QR_ADMIN_TITLE',
+                $this->qrAdminTranslation(
+                    'QR_ADMIN_TITLE',
+                    'QR Code'
+                ),
             'icon' => 'fa-qrcode',
             'route' => '/plugin/goosialize-links',
             'priority' => 19,
@@ -228,14 +236,20 @@ final class GoosializeLinksPlugin extends Plugin
             'id' => 'goosialize-links',
             'plugin' => 'goosialize-links',
             'title' =>
-                'PLUGIN_GOOSIALIZE_LINKS.ICU.QR_ADMIN_TITLE',
+                $this->qrAdminTranslation(
+                    'QR_ADMIN_TITLE',
+                    'QR Code'
+                ),
             'icon' => 'fa-qrcode',
             'page_type' => 'component',
             'actions' => [
                 [
                     'id' => 'download-png',
                     'label' =>
-                        'PLUGIN_GOOSIALIZE_LINKS.ICU.QR_DOWNLOAD_PNG',
+                        $this->qrAdminTranslation(
+                            'QR_DOWNLOAD_PNG',
+                            'Download PNG'
+                        ),
                     'icon' => 'fa-download',
                     'endpoint' =>
                         '/goosialize-links/qr/download/png',
@@ -244,7 +258,10 @@ final class GoosializeLinksPlugin extends Plugin
                 [
                     'id' => 'download-svg',
                     'label' =>
-                        'PLUGIN_GOOSIALIZE_LINKS.ICU.QR_DOWNLOAD_SVG',
+                        $this->qrAdminTranslation(
+                            'QR_DOWNLOAD_SVG',
+                            'Download SVG'
+                        ),
                     'icon' => 'fa-download',
                     'endpoint' =>
                         '/goosialize-links/qr/download/svg',
@@ -275,6 +292,47 @@ final class GoosializeLinksPlugin extends Plugin
         ) {
             $event['fields'] = [];
         }
+    }
+
+    private function qrAdminTranslation(
+        string $name,
+        string $fallback
+    ): string {
+        $key =
+            'ICU.PLUGIN_GOOSIALIZE_LINKS.'
+            . $name;
+
+        $language =
+            $this->grav['language'] ?? null;
+
+        if (
+            is_object($language) &&
+            method_exists(
+                $language,
+                'translate'
+            )
+        ) {
+            try {
+                $translated =
+                    $language->translate($key);
+
+                if (
+                    is_string($translated) &&
+                    trim($translated) !== '' &&
+                    $translated !== $key &&
+                    !str_contains(
+                        $translated,
+                        'PLUGIN_GOOSIALIZE_LINKS'
+                    )
+                ) {
+                    return $translated;
+                }
+            } catch (\Throwable) {
+                // Use the safe display fallback below.
+            }
+        }
+
+        return $fallback;
     }
 
     private function qrAdminEnabled(): bool

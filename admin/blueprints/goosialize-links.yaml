@@ -3,5 +3,5 @@ form:
   fields:
     qr_page:
       type: section
-      title: PLUGIN_GOOSIALIZE_LINKS.ICU.QR_ADMIN_TITLE
+      title: PLUGIN_GOOSIALIZE_LINKS.QR_ADMIN_TITLE
       underline: true

@@ -28,6 +28,55 @@ final class QrAdminController extends AbstractApiController
             self::PERMISSION
         );
 
+        $config =
+            $this->normalizedConfig();
+
+        $route =
+            (string) (
+                $config['route']
+                ?? ''
+            );
+
+        if ($route === '') {
+            throw new RuntimeException(
+                'The public Goosialize Links route is unavailable.'
+            );
+        }
+
+        return $this->jsonResponse([
+            'qr_id' =>
+                self::QR_ID,
+
+            'tracked_url' =>
+                $route .
+                '/qr/' .
+                self::QR_ID,
+
+            'preview_url' =>
+                $route .
+                '/qr/' .
+                self::QR_ID .
+                '/png',
+
+            'png_download_url' =>
+                '/goosialize-links/qr/download/png',
+
+            'svg_download_url' =>
+                '/goosialize-links/qr/download/svg',
+
+            'qr_visits' =>
+                $this->qrVisits(),
+        ]);
+    }
+
+    public function dashboardData(
+        ServerRequestInterface $request
+    ): ResponseInterface {
+        $this->requirePermission(
+            $request,
+            self::PERMISSION
+        );
+
         $config = $this->normalizedConfig();
         $route = (string) ($config['route'] ?? '');
 
@@ -37,23 +86,47 @@ final class QrAdminController extends AbstractApiController
             );
         }
 
+        $report = $this->analyticsReport();
+
         return $this->jsonResponse([
-            'qr_id' => self::QR_ID,
-            'tracked_url' =>
-                $this->absolutePublicUrl(
-                    $request,
-                    $route . '/qr/' . self::QR_ID
+            'summary' => [
+                'page_views' =>
+                    (int) ($report['page_views'] ?? 0),
+                'total_clicks' =>
+                    (int) ($report['total_clicks'] ?? 0),
+                'qr_visits' =>
+                    (int) ($report['qr_visits'] ?? 0),
+                'ctr' =>
+                    $this->ctr(
+                        (int) ($report['page_views'] ?? 0),
+                        (int) ($report['total_clicks'] ?? 0)
+                    ),
+            ],
+            'timeline' =>
+                $this->timelineReport(7),
+            'top_links' =>
+                $this->topItems(
+                    $report['links'] ?? [],
+                    5
                 ),
-            'preview_url' =>
-                $this->absolutePublicUrl(
-                    $request,
-                    $route . '/qr/' . self::QR_ID . '/png'
+            'top_actions' =>
+                $this->topItems(
+                    $report['actions'] ?? [],
+                    5
                 ),
-            'png_download_url' =>
-                '/goosialize-links/qr/download/png',
-            'svg_download_url' =>
-                '/goosialize-links/qr/download/svg',
-            'qr_visits' => $this->qrVisits(),
+            'qr' => [
+                'qr_id' => self::QR_ID,
+                'tracked_url' =>
+                    $route . '/qr/' . self::QR_ID,
+                'preview_url' =>
+                    $route . '/qr/' . self::QR_ID . '/png',
+                'png_download_url' =>
+                    '/goosialize-links/qr/download/png',
+                'svg_download_url' =>
+                    '/goosialize-links/qr/download/svg',
+                'qr_visits' =>
+                    $this->qrVisits(),
+            ],
         ]);
     }
 
@@ -153,6 +226,308 @@ final class QrAdminController extends AbstractApiController
     /**
      * @return array<string, mixed>
      */
+    /**
+     * @return array<string, mixed>
+     */
+    private function analyticsReport(): array
+    {
+        $aggregator =
+            new AnalyticsReportAggregator(
+                $this->analyticsDirectory()
+            );
+
+        return $aggregator->aggregate();
+    }
+
+    private function analyticsDirectory(): string
+    {
+        $locator =
+            $this->grav['locator'] ?? null;
+
+        $path = '';
+
+        if (
+            is_object($locator) &&
+            method_exists(
+                $locator,
+                'findResource'
+            )
+        ) {
+            try {
+                $resolved =
+                    $locator->findResource(
+                        'user-data://goosialize-links/analytics',
+                        true,
+                        true
+                    );
+
+                if (is_string($resolved)) {
+                    $path = $resolved;
+                }
+            } catch (\Throwable) {
+                $path = '';
+            }
+        }
+
+        if (trim($path) !== '') {
+            return rtrim(
+                $path,
+                '/'
+            );
+        }
+
+        if (defined('USER_DIR')) {
+            return rtrim(
+                USER_DIR,
+                '/'
+            )
+            . '/data/goosialize-links/analytics';
+        }
+
+        throw new RuntimeException(
+            'The Goosialize Links analytics directory is unavailable.'
+        );
+    }
+
+    private function analyticsStore(): AnalyticsStore
+    {
+        return new AnalyticsStore(
+            $this->analyticsDirectory()
+        );
+    }
+
+    private function ctr(
+        int $pageViews,
+        int $totalClicks
+    ): float {
+        if ($pageViews <= 0) {
+            return 0.0;
+        }
+
+        return round(
+            ($totalClicks / $pageViews) * 100,
+            2
+        );
+    }
+
+    /**
+     * @param array<string, int> $items
+     * @return array<int, array{
+     *     id: string,
+     *     label: string,
+     *     clicks: int
+     * }>
+     */
+    private function topItems(
+        array $items,
+        int $limit
+    ): array {
+        $rows = [];
+
+        foreach ($items as $id => $clicks) {
+            $rows[] = [
+                'id' =>
+                    (string) $id,
+                'label' =>
+                    $this->analyticsItemLabel(
+                        (string) $id
+                    ),
+                'clicks' =>
+                    max(
+                        0,
+                        (int) $clicks
+                    ),
+            ];
+        }
+
+        usort(
+            $rows,
+            static function (
+                array $left,
+                array $right
+            ): int {
+                $clickComparison =
+                    $right['clicks']
+                    <=>
+                    $left['clicks'];
+
+                if ($clickComparison !== 0) {
+                    return $clickComparison;
+                }
+
+                return strcasecmp(
+                    (string) $left['label'],
+                    (string) $right['label']
+                );
+            }
+        );
+
+        return array_slice(
+            $rows,
+            0,
+            max(0, $limit)
+        );
+    }
+
+    private function analyticsItemLabel(
+        string $id
+    ): string {
+        $config =
+            $this->normalizedConfig();
+
+        foreach (
+            (array) ($config['links'] ?? [])
+            as $link
+        ) {
+            if (
+                is_array($link) &&
+                (string) ($link['id'] ?? '') === $id
+            ) {
+                $title = trim(
+                    (string) (
+                        $link['title']
+                        ?? ''
+                    )
+                );
+
+                return $title !== ''
+                    ? $title
+                    : $id;
+            }
+        }
+
+        foreach (
+            (array) ($config['actions'] ?? [])
+            as $action
+        ) {
+            if (
+                is_array($action) &&
+                (string) ($action['id'] ?? '') === $id
+            ) {
+                $label = trim(
+                    (string) (
+                        $action['label']
+                        ?? $action['type']
+                        ?? ''
+                    )
+                );
+
+                return $label !== ''
+                    ? $label
+                    : $id;
+            }
+        }
+
+        return $id;
+    }
+
+    /**
+     * @return array<int, array{
+     *     date: string,
+     *     page_views: int,
+     *     total_clicks: int,
+     *     qr_visits: int
+     * }>
+     */
+    private function timelineReport(
+        int $days
+    ): array {
+        $days =
+            max(
+                1,
+                min(31, $days)
+            );
+
+        $store =
+            $this->analyticsStore();
+
+        $timeline = [];
+
+        $today =
+            new \DateTimeImmutable(
+                'today'
+            );
+
+        for (
+            $offset = $days - 1;
+            $offset >= 0;
+            $offset--
+        ) {
+            $date =
+                $today->modify(
+                    '-' . $offset . ' days'
+                );
+
+            $key =
+                $date->format(
+                    'Y-m-d'
+                );
+
+            $daily =
+                $store->readDate(
+                    $key
+                );
+
+            $totals =
+                is_array(
+                    $daily['totals']
+                    ?? null
+                )
+                    ? $daily['totals']
+                    : [];
+
+            $pageViews =
+                max(
+                    0,
+                    (int) (
+                        $totals['page_views']
+                        ?? 0
+                    )
+                );
+
+            $linkClicks =
+                max(
+                    0,
+                    (int) (
+                        $totals['link_clicks']
+                        ?? 0
+                    )
+                );
+
+            $actionClicks =
+                max(
+                    0,
+                    (int) (
+                        $totals['action_clicks']
+                        ?? 0
+                    )
+                );
+
+            $qrVisits =
+                max(
+                    0,
+                    (int) (
+                        $totals['qr_visits']
+                        ?? 0
+                    )
+                );
+
+            $timeline[] = [
+                'date' =>
+                    $key,
+                'page_views' =>
+                    $pageViews,
+                'total_clicks' =>
+                    $linkClicks
+                    + $actionClicks,
+                'qr_visits' =>
+                    $qrVisits,
+            ];
+        }
+
+        return $timeline;
+    }
+
     private function normalizedConfig(): array
     {
         $rawConfig = $this->config->get(

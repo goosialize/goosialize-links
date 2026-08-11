@@ -1,0 +1,87 @@
+PLUGIN_GOOSIALIZE_LINKS:
+  NAME: Goosialize Links
+  DESCRIPTION: Αυτοφιλοξενούμενο Link in Bio plugin για το Grav CMS.
+  STATUS: Κατάσταση plugin
+  STATUS_HELP: Ενεργοποιήστε ή απενεργοποιήστε το Goosialize Links.
+  ENABLED: Ενεργό
+  DISABLED: Ανενεργό
+ICU:
+  PLUGIN_GOOSIALIZE_LINKS:
+    ROUTE: Δημόσια διαδρομή
+    ROUTE_HELP: Επιλέξτε τη διαδρομή URL της μοναδικής δημόσιας Link in Bio σελίδας.
+    PROFILE_SECTION: Προφίλ
+    PROFILE_IMAGE: Εικόνα προφίλ
+    PROFILE_IMAGE_HELP: Ανεβάστε μία εικόνα JPEG, PNG ή WebP. Τα SVG δεν επιτρέπονται.
+    PROFILE_NAME: Όνομα ή brand
+    PROFILE_NAME_HELP: Το βασικό όνομα που εμφανίζεται στην κορυφή της σελίδας.
+    PROFILE_TITLE: Τίτλος
+    PROFILE_TITLE_HELP: Μία σύντομη γραμμή κάτω από το όνομα ή το brand.
+    PROFILE_DESCRIPTION: Περιγραφή
+    PROFILE_DESCRIPTION_HELP: Μία σύντομη εισαγωγή για τη δημόσια σελίδα.
+    PROFILE_WEBSITE_URL: URL ιστοσελίδας
+    PROFILE_WEBSITE_URL_HELP: Προαιρετικός σύνδεσμος προς την κύρια ιστοσελίδα.
+    APPEARANCE_SECTION: Εμφάνιση
+    THEME: Theme
+    THEME_HELP: Επιλέξτε ένα από τα τρία themes της FREE έκδοσης.
+    THEME_LIGHT: Light
+    THEME_DARK: Dark
+    THEME_SUNRISE: Sunrise
+    ACCENT: Χρώμα έμφασης
+    ACCENT_HELP: Επιλέξτε το χρώμα του avatar, των actions και των focus states.
+    ACCENT_YELLOW: Κίτρινο
+    ACCENT_BLUE: Μπλε
+    ACCENT_CORAL: Coral
+    ACCENT_GREEN: Πράσινο
+    ACCENT_PURPLE: Μωβ
+    BUTTON_SHAPE: Σχήμα κουμπιών
+    BUTTON_SHAPE_HELP: Επιλέξτε το σχήμα των βασικών link buttons.
+    BUTTON_SQUARE: Τετράγωνα
+    BUTTON_ROUNDED: Στρογγυλεμένα
+    BUTTON_PILL: Pill
+    ACTIONS_SECTION: Social και contact actions
+    ACTIONS: Actions
+    ACTIONS_HELP: Προσθέστε social profiles και άμεσους τρόπους επικοινωνίας.
+    ADD_ACTION: Προσθήκη action
+    ACTION_ENABLED: Ενεργό
+    ACTION_TYPE: Τύπος action
+    ACTION_VALUE: URL, email ή τηλέφωνο
+    ACTION_VALUE_HELP: Εισαγάγετε HTTP ή HTTPS URL, email, τηλέφωνο ή αριθμό WhatsApp που αντιστοιχεί στον επιλεγμένο τύπο.
+    ACTION_LABEL: Προσαρμοσμένο label
+    ACTION_LABEL_HELP: Αφήστε το κενό για να χρησιμοποιηθεί το κανονικό όνομα της πλατφόρμας.
+    ACTION_WEBSITE: Website
+    ACTION_INSTAGRAM: Instagram
+    ACTION_FACEBOOK: Facebook
+    ACTION_TIKTOK: TikTok
+    ACTION_YOUTUBE: YouTube
+    ACTION_LINKEDIN: LinkedIn
+    ACTION_X: X
+    ACTION_EMAIL: Email
+    ACTION_PHONE: Τηλέφωνο
+    ACTION_WHATSAPP: WhatsApp
+    LINKS_SECTION: Σύνδεσμοι
+    LINKS: Σύνδεσμοι σελίδας
+    LINKS_HELP: Προσθέστε, αφαιρέστε και ταξινομήστε συνδέσμους, με έως οκτώ ενεργούς συνδέσμους στη FREE έκδοση.
+    ADD_LINK: Προσθήκη συνδέσμου
+    LINK_ENABLED: Ενεργός
+    LINK_TITLE: Τίτλος συνδέσμου
+    LINK_TITLE_HELP: Το κείμενο που εμφανίζεται στο κουμπί του συνδέσμου.
+    LINK_URL: URL συνδέσμου
+    LINK_URL_HELP: Ο πλήρης προορισμός HTTP ή HTTPS.
+    LINK_NEW_TAB: Άνοιγμα σε νέα καρτέλα
+    LINK_NEW_TAB_HELP: Άνοιγμα του προορισμού σε ξεχωριστή καρτέλα.
+    QR_ADMIN_TITLE: Κωδικός QR
+    QR_ADMIN_DESCRIPTION: Προεπισκόπηση του tracked QR code και λήψη αρχείων PNG ή SVG.
+    QR_PERMISSION_READ: Προβολή διαχείρισης κωδικού QR
+    QR_ID: Αναγνωριστικό QR
+    QR_TRACKED_URL: Tracked URL
+    QR_VISITS: Επισκέψεις μέσω QR
+    QR_DOWNLOAD_PNG: Λήψη PNG
+    QR_DOWNLOAD_SVG: Λήψη SVG
+    QR_LOADING: Φόρτωση κωδικού QR...
+    QR_ERROR: Δεν ήταν δυνατή η φόρτωση των δεδομένων QR.
+    QR_PREVIEW_ALT: Κωδικός QR για το tracked URL του Goosialize Links.
+    PAGE_VIEWS: Προβολές σελίδας
+    TOTAL_CLICKS: Συνολικά clicks
+    PERFORMANCE_OVER_TIME: Απόδοση στο χρόνο
+    TOP_LINKS: Κορυφαίοι σύνδεσμοι
+    TOP_ACTIONS: Κορυφαία actions
