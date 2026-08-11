@@ -34,15 +34,20 @@ The first public version must provide:
 The FREE dashboard contains only:
 
 - total page views;
-- total link clicks;
-- clicks per link;
+- total link and action clicks;
+- clicks per durable link or action ID;
 - QR visits.
 
-The only required analytics event types are:
+The only approved analytics event types are:
 
 - `page_view`
 - `link_click`
+- `action_click`
 - `qr_visit`
+
+The FREE edition does not record or report visitor profiles, device
+information, geographic information, referrers, UTM reports, funnels, or
+unique-user analytics.
 
 ## Optional Lead Capture
 

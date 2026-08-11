@@ -30,14 +30,30 @@ It is not:
 - Plugin slug: `goosialize-links`
 - Product edition: FREE
 - Grav target: 2.0.12
-- PHP target: PHP 8.x
+- PHP target: PHP 8.3+
 - Admin interface: native Grav Admin2 components
 - Default public route: `/bio`
 - Development workflow: reviewed checkpoints with no automatic commits
 
 ## Development Status
 
-Project foundation and product contracts only.
+Goosialize Links FREE has implemented the standalone core through Phase 7:
 
-Plugin implementation begins after the foundation contracts are reviewed and
-the relevant Goosialize Leads integration boundary is stable.
+- Grav 2 plugin foundation and normalized configuration;
+- native Admin2 profile, appearance, link and action configuration;
+- one mobile-first public Link in Bio page;
+- profile image and three predefined themes;
+- durable links and social/contact actions;
+- privacy-preserving first-party analytics;
+- tracked link and action redirects;
+- one durable tracked QR code (`qr_primary`);
+- PNG and SVG QR output;
+- native Admin2 QR management;
+- a compact Admin2 analytics dashboard with page views, total clicks,
+  QR visits, CTR, a seven-day performance chart, Top Links and Top Actions.
+
+Phase 8, the optional Goosialize Leads adapter and basic contact form, remains
+separately gated by the Goosialize Leads public integration contract.
+
+Release-readiness work is now in progress. The current repository version is
+pre-release and is not yet the final public FREE v1 package.

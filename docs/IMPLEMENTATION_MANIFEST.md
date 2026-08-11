@@ -29,7 +29,7 @@ Locked identity:
 - Main plugin class file: `goosialize-links.php`
 - Initial edition: FREE
 - Target Grav baseline: 2.0.12
-- Target runtime family: PHP 8.x
+- Target runtime family: PHP 8.3+
 - Default public route: `/bio`
 
 ## 4. Planned Root Files

@@ -17,3 +17,6 @@ All notable changes to Goosialize Links will be documented in this file.
 - Add privacy-preserving analytics aggregation and native Admin2 Reports integration.
 - Add tracked QR visits with PNG and SVG generation.
 - Add a permission-gated native Admin2 QR preview with PNG and SVG downloads.
+- Add a native-style Admin2 analytics dashboard with summary metrics, a seven-day performance chart, Top Links, Top Actions, and QR metrics.
+- Preserve the strict QR administration API while exposing dashboard analytics through a separate read-only endpoint.
+- Split plugin translations into per-locale English and Greek files for the Grav 2/Admin2 integration.

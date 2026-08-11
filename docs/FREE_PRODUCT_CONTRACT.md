@@ -20,8 +20,7 @@
 
 - Maximum eight active links
 - Title
-- Valid URL
-- Optional supported icon
+- Valid HTTP or HTTPS URL
 - Same-tab or new-tab behavior
 - Enable or disable state
 - Stable ordering
@@ -29,7 +28,7 @@
 
 ## Social and Contact Actions
 
-Initial supported actions may include:
+The FREE v1 supports:
 
 - Instagram
 - Facebook
@@ -41,24 +40,39 @@ Initial supported actions may include:
 - Email
 - Telephone
 - Website
-- Location URL
+
+Each action has a durable internal action ID so analytics remain stable when
+the visible label or value changes.
 
 ## Design
 
-- Three predefined themes
-- Background color
-- Text color
-- Button background color
-- Button text color
-- Rounded or square button style
-- Basic spacing controls
+The FREE v1 exposes only bounded predefined design options:
+
+- three predefined themes:
+  - Light
+  - Dark
+  - Sunrise
+- five predefined accent colors:
+  - Yellow
+  - Blue
+  - Coral
+  - Green
+  - Purple
+- three predefined button shapes:
+  - Square
+  - Rounded
+  - Pill
 
 Not included:
 
+- arbitrary background colors
+- arbitrary text colors
+- arbitrary button colors
+- configurable spacing controls
 - custom CSS
 - custom fonts
 - video backgrounds
-- advanced animation
+- advanced animation controls
 - advanced theme builder
 
 ## QR Code
