@@ -45,10 +45,16 @@ form:
         required: true
         pattern: '^/[a-z0-9]+(?:/[a-z0-9][a-z0-9-]*)*$'
 
+    editor_preview:
+      type: goosialize-links-preview
+      label: PLUGIN_GOOSIALIZE_LINKS.PREVIEW
+      help: PLUGIN_GOOSIALIZE_LINKS.PREVIEW_HELP
+
     profile_section:
-      type: section
+      type: fieldset
       title: PLUGIN_GOOSIALIZE_LINKS.PROFILE_SECTION
-      underline: true
+      collapsible: true
+      collapsed: false
       fields:
         profile.image:
           type: file
@@ -89,10 +95,38 @@ form:
           help: PLUGIN_GOOSIALIZE_LINKS.PROFILE_WEBSITE_URL_HELP
           placeholder: https://example.com
 
+        profile.translations:
+          type: list
+          label: PLUGIN_GOOSIALIZE_LINKS.PROFILE_TRANSLATIONS
+          help: PLUGIN_GOOSIALIZE_LINKS.PROFILE_TRANSLATIONS_HELP
+          key: language
+          collapsed: true
+          fields:
+            .language:
+              type: text
+              label: PLUGIN_GOOSIALIZE_LINKS.CONTENT_LANGUAGE
+              validate:
+                required: true
+                pattern: '^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$'
+            .name:
+              type: text
+              label: PLUGIN_GOOSIALIZE_LINKS.PROFILE_NAME
+              maxlength: 120
+            .title:
+              type: text
+              label: PLUGIN_GOOSIALIZE_LINKS.PROFILE_TITLE
+              maxlength: 160
+            .description:
+              type: textarea
+              label: PLUGIN_GOOSIALIZE_LINKS.PROFILE_DESCRIPTION
+              maxlength: 500
+              rows: 5
+
     appearance_section:
-      type: section
+      type: fieldset
       title: PLUGIN_GOOSIALIZE_LINKS.APPEARANCE_SECTION
-      underline: true
+      collapsible: true
+      collapsed: true
       fields:
         appearance.theme:
           type: select
@@ -127,9 +161,10 @@ form:
             pill: PLUGIN_GOOSIALIZE_LINKS.BUTTON_PILL
 
     actions_section:
-      type: section
+      type: fieldset
       title: PLUGIN_GOOSIALIZE_LINKS.ACTIONS_SECTION
-      underline: true
+      collapsible: true
+      collapsed: true
       fields:
         actions:
           type: list
@@ -139,6 +174,7 @@ form:
           collapsed: true
           controls: both
           placement: bottom
+          key: label
           btnLabel: PLUGIN_GOOSIALIZE_LINKS.ADD_ACTION
           fields:
             .id:
@@ -184,10 +220,29 @@ form:
               help: PLUGIN_GOOSIALIZE_LINKS.ACTION_LABEL_HELP
               maxlength: 80
 
+            .translations:
+              type: list
+              label: PLUGIN_GOOSIALIZE_LINKS.ACTION_TRANSLATIONS
+              help: PLUGIN_GOOSIALIZE_LINKS.ACTION_TRANSLATIONS_HELP
+              key: language
+              collapsed: true
+              fields:
+                .language:
+                  type: text
+                  label: PLUGIN_GOOSIALIZE_LINKS.CONTENT_LANGUAGE
+                  validate:
+                    required: true
+                    pattern: '^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$'
+                .label:
+                  type: text
+                  label: PLUGIN_GOOSIALIZE_LINKS.ACTION_LABEL
+                  maxlength: 80
+
     links_section:
-      type: section
+      type: fieldset
       title: PLUGIN_GOOSIALIZE_LINKS.LINKS_SECTION
-      underline: true
+      collapsible: true
+      collapsed: true
       fields:
         links:
           type: list
@@ -197,6 +252,7 @@ form:
           collapsed: true
           controls: both
           placement: bottom
+          key: title
           btnLabel: PLUGIN_GOOSIALIZE_LINKS.ADD_LINK
           fields:
             .id:
@@ -240,3 +296,21 @@ form:
                 0: PLUGIN_GOOSIALIZE_LINKS.DISABLED
               validate:
                 type: bool
+
+            .translations:
+              type: list
+              label: PLUGIN_GOOSIALIZE_LINKS.LINK_TRANSLATIONS
+              help: PLUGIN_GOOSIALIZE_LINKS.LINK_TRANSLATIONS_HELP
+              key: language
+              collapsed: true
+              fields:
+                .language:
+                  type: text
+                  label: PLUGIN_GOOSIALIZE_LINKS.CONTENT_LANGUAGE
+                  validate:
+                    required: true
+                    pattern: '^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$'
+                .title:
+                  type: text
+                  label: PLUGIN_GOOSIALIZE_LINKS.LINK_TITLE
+                  maxlength: 120

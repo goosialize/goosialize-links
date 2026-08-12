@@ -86,9 +86,77 @@ final class LinkPageConfigNormalizer
                 'website_url' => $this->normalizeOptionalHttpUrl(
                     $profile['website_url'] ?? ''
                 ),
+                'translations' => $this->normalizeProfileTranslations(
+                    $profile['translations'] ?? []
+                ),
             ],
             'links' => $this->linkNormalizer->normalize($links),
         ];
+    }
+
+    /** @return array<string, array{name: string, title: string, description: string}> */
+    private function normalizeProfileTranslations(mixed $translations): array
+    {
+        if ($translations === null || $translations === []) {
+            return [];
+        }
+
+        if (!is_array($translations) || !array_is_list($translations)) {
+            throw new InvalidArgumentException(
+                'Profile translations must be an ordered list.'
+            );
+        }
+
+        $normalized = [];
+
+        foreach ($translations as $translation) {
+            if (!is_array($translation)) {
+                throw new InvalidArgumentException(
+                    'Each profile translation must be an array.'
+                );
+            }
+
+            $language = $this->normalizeLanguageCode(
+                $translation['language'] ?? ''
+            );
+
+            if (isset($normalized[$language])) {
+                throw new InvalidArgumentException(
+                    sprintf('Duplicate profile translation language: %s', $language)
+                );
+            }
+
+            $normalized[$language] = [
+                'name' => $this->normalizeOptionalString(
+                    $translation['name'] ?? '',
+                    'Localized profile name',
+                    120
+                ),
+                'title' => $this->normalizeOptionalString(
+                    $translation['title'] ?? '',
+                    'Localized profile title',
+                    160
+                ),
+                'description' => $this->normalizeOptionalString(
+                    $translation['description'] ?? '',
+                    'Localized profile description',
+                    500
+                ),
+            ];
+        }
+
+        return $normalized;
+    }
+
+    private function normalizeLanguageCode(mixed $value): string
+    {
+        $language = strtolower(trim((string) $value));
+
+        if (preg_match('/^[a-z]{2,3}(?:-[a-z0-9]{2,8})*$/', $language) !== 1) {
+            throw new InvalidArgumentException('Invalid content language code.');
+        }
+
+        return $language;
     }
 
     private function normalizeRoute(mixed $value): string

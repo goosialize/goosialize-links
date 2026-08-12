@@ -46,7 +46,9 @@ require $pluginAutoload;
 
 use Goosialize\Links\AnalyticsReportAggregator;
 use Goosialize\Links\AnalyticsStore;
+use Goosialize\Links\LinkPageConfigNormalizer;
 use Goosialize\Links\PublicPageExperienceNormalizer;
+use Goosialize\Links\PublicPageViewModelFactory;
 use Goosialize\Links\QrCodeGenerator;
 use Goosialize\Links\SocialActionNormalizer;
 use Goosialize\Links\TrackingRouteResolver;
@@ -161,6 +163,26 @@ check(
     'WhatsApp href'
 );
 
+$localizedActionId = 'action_eeeeeeeeeeeeeeee';
+$localizedActions = $actions->normalize([
+    [
+        'id' => $localizedActionId,
+        'enabled' => true,
+        'type' => 'instagram',
+        'value' => 'https://instagram.com/example',
+        'label' => 'Instagram',
+        'translations' => [
+            ['language' => 'el', 'label' => 'Ίνσταγκραμ'],
+        ],
+    ],
+]);
+
+check(
+    $localizedActions[0]['id'] === $localizedActionId &&
+    $localizedActions[0]['translations']['el'] === 'Ίνσταγκραμ',
+    'Localized action preserves identity'
+);
+
 expectException(
     static fn () =>
         $actions->normalize([
@@ -232,6 +254,77 @@ expectException(
             $base
         ),
     'Custom theme rejected'
+);
+
+echo "\n--- multilingual public content ---\n";
+
+$rawLocalized = [
+    'enabled' => true,
+    'route' => '/bio',
+    'profile' => [
+        'name' => 'Goosialize',
+        'title' => 'Links',
+        'description' => 'English description',
+        'website_url' => 'https://example.com',
+        'translations' => [[
+            'language' => 'el',
+            'name' => 'Γκουσιλάιζ',
+            'title' => 'Σύνδεσμοι',
+            'description' => 'Ελληνική περιγραφή',
+        ]],
+    ],
+    'appearance' => [],
+    'actions' => [[
+        'id' => 'action_ffffffffffffffff',
+        'type' => 'email',
+        'value' => 'hello@example.com',
+        'label' => 'Email',
+        'translations' => [[
+            'language' => 'el',
+            'label' => 'Ηλεκτρονικό ταχυδρομείο',
+        ]],
+    ]],
+    'links' => [[
+        'id' => 'link_ffffffffffffffff',
+        'title' => 'Shop Now',
+        'url' => 'https://example.com/shop',
+        'translations' => [[
+            'language' => 'el',
+            'title' => 'Αγόρασε τώρα',
+        ]],
+    ]],
+];
+
+$localizedBase = (new LinkPageConfigNormalizer())->normalize($rawLocalized);
+$localizedConfig = $experience->normalize($rawLocalized, $localizedBase);
+$localizedView = (new PublicPageViewModelFactory())->create(
+    $localizedConfig,
+    'el'
+);
+$fallbackView = (new PublicPageViewModelFactory())->create(
+    $localizedConfig,
+    'fr'
+);
+
+check(
+    $localizedView['profile']['title'] === 'Σύνδεσμοι' &&
+    $localizedView['links'][0]['title'] === 'Αγόρασε τώρα' &&
+    $localizedView['actions'][0]['label'] === 'Ηλεκτρονικό ταχυδρομείο',
+    'Localized content selection'
+);
+
+check(
+    $fallbackView['profile']['title'] === 'Links' &&
+    $fallbackView['links'][0]['title'] === 'Shop Now' &&
+    $fallbackView['actions'][0]['label'] === 'Email',
+    'Localized content fallback'
+);
+
+check(
+    $localizedView['links'][0]['id'] === $fallbackView['links'][0]['id'] &&
+    $localizedView['actions'][0]['id'] === $fallbackView['actions'][0]['id'] &&
+    str_contains($localizedView['links'][0]['tracked_url'], 'link_ffffffffffffffff'),
+    'Language switch preserves analytics identities'
 );
 
 echo "\n--- analytics storage ---\n";

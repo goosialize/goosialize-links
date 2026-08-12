@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="{{ grav.language.language|default('en')|e('html_attr') }}">
+<html lang="{{ goosialize_links.language|default('en')|e('html_attr') }}">
 <head>
     <meta charset="utf-8">
     <meta
@@ -75,7 +75,7 @@
                     target="_blank"
                     rel="noopener noreferrer"
                 >
-                    Website
+                    {{ 'ICU.PLUGIN_GOOSIALIZE_LINKS.PUBLIC_WEBSITE'|t|e }}
                 </a>
             {% endif %}
         </section>
@@ -83,7 +83,7 @@
         {% if goosialize_links.actions %}
             <nav
                 class="goosialize-links__actions"
-                aria-label="Social and contact actions"
+                aria-label="{{ 'ICU.PLUGIN_GOOSIALIZE_LINKS.PUBLIC_ACTIONS'|t|e('html_attr') }}"
             >
                 {% for action in goosialize_links.actions %}
                     <a
@@ -107,7 +107,7 @@
         {% if goosialize_links.links %}
             <nav
                 class="goosialize-links__list"
-                aria-label="Links"
+                aria-label="{{ 'ICU.PLUGIN_GOOSIALIZE_LINKS.PUBLIC_LINKS'|t|e('html_attr') }}"
             >
                 {% for link in goosialize_links.links %}
                     <a

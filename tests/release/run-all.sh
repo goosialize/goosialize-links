@@ -623,6 +623,34 @@ test -n "$AUTHORIZED_KEY"
 test -n "$UNAUTHORIZED_KEY"
 test -n "$SUPER_KEY"
 
+PREVIEW_API="$BASE_URL/api/v1/goosialize-links/editor-preview"
+
+test "$(curl -sS -o /dev/null -w '%{http_code}' "$PREVIEW_API")" = "401"
+test "$(curl -sS -H "X-API-Key: $UNAUTHORIZED_KEY" -o /dev/null -w '%{http_code}' "$PREVIEW_API")" = "403"
+
+PREVIEW_JSON="$BUILD_DIR/editor-preview.json"
+test "$(curl -sS -H "X-API-Key: $SUPER_KEY" -o "$PREVIEW_JSON" -w '%{http_code}' "$PREVIEW_API")" = "200"
+
+python3 - "$PREVIEW_JSON" <<'PY'
+from pathlib import Path
+import json
+import sys
+
+payload = json.loads(Path(sys.argv[1]).read_text())
+languages = payload.get("languages", [])
+
+if not languages:
+    raise SystemExit("Preview languages missing")
+
+for language in languages:
+    for key in ("preview_path", "public_path"):
+        value = language.get(key, "")
+        if not value.startswith("/") or "://" in value:
+            raise SystemExit("Unsafe preview route")
+
+print("EDITOR_PREVIEW_API = PASS")
+PY
+
 API_BASE="$BASE_URL/api/v1/goosialize-links"
 
 test "$(curl -sS -o /dev/null -w '%{http_code}' "$API_BASE/qr")" = "401"

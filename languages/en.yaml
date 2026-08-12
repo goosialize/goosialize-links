@@ -59,6 +59,26 @@ ICU:
     ACTION_PHONE: Phone
     ACTION_WHATSAPP: WhatsApp
     LINKS_SECTION: Links
+    PREVIEW: Preview
+    PREVIEW_HELP: The real saved public page. Save changes or refresh manually to update it.
+    PREVIEW_LANGUAGE: Preview language
+    REFRESH_PREVIEW: Refresh Preview
+    OPEN_PUBLIC_PAGE: Open Public Page
+    PREVIEW_LOADING: Loading preview…
+    PREVIEW_READY: Preview ready
+    PREVIEW_ERROR: Preview could not be loaded.
+    CONTENT_LANGUAGE: Language code
+    PROFILE_TRANSLATIONS: Localized profile content
+    PROFILE_TRANSLATIONS_HELP: Optional language-specific text. Empty values fall back to the main profile fields.
+    ACTION_TRANSLATIONS: Localized action labels
+    ACTION_TRANSLATIONS_HELP: Optional language-specific labels; the Action ID and destination remain shared.
+    LINK_TRANSLATIONS: Localized link titles
+    LINK_TRANSLATIONS_HELP: Optional language-specific titles; the Link ID and destination remain shared.
+    PUBLIC_WEBSITE: Website
+    PUBLIC_ACTIONS: Social and contact actions
+    PUBLIC_LINKS: Links
+    NEW_ACTION: New Action
+    NEW_LINK: New Link
     LINKS: Page links
     LINKS_HELP: Add, remove and reorder links, with up to eight active links in the FREE edition.
     ADD_LINK: Add link

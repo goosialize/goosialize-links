@@ -147,7 +147,57 @@ final class SocialActionNormalizer
                     ['email', 'phone'],
                     true
                 ),
+                'translations' => $this->normalizeTranslations(
+                    $action['translations'] ?? []
+                ),
             ];
+        }
+
+        return $normalized;
+    }
+
+    /** @return array<string, string> */
+    private function normalizeTranslations(mixed $translations): array
+    {
+        if ($translations === null || $translations === []) {
+            return [];
+        }
+
+        if (!is_array($translations) || !array_is_list($translations)) {
+            throw new InvalidArgumentException(
+                'Action translations must be an ordered list.'
+            );
+        }
+
+        $normalized = [];
+
+        foreach ($translations as $translation) {
+            if (!is_array($translation)) {
+                throw new InvalidArgumentException(
+                    'Each action translation must be an array.'
+                );
+            }
+
+            $language = strtolower(trim((string) ($translation['language'] ?? '')));
+
+            if (
+                preg_match('/^[a-z]{2,3}(?:-[a-z0-9]{2,8})*$/', $language) !== 1 ||
+                isset($normalized[$language])
+            ) {
+                throw new InvalidArgumentException(
+                    'Action translation languages must be valid and unique.'
+                );
+            }
+
+            $label = trim((string) ($translation['label'] ?? ''));
+
+            if ($this->length($label) > 80) {
+                throw new InvalidArgumentException(
+                    'Localized action label must not exceed 80 characters.'
+                );
+            }
+
+            $normalized[$language] = $label;
         }
 
         return $normalized;

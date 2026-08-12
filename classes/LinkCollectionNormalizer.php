@@ -83,6 +83,9 @@ final class LinkCollectionNormalizer
                 'title' => $title,
                 'url' => $url,
                 'new_tab' => $newTab,
+                'translations' => $this->normalizeTranslations(
+                    $link['translations'] ?? []
+                ),
             ];
         }
 
@@ -93,6 +96,53 @@ final class LinkCollectionNormalizer
                     self::MAX_ACTIVE_LINKS
                 )
             );
+        }
+
+        return $normalized;
+    }
+
+    /** @return array<string, string> */
+    private function normalizeTranslations(mixed $translations): array
+    {
+        if ($translations === null || $translations === []) {
+            return [];
+        }
+
+        if (!is_array($translations) || !array_is_list($translations)) {
+            throw new InvalidArgumentException(
+                'Link translations must be an ordered list.'
+            );
+        }
+
+        $normalized = [];
+
+        foreach ($translations as $translation) {
+            if (!is_array($translation)) {
+                throw new InvalidArgumentException(
+                    'Each link translation must be an array.'
+                );
+            }
+
+            $language = strtolower(trim((string) ($translation['language'] ?? '')));
+
+            if (
+                preg_match('/^[a-z]{2,3}(?:-[a-z0-9]{2,8})*$/', $language) !== 1 ||
+                isset($normalized[$language])
+            ) {
+                throw new InvalidArgumentException(
+                    'Link translation languages must be valid and unique.'
+                );
+            }
+
+            $title = trim((string) ($translation['title'] ?? ''));
+
+            if (strlen($title) > 120) {
+                throw new InvalidArgumentException(
+                    'Localized link title must not exceed 120 bytes.'
+                );
+            }
+
+            $normalized[$language] = $title;
         }
 
         return $normalized;

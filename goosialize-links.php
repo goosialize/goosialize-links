@@ -11,6 +11,7 @@ use Grav\Framework\Acl\PermissionsRegisterEvent;
 use Grav\Framework\Psr7\Response;
 use Goosialize\Links\AnalyticsReportAggregator;
 use Goosialize\Links\AnalyticsStore;
+use Goosialize\Links\EditorPreviewController;
 use Goosialize\Links\QrAdminController;
 use Goosialize\Links\QrCodeGenerator;
 use Goosialize\Links\QrRouteResolver;
@@ -139,6 +140,9 @@ final class GoosializeLinksPlugin extends Plugin
         require_once __DIR__ .
             '/classes/QrAdminController.php';
 
+        require_once __DIR__ .
+            '/classes/EditorPreviewController.php';
+
         $routes = $event['routes'] ?? null;
 
         if (
@@ -154,6 +158,11 @@ final class GoosializeLinksPlugin extends Plugin
                 QrAdminController::class,
                 'pageData',
             ]
+        );
+
+        $routes->get(
+            '/goosialize-links/editor-preview',
+            [EditorPreviewController::class, 'data']
         );
 
 $routes->get(
@@ -448,9 +457,15 @@ $routes->get(
             return;
         }
 
+        $viewConfig = $normalizedConfig;
+        $viewConfig['route'] = $this->localizedPublicRoute();
+
         $this->publicViewModel =
             (new PublicPageViewModelFactory())
-                ->create($normalizedConfig);
+                ->create(
+                    $viewConfig,
+                    $this->activeLanguage()
+                );
 
         $this->enable([
             'onPagesInitialized' => [
@@ -480,7 +495,9 @@ $routes->get(
 
         if (
             $route === '' ||
-            $this->currentPath() !== $route
+            $this->stripLanguagePrefix(
+                $this->currentPath()
+            ) !== $route
         ) {
             return;
         }
@@ -488,7 +505,7 @@ $routes->get(
         $pages = $this->grav['pages'];
 
         $existingPage =
-            $pages->find($route);
+            $pages->find($this->currentPath());
 
         if ($existingPage !== null) {
             $this->grav['log']->info(
@@ -531,7 +548,7 @@ $routes->get(
 
         $pages->addPage(
             $page,
-            $route
+            $this->currentPath()
         );
 
         unset($this->grav['page']);
@@ -557,7 +574,10 @@ $routes->get(
             return;
         }
 
-        if (!$this->pageViewRecorded) {
+        if (
+            !$this->pageViewRecorded &&
+            !$this->isAuthorizedPreviewRequest()
+        ) {
             $this->recordAnalytics(
                 'page_view'
             );
@@ -677,7 +697,9 @@ $routes->get(
             $request =
                 (new QrRouteResolver())
                     ->resolve(
-                        $this->currentPath(),
+                        $this->stripLanguagePrefix(
+                            $this->currentPath()
+                        ),
                         (string) (
                             $this->normalizedConfig['route'] ??
                             ''
@@ -691,11 +713,7 @@ $routes->get(
             return false;
         }
 
-        $publicRoute =
-            (string) (
-                $this->normalizedConfig['route'] ??
-                ''
-            );
+        $publicRoute = $this->localizedPublicRoute();
 
         if ($request['kind'] === 'track') {
             $this->recordAnalytics(
@@ -831,7 +849,9 @@ $routes->get(
         try {
             $trackingRequest =
                 $resolver->resolve(
-                    $this->currentPath(),
+                    $this->stripLanguagePrefix(
+                        $this->currentPath()
+                    ),
                     (string) (
                         $this->normalizedConfig['route'] ??
                         ''
@@ -1036,5 +1056,53 @@ $routes->get(
         }
 
         return '/' . trim($path, '/');
+    }
+
+    private function activeLanguage(): string
+    {
+        $language = $this->grav['language'] ?? null;
+
+        if (is_object($language) && method_exists($language, 'getActive')) {
+            try {
+                return strtolower(trim((string) $language->getActive()));
+            } catch (Throwable) {
+                return '';
+            }
+        }
+
+        return '';
+    }
+
+    private function stripLanguagePrefix(string $path): string
+    {
+        $language = $this->activeLanguage();
+
+        if ($language !== '' && str_starts_with($path, '/' . $language . '/')) {
+            return substr($path, strlen($language) + 1) ?: '/';
+        }
+
+        return $path;
+    }
+
+    private function localizedPublicRoute(): string
+    {
+        $route = (string) ($this->normalizedConfig['route'] ?? '/bio');
+        $path = $this->currentPath();
+        $language = $this->activeLanguage();
+
+        if ($language !== '' && str_starts_with($path, '/' . $language . '/')) {
+            return '/' . $language . $route;
+        }
+
+        return $route;
+    }
+
+    private function isAuthorizedPreviewRequest(): bool
+    {
+        if ((string) ($_GET['goosialize-links-preview'] ?? '') !== '1') {
+            return false;
+        }
+
+        return $this->qrAdminAllowed($this->grav['user'] ?? null);
     }
 }

@@ -21,7 +21,10 @@ final class PublicPageViewModelFactory
      *
      * @return array<string, mixed>
      */
-    public function create(array $normalizedConfig): array
+    public function create(
+        array $normalizedConfig,
+        string $language = ''
+    ): array
     {
         $profile = is_array(
             $normalizedConfig['profile'] ?? null
@@ -51,6 +54,18 @@ final class PublicPageViewModelFactory
             (string) (
                 $profile['description'] ?? ''
             )
+        );
+
+        $language = strtolower(trim($language));
+        $profileTranslation = is_array(
+            ($profile['translations'] ?? [])[$language] ?? null
+        ) ? $profile['translations'][$language] : [];
+        $name = $this->localizedValue($profileTranslation, 'name', $name);
+        $title = $this->localizedValue($profileTranslation, 'title', $title);
+        $description = $this->localizedValue(
+            $profileTranslation,
+            'description',
+            $description
         );
 
         $websiteUrl = trim(
@@ -84,8 +99,10 @@ final class PublicPageViewModelFactory
 
             $links[] = [
                 'id' => $id,
-                'title' => (string) (
-                    $link['title'] ?? ''
+                'title' => $this->localizedMapValue(
+                    $link['translations'] ?? [],
+                    $language,
+                    (string) ($link['title'] ?? '')
                 ),
                 'tracked_url' =>
                     $this->trackingRouteResolver
@@ -122,8 +139,10 @@ final class PublicPageViewModelFactory
                 'type' => (string) (
                     $action['type'] ?? ''
                 ),
-                'label' => (string) (
-                    $action['label'] ?? ''
+                'label' => $this->localizedMapValue(
+                    $action['translations'] ?? [],
+                    $language,
+                    (string) ($action['label'] ?? '')
                 ),
                 'tracked_url' =>
                     $this->trackingRouteResolver
@@ -174,7 +193,27 @@ final class PublicPageViewModelFactory
                     'Powered by Goosialize Links',
                 'url' => 'https://goosialize.com',
             ],
+            'language' => $language !== '' ? $language : 'en',
         ];
+    }
+
+    /** @param array<string, mixed> $values */
+    private function localizedValue(array $values, string $key, string $fallback): string
+    {
+        $value = trim((string) ($values[$key] ?? ''));
+
+        return $value !== '' ? $value : $fallback;
+    }
+
+    private function localizedMapValue(mixed $values, string $language, string $fallback): string
+    {
+        if (!is_array($values) || $language === '') {
+            return $fallback;
+        }
+
+        $value = trim((string) ($values[$language] ?? ''));
+
+        return $value !== '' ? $value : $fallback;
     }
 
     private function firstCharacter(

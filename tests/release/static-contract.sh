@@ -33,12 +33,62 @@ required=(
     languages/el.yaml
     templates/goosialize-links.html.twig
     admin-next/pages/goosialize-links.js
+    admin-next/fields/goosialize-links-preview.js
+    classes/EditorPreviewController.php
 )
 
 for file in "${required[@]}"; do
     test -f "$file"
     echo "$file = PASS"
 done
+
+echo
+echo "--- UX1 Admin2 and multilingual contract ---"
+
+python3 - <<'PY'
+from pathlib import Path
+import yaml
+
+bp = yaml.safe_load(Path("blueprints.yaml").read_text())
+fields = bp["form"]["fields"]
+
+for name in (
+    "profile_section",
+    "appearance_section",
+    "actions_section",
+    "links_section",
+):
+    field = fields[name]
+    assert field["type"] == "fieldset"
+    assert field["collapsible"] is True
+
+assert fields["actions_section"]["fields"]["actions"]["key"] == "label"
+assert fields["links_section"]["fields"]["links"]["key"] == "title"
+assert fields["editor_preview"]["type"] == "goosialize-links-preview"
+
+preview = Path("admin-next/fields/goosialize-links-preview.js").read_text()
+controller = Path("classes/EditorPreviewController.php").read_text()
+
+assert "sandbox=\"allow-same-origin allow-scripts allow-forms\"" in preview
+assert "new URL(selected.preview_path, window.location.origin)" in preview
+assert "goosialize-links-preview=1" in controller
+assert "preview_path" in controller and "public_path" in controller
+assert "http://" not in controller and "https://" not in controller
+
+for language in ("en", "el"):
+    translations = yaml.safe_load(Path(f"languages/{language}.yaml").read_text())
+    owned = translations["ICU"]["PLUGIN_GOOSIALIZE_LINKS"]
+    for key in (
+        "PREVIEW", "PREVIEW_LANGUAGE", "REFRESH_PREVIEW",
+        "OPEN_PUBLIC_PAGE", "PUBLIC_WEBSITE", "PUBLIC_ACTIONS", "PUBLIC_LINKS",
+    ):
+        assert owned[key]
+
+print("Native collapsible fieldsets = PASS")
+print("Human-readable list keys = PASS")
+print("Restricted real preview = PASS")
+print("EN/EL UX1 translations = PASS")
+PY
 
 echo
 echo "--- forbidden repository content ---"
