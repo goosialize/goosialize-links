@@ -59,14 +59,24 @@ ICU:
     ACTION_PHONE: Phone
     ACTION_WHATSAPP: WhatsApp
     LINKS_SECTION: Links
+    NATIVE_PAGE_NOTICE: Public page content
+    NATIVE_PAGE_NOTICE_HELP: Public content, route and translations are managed from the Goosialize Links Page under Pages.
+    PAGE_EDITOR_TITLE: Goosialize Links Page
+    PAGE_LINK_TITLES: Link titles
+    PAGE_LINK_TITLES_HELP: Translate the visible title for each shared Link. Hidden stable identities and destinations remain in plugin configuration.
+    PAGE_ACTION_LABELS: Action labels
+    PAGE_ACTION_LABELS_HELP: Translate the visible label for each shared Action. Hidden stable identities and destinations remain in plugin configuration.
     PREVIEW: Preview
-    PREVIEW_HELP: The real saved public page. Save changes or refresh manually to update it.
+    LIVE_PREVIEW: Live Preview
+    PREVIEW_HELP: The real public template updates automatically for unsaved shared settings. Save to publish.
     PREVIEW_LANGUAGE: Preview language
     REFRESH_PREVIEW: Refresh Preview
     OPEN_PUBLIC_PAGE: Open Public Page
     PREVIEW_LOADING: Loading preview…
-    PREVIEW_READY: Preview ready
+    PREVIEW_READY: Ready
     PREVIEW_ERROR: Preview could not be loaded.
+    PREVIEW_UPDATING: Updating…
+    PREVIEW_UNSAVED: Unsaved preview
     CONTENT_LANGUAGE: Language code
     PROFILE_TRANSLATIONS: Localized profile content
     PROFILE_TRANSLATIONS_HELP: Optional language-specific text. Empty values fall back to the main profile fields.

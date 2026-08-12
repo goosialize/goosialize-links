@@ -52,6 +52,8 @@ if roots != {"goosialize-links"}:
 
 required = {
     "goosialize-links/blueprints.yaml",
+    "goosialize-links/blueprints/pages/goosialize-links.yaml",
+    "goosialize-links/classes/EditorPreviewState.php",
     "goosialize-links/goosialize-links.php",
     "goosialize-links/goosialize-links.yaml",
     "goosialize-links/composer.json",

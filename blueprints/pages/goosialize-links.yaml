@@ -1,0 +1,51 @@
+title: PLUGIN_GOOSIALIZE_LINKS.PAGE_EDITOR_TITLE
+
+form:
+  validation: loose
+  fields:
+    header.goosialize_links.profile.name:
+      type: text
+      label: PLUGIN_GOOSIALIZE_LINKS.PROFILE_NAME
+      help: PLUGIN_GOOSIALIZE_LINKS.PROFILE_NAME_HELP
+      maxlength: 120
+    header.goosialize_links.profile.title:
+      type: text
+      label: PLUGIN_GOOSIALIZE_LINKS.PROFILE_TITLE
+      help: PLUGIN_GOOSIALIZE_LINKS.PROFILE_TITLE_HELP
+      maxlength: 160
+    header.goosialize_links.profile.description:
+      type: textarea
+      label: PLUGIN_GOOSIALIZE_LINKS.PROFILE_DESCRIPTION
+      help: PLUGIN_GOOSIALIZE_LINKS.PROFILE_DESCRIPTION_HELP
+      maxlength: 500
+      rows: 5
+    header.goosialize_links.links:
+      type: list
+      label: PLUGIN_GOOSIALIZE_LINKS.PAGE_LINK_TITLES
+      help: PLUGIN_GOOSIALIZE_LINKS.PAGE_LINK_TITLES_HELP
+      key: title
+      collapsed: true
+      controls: false
+      fields:
+        .title:
+          type: text
+          label: PLUGIN_GOOSIALIZE_LINKS.LINK_TITLE
+          help: PLUGIN_GOOSIALIZE_LINKS.LINK_TITLE_HELP
+          maxlength: 120
+        .identity:
+          type: hidden
+    header.goosialize_links.actions:
+      type: list
+      label: PLUGIN_GOOSIALIZE_LINKS.PAGE_ACTION_LABELS
+      help: PLUGIN_GOOSIALIZE_LINKS.PAGE_ACTION_LABELS_HELP
+      key: label
+      collapsed: true
+      controls: false
+      fields:
+        .label:
+          type: text
+          label: PLUGIN_GOOSIALIZE_LINKS.ACTION_LABEL
+          help: PLUGIN_GOOSIALIZE_LINKS.ACTION_LABEL_HELP
+          maxlength: 80
+        .identity:
+          type: hidden

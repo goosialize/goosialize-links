@@ -62,6 +62,7 @@ directories=(
     admin
     admin-next
     assets
+    blueprints
     classes
     languages
     pages

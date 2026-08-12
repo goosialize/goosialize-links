@@ -46,7 +46,11 @@ require $pluginAutoload;
 
 use Goosialize\Links\AnalyticsReportAggregator;
 use Goosialize\Links\AnalyticsStore;
+use Goosialize\Links\EditorPreviewState;
 use Goosialize\Links\LinkPageConfigNormalizer;
+use Goosialize\Links\NativePageContentResolver;
+use Goosialize\Links\NativePageLocator;
+use Goosialize\Links\NativePageProvisioner;
 use Goosialize\Links\PublicPageExperienceNormalizer;
 use Goosialize\Links\PublicPageViewModelFactory;
 use Goosialize\Links\QrCodeGenerator;
@@ -325,6 +329,97 @@ check(
     $localizedView['actions'][0]['id'] === $fallbackView['actions'][0]['id'] &&
     str_contains($localizedView['links'][0]['tracked_url'], 'link_ffffffffffffffff'),
     'Language switch preserves analytics identities'
+);
+
+echo "\n--- native Page provisioning ---\n";
+
+$nativeRoot = sys_get_temp_dir() . '/goosialize-links-native-' . bin2hex(random_bytes(6));
+mkdir($nativeRoot . '/pages/01.home', 0775, true);
+mkdir($nativeRoot . '/pages/02.docs', 0775, true);
+file_put_contents($nativeRoot . '/legacy.yaml', "route: /bio\n");
+$provisioner = new NativePageProvisioner($nativeRoot . '/pages', $nativeRoot . '/backups');
+$firstProvision = $provisioner->provision($rawLocalized, ['en', 'el'], 'en', $nativeRoot . '/legacy.yaml');
+$englishPage = $firstProvision['folder'] . '/goosialize-links.en.md';
+$greekPage = $firstProvision['folder'] . '/goosialize-links.el.md';
+check(is_file($englishPage) && is_file($greekPage), 'Native EN/EL Page creation');
+check((new NativePageLocator($nativeRoot . '/pages'))->route('en') === '/bio', 'Physical Page route discovery');
+check($firstProvision['backup'] !== null && is_file($firstProvision['backup']), 'Legacy configuration backup');
+check(
+    ($rawLocalized['profile']['translations'][0]['language'] ?? null) === 'el' &&
+    ($rawLocalized['links'][0]['translations'][0]['title'] ?? null) === 'Αγόρασε τώρα' &&
+    ($rawLocalized['actions'][0]['translations'][0]['label'] ?? null) === 'Ηλεκτρονικό ταχυδρομείο',
+    'Legacy localized overlays retained after provisioning'
+);
+$greekBefore = file_get_contents($greekPage);
+$secondProvision = $provisioner->provision($rawLocalized, ['en', 'el'], 'en', $nativeRoot . '/legacy.yaml');
+check(file_get_contents($greekPage) === $greekBefore && $secondProvision['backup'] === null, 'Idempotent native Page provisioning');
+$partialRoot = sys_get_temp_dir() . '/goosialize-links-native-partial-' . bin2hex(random_bytes(6));
+mkdir($partialRoot . '/pages/03.bio', 0775, true);
+file_put_contents($partialRoot . '/legacy.yaml', "route: /bio\n");
+$preservedEnglish = "---\ntitle: Existing native content\n---\n";
+file_put_contents($partialRoot . '/pages/03.bio/goosialize-links.en.md', $preservedEnglish);
+$partialProvision = (new NativePageProvisioner($partialRoot . '/pages', $partialRoot . '/backups'))
+    ->provision($rawLocalized, ['en', 'el'], 'en', $partialRoot . '/legacy.yaml');
+check(
+    file_get_contents($partialRoot . '/pages/03.bio/goosialize-links.en.md') === $preservedEnglish &&
+    is_file($partialRoot . '/pages/03.bio/goosialize-links.el.md') &&
+    $partialProvision['backup'] !== null,
+    'Existing native translation preserved while missing translation is provisioned'
+);
+$native = (new NativePageContentResolver())->apply($localizedConfig, [
+    'goosialize_links' => [
+        'profile' => ['title' => 'Native title'],
+        'links' => [['identity' => 'link_ffffffffffffffff', 'title' => 'Native link']],
+        'actions' => [['identity' => 'action_ffffffffffffffff', 'label' => 'Native action']],
+    ],
+]);
+check(
+    $native['profile']['title'] === 'Native title' &&
+    $native['links'][0]['title'] === 'Native link' &&
+    $native['actions'][0]['label'] === 'Native action' &&
+    $native['links'][0]['id'] === 'link_ffffffffffffffff' &&
+    $native['actions'][0]['id'] === 'action_ffffffffffffffff',
+    'Native content precedence preserves identities'
+);
+
+echo "\n--- ephemeral editor preview state ---\n";
+$previewSaved = $rawLocalized;
+$previewDraft = [
+    'profile' => ['website_url' => 'https://preview.example.com'],
+    'appearance' => ['theme' => 'dark', 'accent' => 'coral', 'button_shape' => 'pill'],
+    'actions' => [[
+        'id' => 'action_ffffffffffffffff',
+        'enabled' => true,
+        'type' => 'website',
+        'value' => 'https://preview.example.com/action',
+    ]],
+    'links' => [[
+        'id' => 'link_ffffffffffffffff',
+        'enabled' => true,
+        'url' => 'https://preview.example.com/link',
+        'new_tab' => false,
+    ]],
+];
+$previewMerged = (new EditorPreviewState())->merge($previewDraft, $previewSaved);
+check(
+    $previewMerged['appearance'] === $previewDraft['appearance'] &&
+    $previewMerged['profile']['website_url'] === 'https://preview.example.com' &&
+    $previewMerged['actions'][0]['label'] === 'Email' &&
+    $previewMerged['links'][0]['title'] === 'Shop Now',
+    'Whitelisted unsaved preview overlay'
+);
+check(
+    $previewSaved['profile']['website_url'] === 'https://example.com' &&
+    $previewSaved['appearance'] === [],
+    'Preview overlay does not mutate saved configuration'
+);
+expectException(
+    static fn () => (new EditorPreviewState())->merge(['route' => '/elsewhere'], $previewSaved),
+    'Arbitrary preview route rejected'
+);
+expectException(
+    static fn () => (new EditorPreviewState())->merge(['appearance' => ['custom_css' => 'body{}']], $previewSaved),
+    'Unsupported preview field rejected'
 );
 
 echo "\n--- analytics storage ---\n";

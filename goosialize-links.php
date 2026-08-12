@@ -16,6 +16,9 @@ use Goosialize\Links\QrAdminController;
 use Goosialize\Links\QrCodeGenerator;
 use Goosialize\Links\QrRouteResolver;
 use Goosialize\Links\LinkPageConfigNormalizer;
+use Goosialize\Links\NativePageContentResolver;
+use Goosialize\Links\NativePageLocator;
+use Goosialize\Links\NativePageProvisioner;
 use Goosialize\Links\PublicPageExperienceNormalizer;
 use Goosialize\Links\PublicPageViewModelFactory;
 use Goosialize\Links\TrackingRouteResolver;
@@ -67,6 +70,18 @@ require_once __DIR__ .
 require_once __DIR__ .
     '/classes/PublicPageViewModelFactory.php';
 
+require_once __DIR__ .
+    '/classes/NativePageContentResolver.php';
+
+require_once __DIR__ .
+    '/classes/NativePageLocator.php';
+
+require_once __DIR__ .
+    '/classes/NativePageProvisioner.php';
+
+require_once __DIR__ .
+    '/classes/EditorPreviewState.php';
+
 final class GoosializeLinksPlugin extends Plugin
 {
     /**
@@ -112,6 +127,8 @@ final class GoosializeLinksPlugin extends Plugin
                 'onApiGenerateReports',
                 0,
             ],
+            'onGetPageBlueprints' => ['onGetPageBlueprints', 0],
+            'onGetPageTemplates' => ['onGetPageBlueprints', 0],
             'onPluginsInitialized' => [
                 'onPluginsInitialized',
                 0,
@@ -164,6 +181,20 @@ final class GoosializeLinksPlugin extends Plugin
             '/goosialize-links/editor-preview',
             [EditorPreviewController::class, 'data']
         );
+
+        if (method_exists($routes, 'post')) {
+            $routes->post(
+                '/goosialize-links/editor-preview/state',
+                [EditorPreviewController::class, 'state']
+            );
+        }
+
+        if (method_exists($routes, 'delete')) {
+            $routes->delete(
+                '/goosialize-links/editor-preview/state',
+                [EditorPreviewController::class, 'clear']
+            );
+        }
 
 $routes->get(
     '/goosialize-links/dashboard',
@@ -396,6 +427,8 @@ $routes->get(
 
     public function onPluginsInitialized(): void
     {
+        $this->provisionNativePage();
+
         if ($this->isAdmin()) {
             return;
         }
@@ -414,6 +447,8 @@ $routes->get(
             return;
         }
 
+        $rawConfig = $this->previewConfig($rawConfig);
+
         try {
             $baseConfig =
                 (new LinkPageConfigNormalizer())
@@ -425,6 +460,13 @@ $routes->get(
                         $rawConfig,
                         $baseConfig
                     );
+
+            $nativeRoute = (new NativePageLocator(
+                GRAV_ROOT . '/user/pages'
+            ))->route($this->defaultLanguage());
+            if ($nativeRoute !== null) {
+                $normalizedConfig['route'] = $nativeRoute;
+            }
         } catch (InvalidArgumentException $exception) {
             $this->grav['log']->error(
                 'plugin.goosialize-links: ' .
@@ -493,19 +535,36 @@ $routes->get(
             ''
         );
 
+        $pages = $this->grav['pages'];
+        $currentPath = $this->currentPath();
+        $existingPage = $pages->find($currentPath);
+
+        if (
+            $existingPage !== null &&
+            $existingPage->template() === 'goosialize-links'
+        ) {
+            $viewConfig = $this->normalizedConfig;
+            $viewConfig['route'] = $currentPath;
+            $viewConfig = (new NativePageContentResolver())->apply(
+                $viewConfig,
+                (array) $existingPage->header()
+            );
+            $this->publicViewModel = (new PublicPageViewModelFactory())->create(
+                $viewConfig,
+                $this->activeLanguage()
+            );
+            $this->ownsPublicPage = true;
+            return;
+        }
+
         if (
             $route === '' ||
             $this->stripLanguagePrefix(
-                $this->currentPath()
+                $currentPath
             ) !== $route
         ) {
             return;
         }
-
-        $pages = $this->grav['pages'];
-
-        $existingPage =
-            $pages->find($this->currentPath());
 
         if ($existingPage !== null) {
             $this->grav['log']->info(
@@ -548,7 +607,7 @@ $routes->get(
 
         $pages->addPage(
             $page,
-            $this->currentPath()
+            $currentPath
         );
 
         unset($this->grav['page']);
@@ -563,6 +622,17 @@ $routes->get(
         $this->grav['twig']->twig_paths[] =
             __DIR__ .
             '/templates';
+    }
+
+    public function onGetPageBlueprints(Event $event): void
+    {
+        $types = $event['types'] ?? $event->types ?? null;
+        if (is_object($types) && method_exists($types, 'register')) {
+            $types->register(
+                'goosialize-links',
+                'plugin://goosialize-links/blueprints/pages/goosialize-links.yaml'
+            );
+        }
     }
 
     public function onTwigSiteVariables(): void
@@ -1073,6 +1143,14 @@ $routes->get(
         return '';
     }
 
+    private function defaultLanguage(): string
+    {
+        return strtolower((string) $this->grav['config']->get(
+            'system.languages.default_lang',
+            ''
+        ));
+    }
+
     private function stripLanguagePrefix(string $path): string
     {
         $language = $this->activeLanguage();
@@ -1103,6 +1181,65 @@ $routes->get(
             return false;
         }
 
-        return $this->qrAdminAllowed($this->grav['user'] ?? null);
+        return $this->previewState() !== null ||
+            $this->qrAdminAllowed($this->grav['user'] ?? null);
+    }
+
+    /** @param array<string, mixed> $saved @return array<string, mixed> */
+    private function previewConfig(array $saved): array
+    {
+        $state = $this->previewState();
+        return is_array($state['config'] ?? null) ? $state['config'] : $saved;
+    }
+
+    /** @return array<string, mixed>|null */
+    private function previewState(): ?array
+    {
+        $token = strtolower(trim((string) ($_GET['goosialize-links-preview-token'] ?? '')));
+        if (preg_match('/^[a-f0-9]{32}$/', $token) !== 1) return null;
+        try {
+            $session = $this->grav['session'];
+            $session->start();
+            $states = is_array($session->{EditorPreviewController::SESSION_KEY} ?? null)
+                ? $session->{EditorPreviewController::SESSION_KEY} : [];
+            $state = $states[$token] ?? null;
+            if (!is_array($state) || (int) ($state['created'] ?? 0) < time() - 3600) return null;
+            return $state;
+        } catch (Throwable) {
+            return null;
+        }
+    }
+
+    private function provisionNativePage(): void
+    {
+        $rawConfig = $this->config->get('plugins.goosialize-links', []);
+        if (!is_array($rawConfig) || !($rawConfig['enabled'] ?? true)) {
+            return;
+        }
+
+        try {
+            $languages = (array) $this->grav['config']->get(
+                'system.languages.supported',
+                []
+            );
+            $default = strtolower((string) $this->grav['config']->get(
+                'system.languages.default_lang',
+                ''
+            ));
+            (new NativePageProvisioner(
+                GRAV_ROOT . '/user/pages',
+                GRAV_ROOT . '/user/data/goosialize-links/migration-backups'
+            ))->provision(
+                $rawConfig,
+                $languages,
+                $default,
+                GRAV_ROOT . '/user/config/plugins/goosialize-links.yaml'
+            );
+        } catch (Throwable $exception) {
+            $this->grav['log']->error(
+                'plugin.goosialize-links: native Page provisioning failed: ' .
+                $exception->getMessage()
+            );
+        }
     }
 }

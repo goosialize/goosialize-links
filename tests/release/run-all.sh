@@ -205,7 +205,9 @@ docker exec "$CONTAINER" sh -lc '
     CONFIG="/app/www/public/user/config/plugins/goosialize-links.yaml"
 
     mkdir -p \
-      "/app/www/public/user/config/plugins"
+      "/app/www/public/user/config/plugins" \
+      "/app/www/public/user/data" \
+      "/app/www/public/user/pages"
 
     cat > "$CONFIG" <<EOF
 enabled: true
@@ -230,6 +232,8 @@ EOF
       "$PLUGIN" \
       "$CONFIG" \
       /app/www/public/user/config \
+      /app/www/public/user/data \
+      /app/www/public/user/pages \
       /app/www/public/cache
 
 '
@@ -624,9 +628,15 @@ test -n "$UNAUTHORIZED_KEY"
 test -n "$SUPER_KEY"
 
 PREVIEW_API="$BASE_URL/api/v1/goosialize-links/editor-preview"
+PREVIEW_STATE_API="$PREVIEW_API/state"
 
 test "$(curl -sS -o /dev/null -w '%{http_code}' "$PREVIEW_API")" = "401"
 test "$(curl -sS -H "X-API-Key: $UNAUTHORIZED_KEY" -o /dev/null -w '%{http_code}' "$PREVIEW_API")" = "403"
+test "$(curl -sS -X POST -H 'Content-Type: application/json' -d '{"token":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","config":{"appearance":{"theme":"dark"}}}' -o /dev/null -w '%{http_code}' "$PREVIEW_STATE_API")" = "401"
+test "$(curl -sS -X POST -H "X-API-Key: $UNAUTHORIZED_KEY" -H 'Content-Type: application/json' -d '{"token":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","config":{"appearance":{"theme":"dark"}}}' -o /dev/null -w '%{http_code}' "$PREVIEW_STATE_API")" = "403"
+test "$(curl -sS -X POST -H "X-API-Key: $SUPER_KEY" -H 'Content-Type: application/json' -d '{"token":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","config":{"appearance":{"theme":"dark","accent":"coral","button_shape":"pill"}}}' -o /dev/null -w '%{http_code}' "$PREVIEW_STATE_API")" = "200"
+test "$(curl -sS -X POST -H "X-API-Key: $SUPER_KEY" -H 'Content-Type: application/json' -d '{"token":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","config":{"route":"/unsafe"}}' -o /dev/null -w '%{http_code}' "$PREVIEW_STATE_API")" = "422"
+echo "EDITOR_PREVIEW_STATE_SECURITY = PASS"
 
 PREVIEW_JSON="$BUILD_DIR/editor-preview.json"
 test "$(curl -sS -H "X-API-Key: $SUPER_KEY" -o "$PREVIEW_JSON" -w '%{http_code}' "$PREVIEW_API")" = "200"
@@ -638,6 +648,9 @@ import sys
 
 payload = json.loads(Path(sys.argv[1]).read_text())
 languages = payload.get("languages", [])
+
+if not __import__('re').fullmatch(r'[a-f0-9]{32}', payload.get('token', '')):
+    raise SystemExit("Preview token missing")
 
 if not languages:
     raise SystemExit("Preview languages missing")

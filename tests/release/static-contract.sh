@@ -62,30 +62,52 @@ for name in (
     assert field["type"] == "fieldset"
     assert field["collapsible"] is True
 
-assert fields["actions_section"]["fields"]["actions"]["key"] == "label"
-assert fields["links_section"]["fields"]["links"]["key"] == "title"
+assert fields["actions_section"]["fields"]["actions"]["key"] == "type"
+assert fields["links_section"]["fields"]["links"]["key"] == "url"
+assert fields["route"]["type"] == "hidden"
+assert fields["profile_section"]["fields"]["profile.translations"]["type"] == "hidden"
+assert fields["actions_section"]["fields"]["actions"]["fields"][".translations"]["type"] == "hidden"
+assert fields["links_section"]["fields"]["links"]["fields"][".translations"]["type"] == "hidden"
 assert fields["editor_preview"]["type"] == "goosialize-links-preview"
+assert fields["editor_preview"]["label"] == "PLUGIN_GOOSIALIZE_LINKS.LIVE_PREVIEW"
 
 preview = Path("admin-next/fields/goosialize-links-preview.js").read_text()
 controller = Path("classes/EditorPreviewController.php").read_text()
+page_blueprint = yaml.safe_load(Path("blueprints/pages/goosialize-links.yaml").read_text())
+plugin = Path("goosialize-links.php").read_text()
 
 assert "sandbox=\"allow-same-origin allow-scripts allow-forms\"" in preview
 assert "new URL(selected.preview_path, window.location.origin)" in preview
 assert "goosialize-links-preview=1" in controller
 assert "preview_path" in controller and "public_path" in controller
+assert "LanguageCodes::getNativeName" in controller
+assert "'translations' => $this->uiTranslations()" in controller
 assert "http://" not in controller and "https://" not in controller
+assert "header.goosialize_links.profile.name" in page_blueprint["form"]["fields"]
+assert "header.goosialize_links.links" in page_blueprint["form"]["fields"]
+assert "header.goosialize_links.actions" in page_blueprint["form"]["fields"]
+assert "NativePageProvisioner" in plugin
+assert "NativePageContentResolver" in plugin
+assert "editor-preview/state" in plugin
+assert "method: 'POST'" in preview
+assert "method: 'DELETE'" in preview
+assert "goosialize-links-preview-token" in preview
+assert "SESSION_KEY" in controller
+assert "PREVIEW_UPDATING" in controller and "PREVIEW_UNSAVED" in controller
 
 for language in ("en", "el"):
     translations = yaml.safe_load(Path(f"languages/{language}.yaml").read_text())
     owned = translations["ICU"]["PLUGIN_GOOSIALIZE_LINKS"]
     for key in (
-        "PREVIEW", "PREVIEW_LANGUAGE", "REFRESH_PREVIEW",
+        "PREVIEW", "LIVE_PREVIEW", "PREVIEW_LANGUAGE", "REFRESH_PREVIEW",
         "OPEN_PUBLIC_PAGE", "PUBLIC_WEBSITE", "PUBLIC_ACTIONS", "PUBLIC_LINKS",
+        "PREVIEW_UPDATING", "PREVIEW_UNSAVED",
     ):
         assert owned[key]
 
 print("Native collapsible fieldsets = PASS")
 print("Human-readable list keys = PASS")
+print("Native Page content architecture = PASS")
 print("Restricted real preview = PASS")
 print("EN/EL UX1 translations = PASS")
 PY

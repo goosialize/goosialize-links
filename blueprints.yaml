@@ -23,6 +23,9 @@ compatibility:
 form:
   validation: strict
   fields:
+    route:
+      type: hidden
+
     enabled:
       type: toggle
       label: PLUGIN_GOOSIALIZE_LINKS.STATUS
@@ -35,19 +38,15 @@ form:
       validate:
         type: bool
 
-    route:
-      type: text
-      label: PLUGIN_GOOSIALIZE_LINKS.ROUTE
-      help: PLUGIN_GOOSIALIZE_LINKS.ROUTE_HELP
-      default: /bio
-      placeholder: /bio
-      validate:
-        required: true
-        pattern: '^/[a-z0-9]+(?:/[a-z0-9][a-z0-9-]*)*$'
+    native_page_notice:
+      type: display
+      label: PLUGIN_GOOSIALIZE_LINKS.NATIVE_PAGE_NOTICE
+      markdown: true
+      content: PLUGIN_GOOSIALIZE_LINKS.NATIVE_PAGE_NOTICE_HELP
 
     editor_preview:
       type: goosialize-links-preview
-      label: PLUGIN_GOOSIALIZE_LINKS.PREVIEW
+      label: PLUGIN_GOOSIALIZE_LINKS.LIVE_PREVIEW
       help: PLUGIN_GOOSIALIZE_LINKS.PREVIEW_HELP
 
     profile_section:
@@ -71,56 +70,19 @@ form:
             - image/webp
 
         profile.name:
-          type: text
-          label: PLUGIN_GOOSIALIZE_LINKS.PROFILE_NAME
-          help: PLUGIN_GOOSIALIZE_LINKS.PROFILE_NAME_HELP
-          maxlength: 120
-
+          type: hidden
         profile.title:
-          type: text
-          label: PLUGIN_GOOSIALIZE_LINKS.PROFILE_TITLE
-          help: PLUGIN_GOOSIALIZE_LINKS.PROFILE_TITLE_HELP
-          maxlength: 160
-
+          type: hidden
         profile.description:
-          type: textarea
-          label: PLUGIN_GOOSIALIZE_LINKS.PROFILE_DESCRIPTION
-          help: PLUGIN_GOOSIALIZE_LINKS.PROFILE_DESCRIPTION_HELP
-          maxlength: 500
-          rows: 5
+          type: hidden
+        profile.translations:
+          type: hidden
 
         profile.website_url:
           type: url
           label: PLUGIN_GOOSIALIZE_LINKS.PROFILE_WEBSITE_URL
           help: PLUGIN_GOOSIALIZE_LINKS.PROFILE_WEBSITE_URL_HELP
           placeholder: https://example.com
-
-        profile.translations:
-          type: list
-          label: PLUGIN_GOOSIALIZE_LINKS.PROFILE_TRANSLATIONS
-          help: PLUGIN_GOOSIALIZE_LINKS.PROFILE_TRANSLATIONS_HELP
-          key: language
-          collapsed: true
-          fields:
-            .language:
-              type: text
-              label: PLUGIN_GOOSIALIZE_LINKS.CONTENT_LANGUAGE
-              validate:
-                required: true
-                pattern: '^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$'
-            .name:
-              type: text
-              label: PLUGIN_GOOSIALIZE_LINKS.PROFILE_NAME
-              maxlength: 120
-            .title:
-              type: text
-              label: PLUGIN_GOOSIALIZE_LINKS.PROFILE_TITLE
-              maxlength: 160
-            .description:
-              type: textarea
-              label: PLUGIN_GOOSIALIZE_LINKS.PROFILE_DESCRIPTION
-              maxlength: 500
-              rows: 5
 
     appearance_section:
       type: fieldset
@@ -174,7 +136,7 @@ form:
           collapsed: true
           controls: both
           placement: bottom
-          key: label
+          key: type
           btnLabel: PLUGIN_GOOSIALIZE_LINKS.ADD_ACTION
           fields:
             .id:
@@ -215,28 +177,9 @@ form:
                 required: true
 
             .label:
-              type: text
-              label: PLUGIN_GOOSIALIZE_LINKS.ACTION_LABEL
-              help: PLUGIN_GOOSIALIZE_LINKS.ACTION_LABEL_HELP
-              maxlength: 80
-
+              type: hidden
             .translations:
-              type: list
-              label: PLUGIN_GOOSIALIZE_LINKS.ACTION_TRANSLATIONS
-              help: PLUGIN_GOOSIALIZE_LINKS.ACTION_TRANSLATIONS_HELP
-              key: language
-              collapsed: true
-              fields:
-                .language:
-                  type: text
-                  label: PLUGIN_GOOSIALIZE_LINKS.CONTENT_LANGUAGE
-                  validate:
-                    required: true
-                    pattern: '^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$'
-                .label:
-                  type: text
-                  label: PLUGIN_GOOSIALIZE_LINKS.ACTION_LABEL
-                  maxlength: 80
+              type: hidden
 
     links_section:
       type: fieldset
@@ -252,7 +195,7 @@ form:
           collapsed: true
           controls: both
           placement: bottom
-          key: title
+          key: url
           btnLabel: PLUGIN_GOOSIALIZE_LINKS.ADD_LINK
           fields:
             .id:
@@ -270,12 +213,9 @@ form:
                 type: bool
 
             .title:
-              type: text
-              label: PLUGIN_GOOSIALIZE_LINKS.LINK_TITLE
-              help: PLUGIN_GOOSIALIZE_LINKS.LINK_TITLE_HELP
-              maxlength: 120
-              validate:
-                required: true
+              type: hidden
+            .translations:
+              type: hidden
 
             .url:
               type: url
@@ -296,21 +236,3 @@ form:
                 0: PLUGIN_GOOSIALIZE_LINKS.DISABLED
               validate:
                 type: bool
-
-            .translations:
-              type: list
-              label: PLUGIN_GOOSIALIZE_LINKS.LINK_TRANSLATIONS
-              help: PLUGIN_GOOSIALIZE_LINKS.LINK_TRANSLATIONS_HELP
-              key: language
-              collapsed: true
-              fields:
-                .language:
-                  type: text
-                  label: PLUGIN_GOOSIALIZE_LINKS.CONTENT_LANGUAGE
-                  validate:
-                    required: true
-                    pattern: '^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$'
-                .title:
-                  type: text
-                  label: PLUGIN_GOOSIALIZE_LINKS.LINK_TITLE
-                  maxlength: 120
