@@ -57,6 +57,7 @@ required = {
     "goosialize-links/composer.json",
     "goosialize-links/composer.lock",
     "goosialize-links/permissions.yaml",
+    "goosialize-links/LICENSE",
     "goosialize-links/README.md",
     "goosialize-links/CHANGELOG.md",
     "goosialize-links/languages/en.yaml",
@@ -74,6 +75,19 @@ if missing:
         print(" ", name)
 
     raise SystemExit(1)
+
+blueprint = payloads["goosialize-links/blueprints.yaml"].decode()
+composer_json = json.loads(payloads["goosialize-links/composer.json"])
+license_text = payloads["goosialize-links/LICENSE"].decode()
+
+if "version: 1.0.0-rc.1" not in blueprint:
+    raise SystemExit("Unexpected packaged release-candidate version")
+
+if composer_json.get("license") != "MIT":
+    raise SystemExit("Packaged Composer license must be MIT")
+
+if "Copyright (c) 2026 Goosialize Ltd" not in license_text:
+    raise SystemExit("Packaged MIT license identity is invalid")
 
 forbidden_parts = {
     ".git",
@@ -177,6 +191,7 @@ for name, payload in payloads.items():
 
 print("Single plugin root       = PASS")
 print("Required package files   = PASS")
+print("Version / license        = PASS")
 print("Production vendor        = PASS")
 print("Packaged QR classes      = PASS")
 print("Package secret scan      = PASS")

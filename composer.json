@@ -9,6 +9,7 @@
         "self-hosted"
     ],
     "homepage": "https://goosialize.com",
+    "license": "MIT",
     "authors": [
         {
             "name": "Goosialize Ltd",

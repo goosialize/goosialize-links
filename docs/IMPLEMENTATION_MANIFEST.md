@@ -28,6 +28,8 @@ Locked identity:
 - Plugin slug: `goosialize-links`
 - Main plugin class file: `goosialize-links.php`
 - Initial edition: FREE
+- FREE v1 release-candidate version: `1.0.0-rc.1`
+- FREE core license: MIT
 - Target Grav baseline: 2.0.12
 - Target runtime family: PHP 8.3+
 - Default public route: `/bio`
@@ -45,10 +47,8 @@ The implementation may eventually include:
 - `LICENSE`
 - `README.md`
 
-Not every file is created in the plugin-skeleton checkpoint.
-
-The license file is deferred until the FREE distribution and licensing model is
-approved explicitly.
+The FREE core is distributed under the MIT License. Future paid addons are
+separate products and are outside this repository and its FREE core license.
 
 ## 5. Planned Source Directories
 
@@ -324,7 +324,6 @@ The exact Phase 1 file set will be locked immediately before implementation.
 
 The following decisions remain explicitly open:
 
-- FREE software license;
 - exact storage format;
 - exact PHP minimum version within the supported Grav runtime;
 - QR generation dependency;

@@ -1,22 +1,36 @@
 # Changelog
 
-All notable changes to Goosialize Links will be documented in this file.
+All notable changes to Goosialize Links are documented in this file.
 
-## [0.1.0] - Unreleased
+## [1.0.0-rc.1] - 2026-08-12
 
 ### Added
 
-- Initial behaviorless Grav 2 plugin skeleton.
-- Basic plugin identity, configuration, translations, and package metadata.
-- Core configuration normalization for the single FREE link page.
-- Durable generated link identifiers and the eight-active-link FREE limit.
-- Native Admin2 configuration fields for the public route, profile, and links.
-- Public Link in Bio route, standalone Twig template, responsive styles, route-collision protection, and mandatory attribution.
-- Three public themes, five accent colors, three button shapes, safe profile images, and social/contact actions.
-- Anonymous daily analytics storage with tracked link and action redirects.
-- Add privacy-preserving analytics aggregation and native Admin2 Reports integration.
-- Add tracked QR visits with PNG and SVG generation.
-- Add a permission-gated native Admin2 QR preview with PNG and SVG downloads.
-- Add a native-style Admin2 analytics dashboard with summary metrics, a seven-day performance chart, Top Links, Top Actions, and QR metrics.
-- Preserve the strict QR administration API while exposing dashboard analytics through a separate read-only endpoint.
-- Split plugin translations into per-locale English and Greek files for the Grav 2/Admin2 integration.
+- One mobile-first, self-hosted Link-in-Bio profile with bounded FREE themes,
+  profile media, required branding, and up to eight active links.
+- Durable tracked link and social/contact action redirects.
+- Privacy-preserving page-view and click analytics with per-link and
+  per-action aggregate counts.
+- One durable QR identity, `qr_primary`, with a safe internal tracked redirect.
+- PNG and SVG QR preview/download output without image-request analytics.
+- Aggregate `qr_visit` analytics for tracked QR route opens.
+- Native Grav Admin2 QR management and analytics dashboard with summary
+  metrics, seven-day performance, Top Links, and Top Actions.
+- Dedicated read-only QR permission and authenticated API boundaries.
+- English and Greek Admin2 translations.
+- Deterministic release packaging and clean Grav 2.0.12 acceptance gates.
+
+### Security and privacy
+
+- Restrict redirects to normalized configured destinations and reject unsafe
+  or injected redirect targets.
+- Store anonymous daily aggregate counters only; no visitor profiles, device,
+  location, referrer, UTM, funnel, or unique-user reports are included.
+- Require authentication and explicit permission for QR/dashboard data and
+  downloads.
+
+### Distribution
+
+- License the Goosialize Links FREE core under the MIT License.
+- Keep paid addons, including scheduled analytics email reports, outside this
+  repository and outside the FREE core distribution.

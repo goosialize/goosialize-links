@@ -70,6 +70,7 @@ directories=(
 
 files=(
     CHANGELOG.md
+    LICENSE
     README.md
     blueprints.yaml
     composer.json

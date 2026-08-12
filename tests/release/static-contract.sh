@@ -26,6 +26,7 @@ required=(
     composer.json
     composer.lock
     permissions.yaml
+    LICENSE
     README.md
     CHANGELOG.md
     languages/en.yaml
@@ -114,8 +115,11 @@ if bp.get("slug") != "goosialize-links":
 if bp.get("type") != "plugin":
     raise SystemExit("Invalid package type")
 
-if bp.get("version") != "0.1.0":
-    raise SystemExit("Unexpected pre-release version")
+if bp.get("version") != "1.0.0-rc.1":
+    raise SystemExit("Unexpected release-candidate version")
+
+if bp.get("license") != "MIT":
+    raise SystemExit("Blueprint license must be MIT")
 
 compat = bp.get("compatibility", {})
 
@@ -131,6 +135,14 @@ composer = json.loads(
     Path("composer.json").read_text()
 )
 
+if composer.get("license") != "MIT":
+    raise SystemExit("Composer license must be MIT")
+
+license_text = Path("LICENSE").read_text()
+
+if "Copyright (c) 2026 Goosialize Ltd" not in license_text:
+    raise SystemExit("MIT license identity is invalid")
+
 platform = (
     composer
     .get("config", {})
@@ -144,7 +156,8 @@ if platform != "8.3.0":
     )
 
 print("Plugin identity       = PASS")
-print("Pre-release version   = 0.1.0")
+print("RC version            = 1.0.0-rc.1")
+print("FREE core license     = MIT")
 print("Grav compatibility    = 2.0")
 print("API compatibility     = UNCLAIMED")
 print("Composer PHP platform = 8.3.0")
