@@ -10,6 +10,7 @@ ICU:
     ROUTE: Δημόσια διαδρομή
     ROUTE_HELP: Επιλέξτε τη διαδρομή URL της μοναδικής δημόσιας Link in Bio σελίδας.
     PROFILE_SECTION: Προφίλ
+    PROFILE_SECTION_HELP: Ρυθμίστε την κοινή εικόνα προφίλ και τον κύριο προορισμό ιστοσελίδας.
     PROFILE_IMAGE: Εικόνα προφίλ
     PROFILE_IMAGE_HELP: Ανεβάστε μία εικόνα JPEG, PNG ή WebP. Τα SVG δεν επιτρέπονται.
     PROFILE_NAME: Όνομα ή brand
@@ -21,6 +22,7 @@ ICU:
     PROFILE_WEBSITE_URL: URL ιστοσελίδας
     PROFILE_WEBSITE_URL_HELP: Προαιρετικός σύνδεσμος προς την κύρια ιστοσελίδα.
     APPEARANCE_SECTION: Εμφάνιση
+    APPEARANCE_SECTION_HELP: Επιλέξτε την εμφάνιση που χρησιμοποιείται σε όλες τις γλωσσικές εκδόσεις του δημόσιου προφίλ.
     THEME: Theme
     THEME_HELP: Επιλέξτε ένα από τα τρία themes της FREE έκδοσης.
     THEME_LIGHT: Light
@@ -39,6 +41,7 @@ ICU:
     BUTTON_ROUNDED: Στρογγυλεμένα
     BUTTON_PILL: Pill
     ACTIONS_SECTION: Social και contact actions
+    ACTIONS_SECTION_HELP: Προσθέστε social profiles και άμεσους τρόπους επικοινωνίας όπως email, τηλέφωνο και messaging.
     ACTIONS: Actions
     ACTIONS_HELP: Προσθέστε social profiles και άμεσους τρόπους επικοινωνίας.
     ADD_ACTION: Προσθήκη action
@@ -59,6 +62,7 @@ ICU:
     ACTION_PHONE: Τηλέφωνο
     ACTION_WHATSAPP: WhatsApp
     LINKS_SECTION: Σύνδεσμοι
+    LINKS_SECTION_HELP: Προσθέστε, ταξινομήστε και διαχειριστείτε τους βασικούς συνδέσμους του δημόσιου προφίλ.
     NATIVE_PAGE_NOTICE: Περιεχόμενο δημόσιας σελίδας
     NATIVE_PAGE_NOTICE_HELP: Το δημόσιο περιεχόμενο, η διαδρομή και οι μεταφράσεις διαχειρίζονται από τη σελίδα Goosialize Links στις Σελίδες.
     PAGE_EDITOR_TITLE: Σελίδα Goosialize Links

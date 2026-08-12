@@ -24,14 +24,24 @@
    * Added a same-origin preview of the real public template with manual
      refresh, Save-triggered refresh, language selection, and a safe public-page
      link.
+   * Adopted a physical native Grav Page as the authority for the public route,
+     editorial content, and English/Greek translations.
+   * Added non-destructive, idempotent native Page provisioning while retaining
+     legacy localized overlays as a compatibility fallback.
+   * Added authenticated, ephemeral realtime preview for supported unsaved
+     shared settings without recording analytics or changing the saved page.
    * Added deterministic release packaging and clean Grav 2.0.12 acceptance
      gates.
 2. [](#improved)
    * Grouped the Admin2 editor into native collapsible Profile, Appearance,
      Social & Contact Actions, and Links sections.
+   * Added translated native help text to each main plugin configuration group.
    * Replaced normal collection-header IDs with human-readable Action and Link
      labels while preserving the durable internal identities.
    * Added responsive preview/editor behavior for desktop, tablet, and mobile.
+   * Corrected profile-image upload and media-path resolution across English
+     and Greek, with a clean initial-avatar fallback for invalid or missing
+     images and safe after-Save behavior for new binary uploads.
    * Kept translated labels attached to the same Link and Action IDs so
      analytics aggregate across languages.
    * Restricted redirects to normalized configured destinations and rejected

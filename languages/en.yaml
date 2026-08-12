@@ -10,6 +10,7 @@ ICU:
     ROUTE: Public route
     ROUTE_HELP: Choose the URL path for the single public Link in Bio page.
     PROFILE_SECTION: Profile
+    PROFILE_SECTION_HELP: Configure the shared profile image and primary website destination.
     PROFILE_IMAGE: Profile image
     PROFILE_IMAGE_HELP: Upload one JPEG, PNG or WebP image. SVG files are not accepted.
     PROFILE_NAME: Name or brand
@@ -21,6 +22,7 @@ ICU:
     PROFILE_WEBSITE_URL: Website URL
     PROFILE_WEBSITE_URL_HELP: An optional link to the primary website.
     APPEARANCE_SECTION: Appearance
+    APPEARANCE_SECTION_HELP: Choose the visual style used across all language versions of your public profile.
     THEME: Theme
     THEME_HELP: Select one of the three included FREE themes.
     THEME_LIGHT: Light
@@ -39,6 +41,7 @@ ICU:
     BUTTON_ROUNDED: Rounded
     BUTTON_PILL: Pill
     ACTIONS_SECTION: Social and contact actions
+    ACTIONS_SECTION_HELP: Add social profiles and direct contact methods such as email, phone and messaging.
     ACTIONS: Actions
     ACTIONS_HELP: Add social profiles and direct contact actions.
     ADD_ACTION: Add action
@@ -59,6 +62,7 @@ ICU:
     ACTION_PHONE: Phone
     ACTION_WHATSAPP: WhatsApp
     LINKS_SECTION: Links
+    LINKS_SECTION_HELP: Add, reorder and manage the primary links displayed on your public profile.
     NATIVE_PAGE_NOTICE: Public page content
     NATIVE_PAGE_NOTICE_HELP: Public content, route and translations are managed from the Goosialize Links Page under Pages.
     PAGE_EDITOR_TITLE: Goosialize Links Page

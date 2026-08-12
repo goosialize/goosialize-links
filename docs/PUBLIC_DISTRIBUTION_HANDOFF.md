@@ -10,8 +10,9 @@ release-candidate distribution. It does not authorize publication.
 - Version/tag: `1.0.0-rc.1`
 - Release title: `Goosialize Links 1.0.0-rc.1`
 - Description: Self-hosted multilingual Link-in-Bio plugin for Grav CMS with a
-  responsive Admin2 editor and real-template preview, tracked links, aggregate
-  analytics, and one tracked QR code.
+  native EN/EL Page workflow, physical Page route ownership, authenticated
+  realtime preview for shared settings, tracked links, aggregate analytics,
+  profile-image fallback, and one tracked QR code.
 - License: MIT
 - Compatibility: Grav 2.0.12; PHP 8.3+
 
@@ -26,15 +27,17 @@ release-candidate distribution. It does not authorize publication.
 ## Download contract
 
 - Asset: `goosialize-links-1.0.0-rc.1.zip`
-- SHA-256: `2dff325324a84744027e8fc11026996bbfb390a9142822954b1d152db2e19868`
+- Checksum artifact: `goosialize-links-1.0.0-rc.1.zip.sha256`, generated after
+  the packaged documentation is frozen
 - GitHub download URL: available only after repository, tag, and release exist
 - goosialize.com download URL: pending approved product/download architecture
 
 ## Publication checks
 
-- [ ] Configure the canonical GitHub remote
-- [ ] Merge and tag only after explicit approval
-- [ ] Push the reviewed commit and tag
+- [x] Configure the canonical GitHub remote
+- [x] Merge the approved release candidate to local `main`
+- [ ] Push the reviewed local `main` only after explicit approval
+- [ ] Create and push tag only after explicit approval
 - [ ] Create the GitHub release from the repository-owned release notes
 - [ ] Attach the exact deterministic asset
 - [ ] Download the public asset and independently verify SHA-256

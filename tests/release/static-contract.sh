@@ -61,6 +61,9 @@ for name in (
     field = fields[name]
     assert field["type"] == "fieldset"
     assert field["collapsible"] is True
+    help_field = field["fields"][f"{name}_help"]
+    assert help_field["type"] == "display"
+    assert help_field["content"] == f"PLUGIN_GOOSIALIZE_LINKS.{name.upper()}_HELP"
 
 assert fields["actions_section"]["fields"]["actions"]["key"] == "type"
 assert fields["links_section"]["fields"]["links"]["key"] == "url"
@@ -105,8 +108,29 @@ for language in ("en", "el"):
         "OPEN_PUBLIC_PAGE", "PUBLIC_WEBSITE", "PUBLIC_ACTIONS", "PUBLIC_LINKS",
         "PREVIEW_UPDATING", "PREVIEW_UNSAVED",
         "PREVIEW_IMAGE_AFTER_SAVE",
+        "PROFILE_SECTION_HELP", "APPEARANCE_SECTION_HELP",
+        "ACTIONS_SECTION_HELP", "LINKS_SECTION_HELP",
     ):
         assert owned[key]
+
+expected_group_help = {
+    "en": {
+        "PROFILE_SECTION_HELP": "Configure the shared profile image and primary website destination.",
+        "APPEARANCE_SECTION_HELP": "Choose the visual style used across all language versions of your public profile.",
+        "ACTIONS_SECTION_HELP": "Add social profiles and direct contact methods such as email, phone and messaging.",
+        "LINKS_SECTION_HELP": "Add, reorder and manage the primary links displayed on your public profile.",
+    },
+    "el": {
+        "PROFILE_SECTION_HELP": "Ρυθμίστε την κοινή εικόνα προφίλ και τον κύριο προορισμό ιστοσελίδας.",
+        "APPEARANCE_SECTION_HELP": "Επιλέξτε την εμφάνιση που χρησιμοποιείται σε όλες τις γλωσσικές εκδόσεις του δημόσιου προφίλ.",
+        "ACTIONS_SECTION_HELP": "Προσθέστε social profiles και άμεσους τρόπους επικοινωνίας όπως email, τηλέφωνο και messaging.",
+        "LINKS_SECTION_HELP": "Προσθέστε, ταξινομήστε και διαχειριστείτε τους βασικούς συνδέσμους του δημόσιου προφίλ.",
+    },
+}
+for language, expected in expected_group_help.items():
+    translations = yaml.safe_load(Path(f"languages/{language}.yaml").read_text())
+    owned = translations["ICU"]["PLUGIN_GOOSIALIZE_LINKS"]
+    assert {key: owned[key] for key in expected} == expected
 
 print("Native collapsible fieldsets = PASS")
 print("Human-readable list keys = PASS")

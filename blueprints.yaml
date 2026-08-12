@@ -55,6 +55,10 @@ form:
       collapsible: true
       collapsed: false
       fields:
+        profile_section_help:
+          type: display
+          content: PLUGIN_GOOSIALIZE_LINKS.PROFILE_SECTION_HELP
+
         profile.image:
           type: file
           label: PLUGIN_GOOSIALIZE_LINKS.PROFILE_IMAGE
@@ -90,6 +94,10 @@ form:
       collapsible: true
       collapsed: true
       fields:
+        appearance_section_help:
+          type: display
+          content: PLUGIN_GOOSIALIZE_LINKS.APPEARANCE_SECTION_HELP
+
         appearance.theme:
           type: select
           label: PLUGIN_GOOSIALIZE_LINKS.THEME
@@ -128,6 +136,10 @@ form:
       collapsible: true
       collapsed: true
       fields:
+        actions_section_help:
+          type: display
+          content: PLUGIN_GOOSIALIZE_LINKS.ACTIONS_SECTION_HELP
+
         actions:
           type: list
           label: PLUGIN_GOOSIALIZE_LINKS.ACTIONS
@@ -187,6 +199,10 @@ form:
       collapsible: true
       collapsed: true
       fields:
+        links_section_help:
+          type: display
+          content: PLUGIN_GOOSIALIZE_LINKS.LINKS_SECTION_HELP
+
         links:
           type: list
           label: PLUGIN_GOOSIALIZE_LINKS.LINKS
