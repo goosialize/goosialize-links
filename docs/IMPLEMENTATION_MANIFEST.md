@@ -28,10 +28,12 @@ Locked identity:
 - Plugin slug: `goosialize-links`
 - Main plugin class file: `goosialize-links.php`
 - Initial edition: FREE
-- FREE v1 release-candidate version: `1.0.0-rc.1`
+- FREE v1 stable version: `1.0.0`
 - FREE core license: MIT
 - Target Grav baseline: 2.0.12
 - Target runtime family: PHP 8.3+
+- Minimum Admin2 version: 2.0.15
+- Minimum API plugin version: 1.0.12
 - Default public route: `/bio`
 
 ## 4. Planned Root Files

@@ -1,5 +1,19 @@
 # Changelog
 
+# 1.0.0
+## 08/12/2026
+
+1. [](#new)
+   * Released the stable Goosialize Links FREE v1 experience with one
+     mobile-first Link-in-Bio profile, Links, social/contact Actions, aggregate
+     analytics, and one tracked QR code.
+   * Included native Grav multilingual Pages with English and Greek content,
+     non-destructive provisioning, and authenticated realtime Admin2 preview.
+2. [](#improved)
+   * Finalized shared profile-image handling, permissions and privacy
+     boundaries, deterministic packaging, and explicit supported dependency
+     floors for Grav, Admin2, API, and PHP.
+
 # 1.0.0-rc.1
 ## 08/12/2026
 

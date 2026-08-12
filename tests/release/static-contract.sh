@@ -214,7 +214,7 @@ if bp.get("slug") != "goosialize-links":
 if bp.get("type") != "plugin":
     raise SystemExit("Invalid package type")
 
-if bp.get("version") != "1.0.0-rc.1":
+if bp.get("version") != "1.0.0":
     raise SystemExit("Unexpected release-candidate version")
 
 if bp.get("license") != "MIT":
@@ -265,7 +265,7 @@ if support.get("docs") != repository + "#readme":
 changelog = Path("CHANGELOG.md").read_text()
 
 for marker in (
-    "# 1.0.0-rc.1",
+    "# 1.0.0",
     "## 08/12/2026",
     "[](#new)",
     "[](#improved)",
@@ -274,7 +274,7 @@ for marker in (
         raise SystemExit(f"Missing Grav changelog marker: {marker}")
 
 for path in (
-    "docs/RELEASE_NOTES_1.0.0-rc.1.md",
+    "docs/RELEASE_NOTES_1.0.0.md",
     "docs/PUBLIC_DISTRIBUTION_HANDOFF.md",
 ):
     if not Path(path).is_file():
@@ -297,8 +297,25 @@ if platform != "8.3.0":
         "Composer PHP platform must remain 8.3.0"
     )
 
+requires = composer.get("require", {})
+if requires.get("php") != ">=8.3":
+    raise SystemExit("Composer PHP requirement must be >=8.3")
+
+dependencies = {
+    item.get("name"): item.get("version")
+    for item in bp.get("dependencies", [])
+}
+expected_dependencies = {
+    "grav": ">=2.0.12",
+    "admin2": ">=2.0.15",
+    "api": ">=1.0.12",
+}
+if dependencies != expected_dependencies:
+    raise SystemExit("Stable dependency contract mismatch")
+
 print("Plugin identity       = PASS")
-print("RC version            = 1.0.0-rc.1")
+print("Stable version        = 1.0.0")
+print("Dependency contract   = PASS")
 print("FREE core license     = MIT")
 print("Public repository     = LOCKED")
 print("Grav changelog format = PASS")

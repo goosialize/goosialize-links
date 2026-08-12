@@ -1,48 +1,34 @@
 # Public Distribution Handoff
 
-This document defines the inputs for the future GitHub and goosialize.com FREE
-release-candidate distribution. It does not authorize publication.
+This document prepares the future stable GitHub, GPM, and goosialize.com
+distribution. It does not authorize publication.
 
 ## Release identity
 
 - Product: Goosialize Links
-- Edition badge: FREE
-- Version/tag: `1.0.0-rc.1`
-- Release title: `Goosialize Links 1.0.0-rc.1`
-- Description: Self-hosted multilingual Link-in-Bio plugin for Grav CMS with a
-  native EN/EL Page workflow, physical Page route ownership, authenticated
-  realtime preview for shared settings, tracked links, aggregate analytics,
-  profile-image fallback, and one tracked QR code.
+- Edition: FREE
+- Version/tag/title: `1.0.0`
 - License: MIT
-- Compatibility: Grav 2.0.12; PHP 8.3+
-
-## Canonical public URLs
-
+- Compatibility: Grav `>=2.0.12`, PHP `>=8.3`, Admin2 `>=2.0.15`, API `>=1.0.12`
 - Source: <https://github.com/goosialize/goosialize-links>
-- Releases: <https://github.com/goosialize/goosialize-links/releases>
 - Documentation: <https://github.com/goosialize/goosialize-links#readme>
-- Release notes: `docs/RELEASE_NOTES_1.0.0-rc.1.md`
-- Product page: **PENDING** — no goosialize.com slug is approved
+- Issues: <https://github.com/goosialize/goosialize-links/issues>
+- Stable release notes: `docs/RELEASE_NOTES_1.0.0.md`
 
 ## Download contract
 
-- Asset: `goosialize-links-1.0.0-rc.1.zip`
-- Checksum artifact: `goosialize-links-1.0.0-rc.1.zip.sha256`, generated after
-  the packaged documentation is frozen
-- GitHub download URL: available only after repository, tag, and release exist
-- goosialize.com download URL: pending approved product/download architecture
+- Future asset: `goosialize-links-1.0.0.zip`
+- Future checksum: `goosialize-links-1.0.0.zip.sha256`
+- Checksum value: generated only after packaged documentation is frozen
+- GitHub stable release URL: pending publication
+- Product page and goosialize.com download URL: pending business approval
 
-## Publication checks
+## Pending decisions and actions
 
-- [x] Configure the canonical GitHub remote
-- [x] Merge the approved release candidate to local `main`
-- [ ] Push the reviewed local `main` only after explicit approval
-- [ ] Create and push tag only after explicit approval
-- [ ] Create the GitHub release from the repository-owned release notes
-- [ ] Attach the exact deterministic asset
-- [ ] Download the public asset and independently verify SHA-256
-- [ ] Approve the goosialize.com product-page slug
-- [ ] Add FREE badge, compatibility, license, source, documentation, changelog,
-      download, and checksum information to the product page
-- [ ] Verify the goosialize.com download resolves to the approved artifact
-- [ ] Submit to Grav GPM only after the public repository and release exist
+- Commit and push the reviewed stable metadata
+- Create and push bare numeric tag `1.0.0`
+- Create the GitHub stable release and attach the exact ZIP and sidecar
+- Independently download and verify the public stable asset
+- Submit the stable repository through Grav's `[add-resource]` process
+- Decide the goosialize.com product slug, primary binary source,
+  documentation destination, checksum presentation, and support destination

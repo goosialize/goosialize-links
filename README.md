@@ -5,7 +5,7 @@ creates one mobile-first public link page on your own website, with tracked
 links and actions, privacy-preserving aggregate analytics, and one tracked QR
 code.
 
-Release candidate: `1.0.0-rc.1`.
+Stable release: `1.0.0`.
 
 - Source: <https://github.com/goosialize/goosialize-links>
 - Releases: <https://github.com/goosialize/goosialize-links/releases>
@@ -17,8 +17,12 @@ Release candidate: `1.0.0-rc.1`.
 - Grav 2.0.12
 - PHP 8.3 or newer
 - Grav Admin2
+- Admin2 2.0.15 or newer
+- Grav API plugin 1.0.12 or newer
 
-Compatibility claims are limited to the tested Grav 2.0.12 baseline.
+These are enforced release dependencies. Install or update Grav, Admin2, and
+the API plugin before enabling Goosialize Links when installing manually.
+Compatibility claims are limited to these tested minimums.
 
 ## Installation
 
