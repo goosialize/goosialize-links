@@ -9,8 +9,9 @@ release-candidate distribution. It does not authorize publication.
 - Edition badge: FREE
 - Version/tag: `1.0.0-rc.1`
 - Release title: `Goosialize Links 1.0.0-rc.1`
-- Description: Self-hosted Link-in-Bio plugin for Grav CMS with tracked links,
-  aggregate analytics, and one tracked QR code.
+- Description: Self-hosted multilingual Link-in-Bio plugin for Grav CMS with a
+  responsive Admin2 editor and real-template preview, tracked links, aggregate
+  analytics, and one tracked QR code.
 - License: MIT
 - Compatibility: Grav 2.0.12; PHP 8.3+
 
@@ -25,7 +26,7 @@ release-candidate distribution. It does not authorize publication.
 ## Download contract
 
 - Asset: `goosialize-links-1.0.0-rc.1.zip`
-- SHA-256: `33cd0ddabcda9c6b1bd38850b058b5dd9e2c7ee9386452d797e3685aafff3bfa`
+- SHA-256: `2dff325324a84744027e8fc11026996bbfb390a9142822954b1d152db2e19868`
 - GitHub download URL: available only after repository, tag, and release exist
 - goosialize.com download URL: pending approved product/download architecture
 

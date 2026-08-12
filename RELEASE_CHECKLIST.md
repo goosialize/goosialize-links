@@ -10,6 +10,9 @@ Release candidate: `1.0.0-rc.1`
 - [x] FREE/PAID boundary documented and tested
 - [x] Automated release gates pass on Grav 2.0.12
 - [x] P9 human-browser acceptance passed
+- [x] UX1 responsive Admin2 preview/editor browser acceptance passed
+- [x] English and Greek public-content and routing acceptance passed
+- [x] Stable cross-language Link/Action identity and analytics verified
 - [x] Deterministic package reproducibility verified
 - [x] Clean package installation and runtime behavior verified
 - [x] Authorized and unauthorized permission paths verified
@@ -19,7 +22,7 @@ Release candidate: `1.0.0-rc.1`
 
 ## Public distribution pending
 
-- [ ] Canonical GitHub remote configured
+- [x] Canonical GitHub remote configured
 - [ ] Release branch merged to `main` by explicit approval
 - [ ] Tag `1.0.0-rc.1` created
 - [ ] Release branch and tag pushed
@@ -32,7 +35,7 @@ Release candidate: `1.0.0-rc.1`
 - [ ] Final `1.0.0` promotion reviewed after RC acceptance
 
 RC package SHA-256:
-`33cd0ddabcda9c6b1bd38850b058b5dd9e2c7ee9386452d797e3685aafff3bfa`
+`2dff325324a84744027e8fc11026996bbfb390a9142822954b1d152db2e19868`
 
 Merge, tag, GitHub release, GPM, website, and publication steps remain pending
 until separately authorized.

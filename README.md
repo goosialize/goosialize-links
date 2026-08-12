@@ -44,6 +44,23 @@ Open **Plugins → Goosialize Links** in Admin2 to configure:
 - social/contact actions;
 - up to eight active HTTP or HTTPS links.
 
+The editor uses four native collapsible groups: **Profile**, **Appearance**,
+**Social & Contact Actions**, and **Links**. Action and Link collection headers
+use their human-readable labels or titles; durable internal IDs remain hidden
+from the normal editor presentation.
+
+On desktop, the editor places a sticky preview of the real public template
+beside the configuration form. Smaller screens use a single-column layout.
+**Refresh Preview** reloads the saved public page without reloading Admin2,
+**Open Public Page** opens its same-origin route, and a successful Save refreshes
+the preview automatically. Unsaved changes are not rendered in real time.
+
+When Grav multilingual support is enabled, profile text, Action labels, and
+Link titles can have language-specific values. English and Greek are supported
+by the plugin UI and public-content foundation. URLs, tracking routes, and
+durable Link and Action IDs remain shared across languages, so analytics
+aggregate by stable identity instead of translated labels.
+
 Each link and action has a durable internal ID. Keep these IDs stable when
 editing or reordering items so their aggregate analytics remain associated
 with the same item.

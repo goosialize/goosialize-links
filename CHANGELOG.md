@@ -19,9 +19,21 @@
    * Added a dedicated read-only QR permission and authenticated API
      boundaries.
    * Added English and Greek Admin2 translations.
+   * Added English and Greek public profile content with language-aware public
+     routes and fallback to existing single-language values.
+   * Added a same-origin preview of the real public template with manual
+     refresh, Save-triggered refresh, language selection, and a safe public-page
+     link.
    * Added deterministic release packaging and clean Grav 2.0.12 acceptance
      gates.
 2. [](#improved)
+   * Grouped the Admin2 editor into native collapsible Profile, Appearance,
+     Social & Contact Actions, and Links sections.
+   * Replaced normal collection-header IDs with human-readable Action and Link
+     labels while preserving the durable internal identities.
+   * Added responsive preview/editor behavior for desktop, tablet, and mobile.
+   * Kept translated labels attached to the same Link and Action IDs so
+     analytics aggregate across languages.
    * Restricted redirects to normalized configured destinations and rejected
      unsafe or injected redirect targets.
    * Limited analytics storage to anonymous daily aggregate counters; visitor
