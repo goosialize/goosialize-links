@@ -8,7 +8,7 @@
         "link-in-bio",
         "self-hosted"
     ],
-    "homepage": "https://goosialize.com",
+    "homepage": "https://github.com/goosialize/goosialize-links",
     "license": "MIT",
     "authors": [
         {
@@ -19,7 +19,10 @@
         }
     ],
     "support": {
-        "email": "agency@goosialize.com"
+        "email": "agency@goosialize.com",
+        "issues": "https://github.com/goosialize/goosialize-links/issues",
+        "source": "https://github.com/goosialize/goosialize-links",
+        "docs": "https://github.com/goosialize/goosialize-links#readme"
     },
     "autoload": {
         "psr-4": {

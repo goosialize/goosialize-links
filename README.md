@@ -7,6 +7,11 @@ code.
 
 Release candidate: `1.0.0-rc.1`.
 
+- Source: <https://github.com/goosialize/goosialize-links>
+- Releases: <https://github.com/goosialize/goosialize-links/releases>
+- Documentation: <https://github.com/goosialize/goosialize-links#readme>
+- Product page: pending; no goosialize.com product-page slug has been approved
+
 ## Requirements
 
 - Grav 2.0.12

@@ -8,7 +8,9 @@ author:
   name: Goosialize Ltd
   email: agency@goosialize.com
   url: https://goosialize.com
-homepage: https://goosialize.com
+homepage: https://github.com/goosialize/goosialize-links
+bugs: https://github.com/goosialize/goosialize-links/issues
+docs: https://github.com/goosialize/goosialize-links#readme
 keywords: grav, plugin, link in bio, self-hosted
 license: MIT
 dependencies:

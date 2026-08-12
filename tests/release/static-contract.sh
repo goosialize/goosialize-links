@@ -121,6 +121,17 @@ if bp.get("version") != "1.0.0-rc.1":
 if bp.get("license") != "MIT":
     raise SystemExit("Blueprint license must be MIT")
 
+repository = "https://github.com/goosialize/goosialize-links"
+
+if bp.get("homepage") != repository:
+    raise SystemExit("Canonical blueprint homepage missing")
+
+if bp.get("bugs") != repository + "/issues":
+    raise SystemExit("Canonical blueprint issues URL missing")
+
+if bp.get("docs") != repository + "#readme":
+    raise SystemExit("Canonical blueprint docs URL missing")
+
 compat = bp.get("compatibility", {})
 
 if "2.0" not in compat.get("grav", []):
@@ -137,6 +148,38 @@ composer = json.loads(
 
 if composer.get("license") != "MIT":
     raise SystemExit("Composer license must be MIT")
+
+if composer.get("homepage") != repository:
+    raise SystemExit("Canonical Composer homepage missing")
+
+support = composer.get("support", {})
+
+if support.get("source") != repository:
+    raise SystemExit("Canonical Composer source URL missing")
+
+if support.get("issues") != repository + "/issues":
+    raise SystemExit("Canonical Composer issues URL missing")
+
+if support.get("docs") != repository + "#readme":
+    raise SystemExit("Canonical Composer docs URL missing")
+
+changelog = Path("CHANGELOG.md").read_text()
+
+for marker in (
+    "# 1.0.0-rc.1",
+    "## 08/12/2026",
+    "[](#new)",
+    "[](#improved)",
+):
+    if marker not in changelog:
+        raise SystemExit(f"Missing Grav changelog marker: {marker}")
+
+for path in (
+    "docs/RELEASE_NOTES_1.0.0-rc.1.md",
+    "docs/PUBLIC_DISTRIBUTION_HANDOFF.md",
+):
+    if not Path(path).is_file():
+        raise SystemExit(f"Missing distribution document: {path}")
 
 license_text = Path("LICENSE").read_text()
 
@@ -158,6 +201,8 @@ if platform != "8.3.0":
 print("Plugin identity       = PASS")
 print("RC version            = 1.0.0-rc.1")
 print("FREE core license     = MIT")
+print("Public repository     = LOCKED")
+print("Grav changelog format = PASS")
 print("Grav compatibility    = 2.0")
 print("API compatibility     = UNCLAIMED")
 print("Composer PHP platform = 8.3.0")

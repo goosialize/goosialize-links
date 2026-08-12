@@ -86,6 +86,14 @@ if "version: 1.0.0-rc.1" not in blueprint:
 if composer_json.get("license") != "MIT":
     raise SystemExit("Packaged Composer license must be MIT")
 
+repository = "https://github.com/goosialize/goosialize-links"
+
+if composer_json.get("homepage") != repository:
+    raise SystemExit("Packaged canonical homepage is invalid")
+
+if repository not in payloads["goosialize-links/README.md"].decode():
+    raise SystemExit("Packaged README lacks canonical source URL")
+
 if "Copyright (c) 2026 Goosialize Ltd" not in license_text:
     raise SystemExit("Packaged MIT license identity is invalid")
 
