@@ -267,6 +267,10 @@
 
     installRealtimePreview() {
       const schedule = (event) => {
+        if (event.target instanceof HTMLInputElement && event.target.type === 'file') {
+          this.status.textContent = this.translate('PREVIEW_IMAGE_AFTER_SAVE');
+          return;
+        }
         const path = this.fieldPath(event.target);
         if (!path) return;
         this.setDraftValue(path, this.fieldValue(event.target));

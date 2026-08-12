@@ -70,6 +70,7 @@ assert fields["actions_section"]["fields"]["actions"]["fields"][".translations"]
 assert fields["links_section"]["fields"]["links"]["fields"][".translations"]["type"] == "hidden"
 assert fields["editor_preview"]["type"] == "goosialize-links-preview"
 assert fields["editor_preview"]["label"] == "PLUGIN_GOOSIALIZE_LINKS.LIVE_PREVIEW"
+assert fields["profile_section"]["fields"]["profile.image"]["destination"] == "user://media/goosialize-links/profile"
 
 preview = Path("admin-next/fields/goosialize-links-preview.js").read_text()
 controller = Path("classes/EditorPreviewController.php").read_text()
@@ -94,6 +95,7 @@ assert "method: 'DELETE'" in preview
 assert "goosialize-links-preview-token" in preview
 assert "SESSION_KEY" in controller
 assert "PREVIEW_UPDATING" in controller and "PREVIEW_UNSAVED" in controller
+assert "PREVIEW_IMAGE_AFTER_SAVE" in controller
 
 for language in ("en", "el"):
     translations = yaml.safe_load(Path(f"languages/{language}.yaml").read_text())
@@ -102,6 +104,7 @@ for language in ("en", "el"):
         "PREVIEW", "LIVE_PREVIEW", "PREVIEW_LANGUAGE", "REFRESH_PREVIEW",
         "OPEN_PUBLIC_PAGE", "PUBLIC_WEBSITE", "PUBLIC_ACTIONS", "PUBLIC_LINKS",
         "PREVIEW_UPDATING", "PREVIEW_UNSAVED",
+        "PREVIEW_IMAGE_AFTER_SAVE",
     ):
         assert owned[key]
 

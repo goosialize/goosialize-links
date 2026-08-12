@@ -59,7 +59,7 @@ form:
           type: file
           label: PLUGIN_GOOSIALIZE_LINKS.PROFILE_IMAGE
           help: PLUGIN_GOOSIALIZE_LINKS.PROFILE_IMAGE_HELP
-          destination: user/media/goosialize-links/profile
+          destination: user://media/goosialize-links/profile
           multiple: false
           limit: 1
           random_name: true

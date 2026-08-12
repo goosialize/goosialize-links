@@ -53,6 +53,7 @@ use Goosialize\Links\NativePageLocator;
 use Goosialize\Links\NativePageProvisioner;
 use Goosialize\Links\PublicPageExperienceNormalizer;
 use Goosialize\Links\PublicPageViewModelFactory;
+use Goosialize\Links\ProfileImageResolver;
 use Goosialize\Links\QrCodeGenerator;
 use Goosialize\Links\SocialActionNormalizer;
 use Goosialize\Links\TrackingRouteResolver;
@@ -420,6 +421,42 @@ expectException(
 expectException(
     static fn () => (new EditorPreviewState())->merge(['appearance' => ['custom_css' => 'body{}']], $previewSaved),
     'Unsupported preview field rejected'
+);
+
+echo "\n--- profile image resolution ---\n";
+$imageRoot = sys_get_temp_dir() . '/goosialize-links-images-' . bin2hex(random_bytes(6));
+mkdir($imageRoot . '/media/goosialize-links/profile', 0775, true);
+mkdir($imageRoot . '/user/media/goosialize-links/profile', 0775, true);
+file_put_contents($imageRoot . '/media/goosialize-links/profile/logo mark.png', 'png');
+file_put_contents($imageRoot . '/user/media/goosialize-links/profile/legacy.png', 'png');
+$imageResolver = new ProfileImageResolver($imageRoot);
+$savedImage = $imageResolver->resolve([
+    'user/media/goosialize-links/profile/logo mark.png' => [
+        'name' => 'Logo Mark.png',
+        'type' => 'image/png',
+        'path' => 'user/media/goosialize-links/profile/logo mark.png',
+    ],
+]);
+$legacyImage = $imageResolver->resolve([
+    'user/user/media/goosialize-links/profile/legacy.png' => [
+        'type' => 'image/png',
+        'path' => 'user/user/media/goosialize-links/profile/legacy.png',
+    ],
+]);
+check(
+    ($savedImage['stream'] ?? null) === 'user://media/goosialize-links/profile/logo mark.png' &&
+    ($savedImage['filename'] ?? null) === 'logo mark.png',
+    'Saved Profile image stream resolution'
+);
+check(
+    ($legacyImage['stream'] ?? null) === 'user://user/media/goosialize-links/profile/legacy.png',
+    'Legacy duplicated Profile image path compatibility'
+);
+check(
+    $imageResolver->resolve(['missing.png' => ['type' => 'image/png']]) === null &&
+    $imageResolver->resolve(['../unsafe.png' => ['type' => 'image/png']]) === null &&
+    $imageResolver->resolve(['https://example.com/image.png' => ['type' => 'image/png']]) === null,
+    'Missing and unsafe Profile images use fallback'
 );
 
 echo "\n--- analytics storage ---\n";

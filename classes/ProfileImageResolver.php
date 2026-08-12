@@ -28,6 +28,11 @@ final class ProfileImageResolver
         'image/webp',
     ];
 
+    public function __construct(
+        private readonly ?string $userRoot = null
+    ) {
+    }
+
     /**
      * @return array{
      *     stream: string,
@@ -127,13 +132,24 @@ final class ProfileImageResolver
             $path = self::DIRECTORY . $path;
         }
 
-        if (!str_starts_with($path, self::DIRECTORY)) {
+        $legacyDuplicate = str_starts_with(
+            $path,
+            'user/' . self::DIRECTORY
+        );
+
+        if (
+            !str_starts_with($path, self::DIRECTORY) &&
+            !$legacyDuplicate
+        ) {
             return null;
         }
 
         $filename = basename($path);
 
-        if ($path !== self::DIRECTORY . $filename) {
+        $expected = ($legacyDuplicate ? 'user/' : '') .
+            self::DIRECTORY . $filename;
+
+        if ($path !== $expected) {
             return null;
         }
 
@@ -154,9 +170,25 @@ final class ProfileImageResolver
             return null;
         }
 
+        $userRoot = $this->userRoot;
+        if ($userRoot === null && defined('GRAV_ROOT')) {
+            $userRoot = GRAV_ROOT . '/user';
+        }
+
+        $relative = ($legacyDuplicate ? 'user/' : '') .
+            'media/goosialize-links/profile/' . $filename;
+
+        if (
+            $userRoot !== null &&
+            !is_file(rtrim($userRoot, '/') . '/' . $relative)
+        ) {
+            return null;
+        }
+
         return [
             'stream' =>
-                'user://media/goosialize-links/profile/' .
+                'user://' . ($legacyDuplicate ? 'user/' : '') .
+                'media/goosialize-links/profile/' .
                 $filename,
             'filename' => $filename,
         ];

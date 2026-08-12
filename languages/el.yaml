@@ -77,6 +77,7 @@ ICU:
     PREVIEW_ERROR: Δεν ήταν δυνατή η φόρτωση της προεπισκόπησης.
     PREVIEW_UPDATING: Ενημέρωση…
     PREVIEW_UNSAVED: Προεπισκόπηση μη αποθηκευμένων αλλαγών
+    PREVIEW_IMAGE_AFTER_SAVE: Η εικόνα ενημερώνεται μετά την αποθήκευση
     CONTENT_LANGUAGE: Κωδικός γλώσσας
     PROFILE_TRANSLATIONS: Μεταφρασμένο περιεχόμενο προφίλ
     PROFILE_TRANSLATIONS_HELP: Προαιρετικό κείμενο ανά γλώσσα. Οι κενές τιμές χρησιμοποιούν τα κύρια πεδία προφίλ.

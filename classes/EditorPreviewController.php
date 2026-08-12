@@ -184,6 +184,7 @@ final class EditorPreviewController extends AbstractApiController
             'PREVIEW_ERROR',
             'PREVIEW_UPDATING',
             'PREVIEW_UNSAVED',
+            'PREVIEW_IMAGE_AFTER_SAVE',
             'NEW_ACTION',
             'NEW_LINK',
         ] as $name) {
