@@ -100,6 +100,27 @@ stable.
 - Changelog
 - FREE release assets
 
+## Phase 10 — 1.1.0 Business Information
+
+- additive optional `business` configuration;
+- Working Hours for Monday through Sunday;
+- one continuous same-day interval per enabled day;
+- strict 24-hour `HH:MM` validation;
+- deterministic and accessible EN/EL public rendering;
+- optional validated HTTPS Google Maps Directions action;
+- existing `action_click` analytics semantics for Directions;
+- backward-compatible empty defaults with no migration;
+- native Admin2 Business Information section between Profile and Appearance;
+- locked Grav 2.0.12 and current-stack regression coverage.
+
+Deferred beyond 1.1.0:
+
+- split shifts, overnight intervals, exceptions, holidays, and seasons;
+- timezone-aware `Open now` status;
+- appointments and booking;
+- Google APIs, Business Profile synchronization, embedded maps, geocoding,
+  coordinates, visitor location, or map analytics.
+
 ## Future Commercial Addon
 
 Deferred paid functionality includes:

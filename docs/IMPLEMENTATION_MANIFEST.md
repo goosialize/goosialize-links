@@ -359,6 +359,79 @@ Any new top-level directory, runtime dependency, external service, analytics
 event, public route, or cross-plugin dependency requires an explicit manifest
 review before implementation.
 
+## Locked 1.1.0 Business Information Contract
+
+### Configuration ownership
+
+Business Information remains in the existing Grav plugin configuration under
+`business`. It adds no runtime database, external service, dependency, API key,
+public route, or migration state.
+
+The normalized shape is:
+
+```yaml
+business:
+  working_hours:
+    monday: { enabled: true, open: '09:00', close: '18:00' }
+    tuesday: { enabled: true, open: '09:00', close: '18:00' }
+    wednesday: { enabled: true, open: '09:00', close: '18:00' }
+    thursday: { enabled: true, open: '09:00', close: '18:00' }
+    friday: { enabled: true, open: '09:00', close: '18:00' }
+    saturday: { enabled: false }
+    sunday: { enabled: false }
+  google_maps_url: 'https://maps.google.com/...'
+```
+
+The entire subtree is optional. Empty input normalizes to an absent public
+Business Information section. Day ordering is fixed Monday through Sunday.
+Enabled days require strict `HH:MM` values and `open < close`. There is one
+same-day interval only. Admin validation rejects invalid enabled intervals;
+runtime normalization fails malformed days closed and removes stale times from
+disabled days. Missing or empty schedules remain absent, while an explicitly
+persisted all-closed schedule remains configured and may render as closed.
+
+### Implementation boundaries for the next checkpoint
+
+The implementation checkpoint may consider only narrowly necessary changes to:
+
+- `blueprints.yaml` for native Admin2 Business Information fields;
+- `goosialize-links.yaml` for additive empty defaults if required;
+- `classes/BusinessInformationNormalizer.php` as a bounded normalizer;
+- `classes/LinkPageConfigNormalizer.php` for composition;
+- `classes/PublicPageViewModelFactory.php` for display rows and Directions;
+- the existing redirect orchestration for the reserved Directions action;
+- `templates/goosialize-links.html.twig` for accessible public markup;
+- `assets/css/goosialize-links.css` for minimal existing-design integration;
+- `languages/en.yaml` and `languages/el.yaml` for labels;
+- existing release tests needed to enforce the contract.
+
+This is a candidate inventory, not permission to modify all listed files. The
+next checkpoint must inspect the implementation and declare its exact approved
+inventory before editing.
+
+No new API endpoint, public route family, analytics event, dependency, generic
+action type, JavaScript framework, migration, or data store is authorized.
+
+### Analytics and security
+
+Directions uses the existing `action_click` event with the reserved identity
+`action_d1ec710000000000`, which already conforms to the established action ID
+format. Implementation must define this identity once as a named constant; the
+literal must not be scattered through runtime code. The target is derived only
+from the normalized HTTPS Google Maps URL stored in configuration. Working
+Hours are not tracked. No map, coordinate, visitor-location, device, or
+geographic data is collected.
+
+The URL allowlist is limited to `www.google.com/maps/...`,
+`maps.google.com/...`, `maps.app.goo.gl/...`, and `goo.gl/maps/...`. Invalid
+values are rejected by Admin2 and omitted safely by runtime normalization.
+
+### Deferred implementation
+
+Split shifts, overnight hours, exceptions, holidays, seasons, timezone-aware
+live status, bookings, external hours synchronization, embedded maps,
+geocoding, coordinates, and Google APIs remain deferred.
+
 ## Locked Phase 7 QR Implementation Contract
 
 ### Identity

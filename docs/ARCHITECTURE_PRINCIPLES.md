@@ -102,6 +102,64 @@ designed so they can be tested independently from the visual interface.
 Architecture must serve the locked FREE v1 product rather than speculative SaaS
 or multi-tenant requirements.
 
+## Business Information Architecture — 1.1.0 Target
+
+Business Information is an additive optional subtree of the existing single
+page configuration:
+
+```yaml
+business:
+  working_hours:
+    monday:
+      enabled: true
+      open: '09:00'
+      close: '18:00'
+  google_maps_url: 'https://maps.google.com/...'
+```
+
+The canonical day keys are `monday`, `tuesday`, `wednesday`, `thursday`,
+`friday`, `saturday`, and `sunday`, always normalized in that order. Unknown
+keys are rejected. Times use a strict 24-hour `HH:MM` representation. Enabled
+days require a same-day interval with `open < close`; overnight intervals are
+outside 1.1.0. Admin validation rejects invalid enabled intervals. Runtime
+normalization fails malformed days closed and strips inactive time values.
+Disabled days normalize without an active interval.
+
+Missing or empty `business` configuration normalizes to no Working Hours and no
+Directions action. This is additive and requires no schema migration: existing
+1.0.0 configurations, native Pages, analytics files, routes, QR behavior, and
+API contracts remain valid and unchanged.
+
+Schedule presence is explicit rather than inferred from generated weekday
+defaults. An absent or empty schedule produces no section; a persisted schedule
+with all seven days disabled is valid configured data and renders as closed.
+
+The Admin2 order is Profile, Business Information, Appearance, Social and
+Contact Actions, then Links. Business Information uses native Admin2 fields:
+one compact open/closed control and two time fields per day, followed by one
+HTTPS Google Maps URL field. It introduces no custom form framework.
+
+The Maps field accepts only the bounded Google Maps URL forms defined in the
+FREE product contract. Admin validation rejects other values and runtime
+normalization omits an invalid action. This is a validated outbound link, not a
+Google service integration.
+
+The public view model exposes normalized display rows only when configured.
+Twig uses accessible semantic markup, deterministic ordering, translated day
+and closed labels, and may group consecutive identical days for display only.
+Directions is rendered as a map-pin action with a new-tab security boundary.
+
+Directions reuses the existing `action_click` route and storage semantics with
+the reserved durable identity `action_d1ec710000000000`, which conforms to the
+existing `action_[a-f0-9]{16}` identity contract. This identity is plugin-owned,
+is not accepted as a user-created social action ID, and resolves server-side
+only to the validated `business.google_maps_url`. No `directions_click` event
+or analytics schema expansion is allowed.
+
+The current stable release remains 1.0.0. Current main includes post-1.0.0 UX
+improvements; Business Information is targeted for 1.1.0 and does not authorize
+a version bump, tag, package, or release in this contract checkpoint.
+
 ## QR Code Contract
 
 The FREE edition provides one QR code with the durable identifier
