@@ -327,6 +327,7 @@
     installSaveRefresh() {
       if (window.__GOOSIALIZE_LINKS_FETCH_WRAPPED) return;
       const original = window.fetch.bind(window);
+      const configUrl = new URL(apiUrl('/config/plugins/goosialize-links'), window.location.origin);
       window.__GOOSIALIZE_LINKS_FETCH_WRAPPED = true;
       window.fetch = async (...args) => {
         const response = await original(...args);
@@ -334,7 +335,16 @@
         const options = args[1] || {};
         const url = String(request?.url || request || '');
         const method = String(options.method || request?.method || 'GET').toUpperCase();
-        if (response.ok && method === 'PATCH' && url.includes('/plugins/goosialize-links')) {
+        let requestUrl;
+        try {
+          requestUrl = new URL(url, window.location.origin);
+        } catch {
+          return response;
+        }
+        const isConfigSave = method === 'PATCH'
+          && requestUrl.origin === configUrl.origin
+          && requestUrl.pathname === configUrl.pathname;
+        if (response.ok && isConfigSave) {
           const preview = document.querySelector(TAG);
           await preview?.clearPreviewState();
           if (preview) {
@@ -342,6 +352,18 @@
             preview.setStatus('PREVIEW_READY', 'ready');
             await preview.installCollectionLabels();
             preview.applyLanguage();
+          }
+        }
+        if (response.status === 422 && isConfigSave) {
+          try {
+            const payload = await response.clone().json();
+            const fieldMessage = Array.isArray(payload?.errors)
+              ? payload.errors.find((error) => typeof error?.message === 'string')?.message
+              : '';
+            const message = String(fieldMessage || payload?.detail || '').trim();
+            if (message) window.__GRAV_TOAST?.error?.(message, {duration: 0});
+          } catch {
+            // Preserve Admin2's existing generic failure handling for malformed responses.
           }
         }
         return response;
