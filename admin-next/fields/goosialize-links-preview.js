@@ -39,6 +39,7 @@
       this.installLayout();
       this.load().then(async () => {
         await this.installCollectionLabels();
+        this.refineAdminPresentation();
         this.installRealtimePreview();
       });
       this.installSaveRefresh();
@@ -59,7 +60,12 @@
           .gl-preview-host{display:block!important}
           .gl-preview-host>div:first-child{display:none}
           .gl-preview-frame{display:block;width:100%;max-width:420px;height:700px;margin-inline:auto;background:#fff}
-          @media(min-width:1024px){[data-goosialize-links-editor-layout]{display:grid!important;grid-template-columns:minmax(300px,1fr) minmax(0,2fr);gap:1.5rem;align-items:start}[data-goosialize-links-editor-layout]>*{grid-column:2}[data-goosialize-links-editor-layout]>.gl-preview-host{grid-column:1;grid-row:1/span 30;position:sticky;top:5rem}}
+          .gl-preview-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:.375rem}
+          .gl-preview-status{display:inline-flex;align-items:center;gap:.4rem;width:fit-content;border:1px solid var(--border);border-radius:9999px;background:var(--muted);padding:.25rem .625rem}
+          .gl-preview-status::before{content:"";width:.45rem;height:.45rem;border-radius:9999px;background:#22c55e;flex:none}
+          .gl-preview-status[data-state="dirty"]::before,.gl-preview-status[data-state="loading"]::before{background:#f59e0b}
+          .gl-preview-status[data-state="error"]::before{background:#ef4444}
+          @media(min-width:1024px){[data-goosialize-links-editor-layout]{display:grid!important;grid-template-columns:minmax(340px,35fr) minmax(0,65fr);gap:1.25rem;align-items:start}[data-goosialize-links-editor-layout]>*{grid-column:2}[data-goosialize-links-editor-layout]>.gl-preview-host{grid-column:1;grid-row:1/span 30;position:sticky;top:5.5rem;max-height:calc(100vh - 6.5rem);overflow:auto;scrollbar-width:thin}}
           @media(max-width:1023px){.gl-preview-frame{height:620px}}
           @media(max-width:480px){.gl-preview-frame{height:540px}}
         </style>
@@ -72,17 +78,17 @@
             <label class="text-sm font-medium text-foreground" for="gl-preview-language" data-i18n="PREVIEW_LANGUAGE">${t('PREVIEW_LANGUAGE')}</label>
             <select class="flex h-9 w-full rounded-md border border-border bg-background px-3 py-1 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" id="gl-preview-language" data-language></select>
           </div>
-          <div class="flex flex-wrap items-center gap-2">
-            <button class="inline-flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-md border border-border bg-background px-3 text-xs font-medium text-foreground shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" type="button" data-refresh data-i18n="REFRESH_PREVIEW">${t('REFRESH_PREVIEW')}</button>
+          <div class="gl-preview-toolbar">
+            <button class="inline-flex h-8 items-center justify-center gap-1.5 whitespace-nowrap rounded-md border border-border bg-background px-2.5 text-xs font-medium text-foreground shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" type="button" data-refresh><i class="fa-solid fa-rotate" aria-hidden="true"></i><span data-i18n="REFRESH_PREVIEW">${t('REFRESH_PREVIEW')}</span></button>
             <a class="inline-flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-md border border-border bg-background px-3 text-xs font-medium text-foreground no-underline shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" data-open target="_blank" rel="noopener noreferrer">
+              <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
               <span data-i18n="OPEN_PUBLIC_PAGE">${t('OPEN_PUBLIC_PAGE')}</span>
-              <svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M10 14 21 3M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"/></svg>
             </a>
           </div>
           <div class="overflow-hidden rounded-md border border-border bg-muted/30 p-2">
             <iframe class="gl-preview-frame rounded-md border-0" data-frame title="${t('PREVIEW')}" sandbox="allow-same-origin allow-scripts allow-forms"></iframe>
           </div>
-          <p class="text-xs text-muted-foreground" data-status role="status" data-i18n="PREVIEW_LOADING">${t('PREVIEW_LOADING')}</p>
+          <p class="gl-preview-status text-xs text-muted-foreground" data-status data-state="loading" role="status" data-i18n="PREVIEW_LOADING">${t('PREVIEW_LOADING')}</p>
         </section>`;
 
       this.frame = this.querySelector('[data-frame]');
@@ -92,9 +98,10 @@
       this.querySelector('[data-refresh]').addEventListener('click', () => this.refresh());
       this.select.addEventListener('change', () => this.applyLanguage());
       this.frame.addEventListener('load', () => {
-        this.status.textContent = this.hasUnsavedPreview
-          ? this.translate('PREVIEW_UNSAVED')
-          : this.translate('PREVIEW_READY');
+        this.setStatus(
+          this.hasUnsavedPreview ? 'PREVIEW_UNSAVED' : 'PREVIEW_READY',
+          this.hasUnsavedPreview ? 'dirty' : 'ready'
+        );
       });
     }
 
@@ -137,8 +144,13 @@
         }
         this.applyLanguage();
       } catch {
-        this.status.textContent = this.translate('PREVIEW_ERROR');
+        this.setStatus('PREVIEW_ERROR', 'error');
       }
+    }
+
+    setStatus(key, state) {
+      this.status.textContent = this.translate(key);
+      this.status.dataset.state = state;
     }
 
     async installCollectionLabels() {
@@ -191,6 +203,7 @@
               node.nodeValue = node.nodeValue.replace(id, languageLabel);
             }
           }
+          this.updateSectionPresentation(config, actionTypes);
         };
 
         synchronize();
@@ -198,6 +211,79 @@
         this.collectionObserver.observe(document.body, {childList: true, subtree: true});
       } catch {
         // The form remains usable if presentation metadata cannot be loaded.
+      }
+    }
+
+    updateSectionPresentation(config, actionTypes) {
+      const fieldsets = [...document.querySelectorAll('.rounded-xl')];
+      const findSection = (label) => fieldsets.find((item) =>
+        String(item.innerText || '').trim().startsWith(label));
+      const actions = Array.isArray(this.draftConfig?.actions) ? this.draftConfig.actions : (config.actions || []);
+      const links = Array.isArray(this.draftConfig?.links) ? this.draftConfig.links : (config.links || []);
+      const enabled = (value) => value !== false && value !== 0 && value !== '0';
+      const setHeading = (section, value, marker) => {
+        if (!section) return;
+        const heading = [...section.querySelectorAll('h2,h3,h4,legend')].find((item) =>
+          String(item.textContent || '').trim().startsWith(marker));
+        const label = heading && [...heading.querySelectorAll('span')].find((item) =>
+          String(item.textContent || '').trim().startsWith(marker) && !item.querySelector('svg'));
+        if (label && label.textContent !== value) label.textContent = value;
+      };
+      const actionSection = findSection(this.translate('ACTIONS_SECTION')) || findSection('Actions');
+      const linkSection = findSection(this.translate('LINKS_SECTION')) || findSection('Links');
+      setHeading(actionSection, `${this.translate('ACTIONS_SECTION')} · ${actions.length}`, this.translate('ACTIONS_SECTION'));
+      setHeading(linkSection, `${this.translate('LINKS_SECTION')} · ${links.filter((item) => enabled(item.enabled)).length} / 8`, this.translate('LINKS_SECTION'));
+
+      const summaries = (section, items, formatter) => {
+        if (!section) return;
+        const candidates = [...section.querySelectorAll('[data-list-row] > div:first-child > span.flex-1')];
+        candidates.slice(0, items.length).forEach((item, index) => {
+          const summary = formatter(items[index]);
+          if (item.textContent !== summary) item.textContent = summary;
+        });
+      };
+      summaries(actionSection, actions, (action) => {
+        const label = String(action.label || '').trim() || actionTypes[String(action.type || '').toLowerCase()] || this.translate('NEW_ACTION');
+        const type = actionTypes[String(action.type || '').toLowerCase()] || String(action.type || '');
+        return `${label} · ${type} · ${this.translate(enabled(action.enabled) ? 'ENABLED_SUMMARY' : 'DISABLED_SUMMARY')}`;
+      });
+      summaries(linkSection, links, (link) => {
+        let destination = String(link.url || '').trim();
+        try { destination = new URL(destination).hostname || destination; } catch { /* Keep safe display value. */ }
+        const parts = [String(link.title || '').trim() || this.translate('NEW_LINK'), destination];
+        parts.push(this.translate(enabled(link.enabled) ? 'ENABLED_SUMMARY' : 'DISABLED_SUMMARY'));
+        if (enabled(link.new_tab)) parts.push(this.translate('NEW_TAB_SUMMARY'));
+        return parts.filter(Boolean).join(' · ');
+      });
+    }
+
+    refineAdminPresentation() {
+      const notice = [...document.querySelectorAll('p,div')].find((item) =>
+        String(item.textContent || '').trim() === this.translate('NATIVE_PAGE_NOTICE_HELP'));
+      if (notice && !notice.querySelector('[data-manage-public-page]')) {
+        const link = document.createElement('a');
+        link.dataset.managePublicPage = '';
+        link.href = `${String(window.__GRAV_ADMIN_BASE || '/admin').replace(/\/$/, '')}/pages/bio`;
+        link.className = 'inline-flex items-center gap-1 font-medium underline underline-offset-4';
+        link.textContent = this.translate('MANAGE_PUBLIC_PAGE');
+        notice.append(document.createTextNode(' '), link);
+      }
+      const metadataCard = [...document.querySelectorAll('.rounded-xl.border')].find((item) => {
+        const content = String(item.textContent || '');
+        return content.includes('Goosialize Ltd') && content.includes('Documentation');
+      });
+      if (metadataCard) {
+        metadataCard.classList.remove('p-5', 'p-6');
+        metadataCard.classList.add('p-3');
+        metadataCard.querySelectorAll('.mb-4,.mt-4').forEach((item) => {
+          item.classList.remove('mb-4', 'mt-4');
+          item.classList.add('mb-2');
+        });
+      }
+      const form = this.closest('form') || document.querySelector('form');
+      if (form) {
+        form.classList.add('space-y-3');
+        form.querySelectorAll('.rounded-xl').forEach((section) => section.classList.add('shadow-sm'));
       }
     }
 
@@ -234,6 +320,7 @@
       const url = new URL(selected.preview_path, window.location.origin);
       url.searchParams.set('goosialize-links-preview-token', this.previewToken);
       url.searchParams.set('_preview_refresh', String(Date.now()));
+      this.setStatus('PREVIEW_REFRESHING', 'loading');
       this.frame.src = url.href;
     }
 
@@ -252,7 +339,7 @@
           await preview?.clearPreviewState();
           if (preview) {
             preview.hasUnsavedPreview = false;
-            preview.status.textContent = preview.translate('PREVIEW_READY');
+            preview.setStatus('PREVIEW_READY', 'ready');
             await preview.installCollectionLabels();
             preview.applyLanguage();
           }
@@ -268,14 +355,19 @@
     installRealtimePreview() {
       const schedule = (event) => {
         if (event.target instanceof HTMLInputElement && event.target.type === 'file') {
-          this.status.textContent = this.translate('PREVIEW_IMAGE_AFTER_SAVE');
+          this.setStatus('PREVIEW_IMAGE_AFTER_SAVE', 'dirty');
           return;
         }
         const path = this.fieldPath(event.target);
         if (!path) return;
         this.setDraftValue(path, this.fieldValue(event.target));
+        if (this.savedConfig) this.updateSectionPresentation(this.savedConfig, {
+          website: 'Website', instagram: 'Instagram', facebook: 'Facebook',
+          tiktok: 'TikTok', youtube: 'YouTube', linkedin: 'LinkedIn', x: 'X',
+          email: 'Email', phone: 'Phone', whatsapp: 'WhatsApp',
+        });
         clearTimeout(this.previewDebounce);
-        this.status.textContent = this.translate('PREVIEW_UPDATING');
+        this.setStatus('PREVIEW_UPDATING', 'loading');
         this.previewDebounce = setTimeout(() => this.updatePreview(), 350);
       };
       document.addEventListener('input', schedule, true);
@@ -392,7 +484,7 @@
         this.hasUnsavedPreview = true;
         this.applyLanguage();
       } catch {
-        this.status.textContent = this.translate('PREVIEW_ERROR');
+        this.setStatus('PREVIEW_ERROR', 'error');
       }
     }
 

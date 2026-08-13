@@ -77,11 +77,16 @@ ICU:
     REFRESH_PREVIEW: Refresh Preview
     OPEN_PUBLIC_PAGE: Open Public Page
     PREVIEW_LOADING: Loading preview…
-    PREVIEW_READY: Ready
+    PREVIEW_READY: Preview up to date
     PREVIEW_ERROR: Preview could not be loaded.
-    PREVIEW_UPDATING: Updating…
-    PREVIEW_UNSAVED: Unsaved preview
+    PREVIEW_UPDATING: Updating preview…
+    PREVIEW_REFRESHING: Refreshing preview…
+    PREVIEW_UNSAVED: Unsaved changes
     PREVIEW_IMAGE_AFTER_SAVE: Image updates after save
+    MANAGE_PUBLIC_PAGE: Manage public page
+    NEW_TAB_SUMMARY: New tab
+    ENABLED_SUMMARY: Enabled
+    DISABLED_SUMMARY: Disabled
     CONTENT_LANGUAGE: Language code
     PROFILE_TRANSLATIONS: Localized profile content
     PROFILE_TRANSLATIONS_HELP: Optional language-specific text. Empty values fall back to the main profile fields.

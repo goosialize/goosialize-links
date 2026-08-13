@@ -77,11 +77,16 @@ ICU:
     REFRESH_PREVIEW: Ανανέωση προεπισκόπησης
     OPEN_PUBLIC_PAGE: Άνοιγμα δημόσιας σελίδας
     PREVIEW_LOADING: Φόρτωση προεπισκόπησης…
-    PREVIEW_READY: Έτοιμη
+    PREVIEW_READY: Η προεπισκόπηση είναι ενημερωμένη
     PREVIEW_ERROR: Δεν ήταν δυνατή η φόρτωση της προεπισκόπησης.
-    PREVIEW_UPDATING: Ενημέρωση…
-    PREVIEW_UNSAVED: Προεπισκόπηση μη αποθηκευμένων αλλαγών
+    PREVIEW_UPDATING: Ενημέρωση προεπισκόπησης…
+    PREVIEW_REFRESHING: Ανανέωση προεπισκόπησης…
+    PREVIEW_UNSAVED: Μη αποθηκευμένες αλλαγές
     PREVIEW_IMAGE_AFTER_SAVE: Η εικόνα ενημερώνεται μετά την αποθήκευση
+    MANAGE_PUBLIC_PAGE: Διαχείριση δημόσιας σελίδας
+    NEW_TAB_SUMMARY: Νέα καρτέλα
+    ENABLED_SUMMARY: Ενεργό
+    DISABLED_SUMMARY: Ανενεργό
     CONTENT_LANGUAGE: Κωδικός γλώσσας
     PROFILE_TRANSLATIONS: Μεταφρασμένο περιεχόμενο προφίλ
     PROFILE_TRANSLATIONS_HELP: Προαιρετικό κείμενο ανά γλώσσα. Οι κενές τιμές χρησιμοποιούν τα κύρια πεδία προφίλ.
