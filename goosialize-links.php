@@ -6,10 +6,10 @@ namespace Grav\Plugin;
 
 use Grav\Common\Page\Page;
 use Grav\Common\Plugin;
-use Grav\Common\Data\ValidationException;
 use Grav\Framework\Acl\PermissionsReader;
 use Grav\Framework\Acl\PermissionsRegisterEvent;
 use Grav\Framework\Psr7\Response;
+use Grav\Plugin\Api\Exceptions\ValidationException;
 use Goosialize\Links\AnalyticsReportAggregator;
 use Goosialize\Links\AnalyticsStore;
 use Goosialize\Links\BusinessInformationNormalizer;
@@ -181,10 +181,11 @@ final class GoosializeLinksPlugin extends Plugin
                 : 'ICU.PLUGIN_GOOSIALIZE_LINKS.WORKING_HOURS_INVALID';
             $message = (string) $this->grav['language']->translate($key);
 
-            throw (new ValidationException('', 422, $exception))
-                ->setMessages([
-                    'business' => [$message],
-                ]);
+            throw new ValidationException(
+                $message,
+                ['business' => [$message]],
+                $exception
+            );
         }
     }
 
