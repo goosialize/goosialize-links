@@ -46,6 +46,7 @@ require $pluginAutoload;
 
 use Goosialize\Links\AnalyticsReportAggregator;
 use Goosialize\Links\AnalyticsStore;
+use Goosialize\Links\BusinessInformationNormalizer;
 use Goosialize\Links\EditorPreviewState;
 use Goosialize\Links\LinkPageConfigNormalizer;
 use Goosialize\Links\NativePageContentResolver;
@@ -91,6 +92,145 @@ function expectException(
 echo "==============================================\n";
 echo " CORE RUNTIME CONTRACT\n";
 echo "==============================================\n\n";
+
+echo "--- business information normalization ---\n";
+
+$businessNormalizer = new BusinessInformationNormalizer();
+$legacyBusiness = (new LinkPageConfigNormalizer())->normalize([
+    'links' => [],
+]);
+check(
+    $legacyBusiness['business']['working_hours']['configured'] === false &&
+    $legacyBusiness['business']['google_maps_url'] === '' &&
+    array_keys($legacyBusiness['business']['working_hours']['days']) ===
+        BusinessInformationNormalizer::DAYS,
+    'Legacy configuration receives safe business defaults'
+);
+
+$week = [
+    'monday' => ['enabled' => true, 'open' => '09:00', 'close' => '18:00'],
+    'tuesday' => ['enabled' => true, 'open' => '09:00', 'close' => '18:00'],
+    'wednesday' => ['enabled' => true, 'open' => '09:00', 'close' => '18:00'],
+    'thursday' => ['enabled' => true, 'open' => '09:00', 'close' => '18:00'],
+    'friday' => ['enabled' => true, 'open' => '09:00', 'close' => '18:00'],
+    'saturday' => ['enabled' => false, 'open' => 'unsafe', 'close' => 'unsafe'],
+    'sunday' => ['enabled' => false],
+];
+$normalizedBusiness = $businessNormalizer->normalize([
+    'working_hours' => $week,
+    'google_maps_url' => 'https://www.google.com/maps/place/Goosialize',
+]);
+check(
+    $normalizedBusiness['working_hours']['configured'] === true &&
+    array_keys($normalizedBusiness['working_hours']['days']) ===
+        BusinessInformationNormalizer::DAYS &&
+    $normalizedBusiness['working_hours']['days']['monday']['open'] === '09:00' &&
+    $normalizedBusiness['working_hours']['days']['friday']['close'] === '18:00' &&
+    $normalizedBusiness['working_hours']['days']['saturday'] === [
+        'enabled' => false,
+        'open' => '',
+        'close' => '',
+    ],
+    'Canonical working week and closed-day stale values'
+);
+
+$allClosed = $businessNormalizer->normalize([
+    'working_hours' => array_fill_keys(
+        BusinessInformationNormalizer::DAYS,
+        ['enabled' => false]
+    ),
+]);
+check(
+    $allClosed['working_hours']['configured'] === true &&
+    count(array_filter(
+        $allClosed['working_hours']['days'],
+        static fn (array $day): bool => $day['enabled']
+    )) === 0,
+    'Explicit all-closed schedule remains configured'
+);
+
+foreach ([
+    ['enabled' => true, 'open' => '9:00', 'close' => '18:00'],
+    ['enabled' => true, 'open' => '09:00'],
+    ['enabled' => true, 'open' => '09:00', 'close' => '09:00'],
+    ['enabled' => true, 'open' => '18:00', 'close' => '09:00'],
+    ['enabled' => true, 'open' => '24:00', 'close' => '25:00'],
+    ['enabled' => true, 'open' => '12:00', 'close' => '12:60'],
+] as $invalidDay) {
+    expectException(
+        static fn () => $businessNormalizer->validate([
+            'working_hours' => ['monday' => $invalidDay],
+        ]),
+        'Invalid Working Hours interval rejected'
+    );
+}
+
+$failedClosed = $businessNormalizer->normalize([
+    'working_hours' => [
+        'monday' => ['enabled' => true, 'open' => '18:00', 'close' => '09:00'],
+    ],
+]);
+check(
+    $failedClosed['working_hours']['days']['monday']['enabled'] === false &&
+    $failedClosed['working_hours']['days']['monday']['open'] === '' &&
+    $failedClosed['working_hours']['days']['monday']['close'] === '',
+    'Malformed runtime interval fails closed'
+);
+
+expectException(
+    static fn () => $businessNormalizer->normalize([
+        'working_hours' => ['funday' => ['enabled' => false]],
+    ]),
+    'Unknown Working Hours day rejected'
+);
+expectException(
+    static fn () => $businessNormalizer->normalize([
+        'working_hours' => ['monday' => 'closed'],
+    ]),
+    'Malformed Working Hours day rejected'
+);
+
+foreach ([
+    'https://www.google.com/maps/place/Goosialize',
+    'https://maps.google.com/?q=Goosialize',
+    'https://maps.app.goo.gl/abc123',
+    'https://goo.gl/maps/abc123',
+] as $mapsUrl) {
+    $businessNormalizer->validate(['google_maps_url' => $mapsUrl]);
+    check(
+        $businessNormalizer->normalize(['google_maps_url' => $mapsUrl])
+            ['google_maps_url'] === $mapsUrl,
+        'Allowed Google Maps URL preserved'
+    );
+}
+
+foreach ([
+    'http://www.google.com/maps/place/Goosialize',
+    'https://example.com/maps/place/Goosialize',
+    'https://maps.google.com.example.com/maps',
+    'javascript:alert(1)',
+    'not a url',
+    'https://user:pass@maps.google.com/?q=Goosialize',
+    'maps.google.com/?q=Goosialize',
+] as $mapsUrl) {
+    expectException(
+        static fn () => $businessNormalizer->validate([
+            'google_maps_url' => $mapsUrl,
+        ]),
+        'Invalid Google Maps URL rejected'
+    );
+    check(
+        $businessNormalizer->normalize(['google_maps_url' => $mapsUrl])
+            ['google_maps_url'] === '',
+        'Invalid runtime Google Maps URL omitted'
+    );
+}
+
+check(
+    BusinessInformationNormalizer::DIRECTIONS_ACTION_ID ===
+        'action_d1ec710000000000',
+    'Reserved Directions identity is centralized'
+);
 
 echo "--- social/contact actions ---\n";
 

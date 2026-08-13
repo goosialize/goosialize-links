@@ -6,6 +6,9 @@ profile:
   title: ''
   description: ''
   website_url: ''
+business:
+  working_hours: {}
+  google_maps_url: ''
 appearance:
   theme: light
   accent: yellow

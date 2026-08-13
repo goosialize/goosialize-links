@@ -13,11 +13,16 @@ final class LinkPageConfigNormalizer
 {
     private LinkCollectionNormalizer $linkNormalizer;
 
+    private BusinessInformationNormalizer $businessNormalizer;
+
     public function __construct(
-        ?LinkCollectionNormalizer $linkNormalizer = null
+        ?LinkCollectionNormalizer $linkNormalizer = null,
+        ?BusinessInformationNormalizer $businessNormalizer = null
     ) {
         $this->linkNormalizer =
             $linkNormalizer ?? new LinkCollectionNormalizer();
+        $this->businessNormalizer =
+            $businessNormalizer ?? new BusinessInformationNormalizer();
     }
 
     /**
@@ -90,6 +95,9 @@ final class LinkPageConfigNormalizer
                     $profile['translations'] ?? []
                 ),
             ],
+            'business' => $this->businessNormalizer->normalize(
+                $config['business'] ?? []
+            ),
             'links' => $this->linkNormalizer->normalize($links),
         ];
     }
