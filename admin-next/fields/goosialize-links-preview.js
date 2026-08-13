@@ -42,11 +42,13 @@
         this.refineAdminPresentation();
         this.installRealtimePreview();
       });
+      this.installValidationToastBridge();
       this.installSaveRefresh();
     }
 
     disconnectedCallback() {
       this.restoreFetch?.();
+      this.restoreToast?.();
       this.collectionObserver?.disconnect();
       this.formObserver?.disconnect();
       clearTimeout(this.previewDebounce);
@@ -361,7 +363,15 @@
               ? payload.errors.find((error) => typeof error?.message === 'string')?.message
               : '';
             const message = String(fieldMessage || payload?.detail || '').trim();
-            if (message) window.__GRAV_TOAST?.error?.(message, {duration: 0});
+            if (message) {
+              const preview = document.querySelector(TAG);
+              if (preview) preview.pendingValidationMessage = message;
+              setTimeout(() => {
+                if (preview?.pendingValidationMessage === message) {
+                  preview.pendingValidationMessage = '';
+                }
+              }, 0);
+            }
           } catch {
             // Preserve Admin2's existing generic failure handling for malformed responses.
           }
@@ -371,6 +381,26 @@
       this.restoreFetch = () => {
         window.fetch = original;
         window.__GOOSIALIZE_LINKS_FETCH_WRAPPED = false;
+      };
+    }
+
+    installValidationToastBridge() {
+      const toast = window.__GRAV_TOAST;
+      if (!toast?.error || window.__GOOSIALIZE_LINKS_TOAST_WRAPPED) return;
+      const original = toast.error.bind(toast);
+      window.__GOOSIALIZE_LINKS_TOAST_WRAPPED = true;
+      toast.error = (message, options) => {
+        const preview = document.querySelector(TAG);
+        const validation = String(preview?.pendingValidationMessage || '').trim();
+        if (validation) {
+          preview.pendingValidationMessage = '';
+          return original(validation, {...options, duration: 0});
+        }
+        return original(message, options);
+      };
+      this.restoreToast = () => {
+        toast.error = original;
+        window.__GOOSIALIZE_LINKS_TOAST_WRAPPED = false;
       };
     }
 

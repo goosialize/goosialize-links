@@ -184,7 +184,7 @@ final class GoosializeLinksPlugin extends Plugin
             throw new ValidationException(
                 $message,
                 [[
-                    'field' => $key === 'ICU.PLUGIN_GOOSIALIZE_LINKS.GOOGLE_MAPS_URL_INVALID'
+                    'field' => $key === 'ICU.PLUGIN_GOOSIALIZE_LINKS.MAPS_URL_INVALID'
                         ? 'business.google_maps_url'
                         : 'business.working_hours',
                     'message' => $message,
