@@ -107,6 +107,14 @@ check(
     'Legacy configuration receives safe business defaults'
 );
 
+$emptyBusiness = $businessNormalizer->normalize([
+    'working_hours' => [],
+]);
+check(
+    $emptyBusiness['working_hours']['configured'] === false,
+    'Empty Working Hours remain unconfigured'
+);
+
 $week = [
     'monday' => ['enabled' => true, 'open' => '09:00', 'close' => '18:00'],
     'tuesday' => ['enabled' => true, 'open' => '09:00', 'close' => '18:00'],
@@ -117,7 +125,7 @@ $week = [
     'sunday' => ['enabled' => false],
 ];
 $normalizedBusiness = $businessNormalizer->normalize([
-    'working_hours' => $week,
+    'working_hours' => ['configured' => true] + $week,
     'google_maps_url' => 'https://www.google.com/maps/place/Goosialize',
 ]);
 check(
@@ -135,7 +143,7 @@ check(
 );
 
 $allClosed = $businessNormalizer->normalize([
-    'working_hours' => array_fill_keys(
+    'working_hours' => ['configured' => true] + array_fill_keys(
         BusinessInformationNormalizer::DAYS,
         ['enabled' => false]
     ),
@@ -149,6 +157,26 @@ check(
     'Explicit all-closed schedule remains configured'
 );
 
+$serializedDefaults = $businessNormalizer->normalize([
+    'working_hours' => ['configured' => false] + $week,
+]);
+check(
+    $serializedDefaults['working_hours']['configured'] === false &&
+    count(array_filter(
+        $serializedDefaults['working_hours']['days'],
+        static fn (array $day): bool => $day['enabled']
+    )) === 0,
+    'Serialized weekday defaults cannot configure Working Hours'
+);
+
+$markerMissing = $businessNormalizer->normalize([
+    'working_hours' => $week,
+]);
+check(
+    $markerMissing['working_hours']['configured'] === false,
+    'Missing configured marker remains authoritative false'
+);
+
 foreach ([
     ['enabled' => true, 'open' => '9:00', 'close' => '18:00'],
     ['enabled' => true, 'open' => '09:00'],
@@ -159,7 +187,10 @@ foreach ([
 ] as $invalidDay) {
     expectException(
         static fn () => $businessNormalizer->validate([
-            'working_hours' => ['monday' => $invalidDay],
+            'working_hours' => [
+                'configured' => true,
+                'monday' => $invalidDay,
+            ],
         ]),
         'Invalid Working Hours interval rejected'
     );
@@ -167,6 +198,7 @@ foreach ([
 
 $failedClosed = $businessNormalizer->normalize([
     'working_hours' => [
+        'configured' => true,
         'monday' => ['enabled' => true, 'open' => '18:00', 'close' => '09:00'],
     ],
 ]);
@@ -179,13 +211,19 @@ check(
 
 expectException(
     static fn () => $businessNormalizer->normalize([
-        'working_hours' => ['funday' => ['enabled' => false]],
+        'working_hours' => [
+            'configured' => true,
+            'funday' => ['enabled' => false],
+        ],
     ]),
     'Unknown Working Hours day rejected'
 );
 expectException(
     static fn () => $businessNormalizer->normalize([
-        'working_hours' => ['monday' => 'closed'],
+        'working_hours' => [
+            'configured' => true,
+            'monday' => 'closed',
+        ],
     ]),
     'Malformed Working Hours day rejected'
 );

@@ -92,6 +92,297 @@ form:
           help: PLUGIN_GOOSIALIZE_LINKS.PROFILE_WEBSITE_URL_HELP
           placeholder: https://example.com
 
+    business_information_section:
+      type: fieldset
+      title: PLUGIN_GOOSIALIZE_LINKS.BUSINESS_INFORMATION_SECTION
+      collapsible: true
+      collapsed: true
+      fields:
+        business_information_help:
+          type: display
+          content: PLUGIN_GOOSIALIZE_LINKS.BUSINESS_INFORMATION_HELP
+
+        business.working_hours.configured:
+          type: toggle
+          label: PLUGIN_GOOSIALIZE_LINKS.ENABLE_WORKING_HOURS
+          help: PLUGIN_GOOSIALIZE_LINKS.WORKING_HOURS_HELP
+          highlight: 1
+          default: 0
+          options:
+            1: PLUGIN_GOOSIALIZE_LINKS.ENABLED
+            0: PLUGIN_GOOSIALIZE_LINKS.DISABLED
+          validate:
+            type: bool
+
+        working_hours_heading:
+          type: section
+          title: PLUGIN_GOOSIALIZE_LINKS.WORKING_HOURS
+
+        business_monday_row:
+          type: columns
+          fields:
+            business_monday_label:
+              type: column
+              fields:
+                business_monday_heading:
+                  type: display
+                  content: PLUGIN_GOOSIALIZE_LINKS.MONDAY
+            business_monday_enabled_column:
+              type: column
+              fields:
+                business.working_hours.monday.enabled:
+                  type: toggle
+                  label: PLUGIN_GOOSIALIZE_LINKS.OPEN
+                  highlight: 1
+                  default: 0
+                  options:
+                    1: PLUGIN_GOOSIALIZE_LINKS.OPEN
+                    0: PLUGIN_GOOSIALIZE_LINKS.CLOSED
+                  validate:
+                    type: bool
+            business_monday_open_column:
+              type: column
+              fields:
+                business.working_hours.monday.open:
+                  type: time
+                  label: PLUGIN_GOOSIALIZE_LINKS.OPENING_TIME
+                  step: 60
+            business_monday_close_column:
+              type: column
+              fields:
+                business.working_hours.monday.close:
+                  type: time
+                  label: PLUGIN_GOOSIALIZE_LINKS.CLOSING_TIME
+                  step: 60
+
+        business_tuesday_row:
+          type: columns
+          fields:
+            business_tuesday_label:
+              type: column
+              fields:
+                business_tuesday_heading:
+                  type: display
+                  content: PLUGIN_GOOSIALIZE_LINKS.TUESDAY
+            business_tuesday_enabled_column:
+              type: column
+              fields:
+                business.working_hours.tuesday.enabled:
+                  type: toggle
+                  label: PLUGIN_GOOSIALIZE_LINKS.OPEN
+                  highlight: 1
+                  default: 0
+                  options:
+                    1: PLUGIN_GOOSIALIZE_LINKS.OPEN
+                    0: PLUGIN_GOOSIALIZE_LINKS.CLOSED
+                  validate:
+                    type: bool
+            business_tuesday_open_column:
+              type: column
+              fields:
+                business.working_hours.tuesday.open:
+                  type: time
+                  label: PLUGIN_GOOSIALIZE_LINKS.OPENING_TIME
+                  step: 60
+            business_tuesday_close_column:
+              type: column
+              fields:
+                business.working_hours.tuesday.close:
+                  type: time
+                  label: PLUGIN_GOOSIALIZE_LINKS.CLOSING_TIME
+                  step: 60
+
+        business_wednesday_row:
+          type: columns
+          fields:
+            business_wednesday_label:
+              type: column
+              fields:
+                business_wednesday_heading:
+                  type: display
+                  content: PLUGIN_GOOSIALIZE_LINKS.WEDNESDAY
+            business_wednesday_enabled_column:
+              type: column
+              fields:
+                business.working_hours.wednesday.enabled:
+                  type: toggle
+                  label: PLUGIN_GOOSIALIZE_LINKS.OPEN
+                  highlight: 1
+                  default: 0
+                  options:
+                    1: PLUGIN_GOOSIALIZE_LINKS.OPEN
+                    0: PLUGIN_GOOSIALIZE_LINKS.CLOSED
+                  validate:
+                    type: bool
+            business_wednesday_open_column:
+              type: column
+              fields:
+                business.working_hours.wednesday.open:
+                  type: time
+                  label: PLUGIN_GOOSIALIZE_LINKS.OPENING_TIME
+                  step: 60
+            business_wednesday_close_column:
+              type: column
+              fields:
+                business.working_hours.wednesday.close:
+                  type: time
+                  label: PLUGIN_GOOSIALIZE_LINKS.CLOSING_TIME
+                  step: 60
+
+        business_thursday_row:
+          type: columns
+          fields:
+            business_thursday_label:
+              type: column
+              fields:
+                business_thursday_heading:
+                  type: display
+                  content: PLUGIN_GOOSIALIZE_LINKS.THURSDAY
+            business_thursday_enabled_column:
+              type: column
+              fields:
+                business.working_hours.thursday.enabled:
+                  type: toggle
+                  label: PLUGIN_GOOSIALIZE_LINKS.OPEN
+                  highlight: 1
+                  default: 0
+                  options:
+                    1: PLUGIN_GOOSIALIZE_LINKS.OPEN
+                    0: PLUGIN_GOOSIALIZE_LINKS.CLOSED
+                  validate:
+                    type: bool
+            business_thursday_open_column:
+              type: column
+              fields:
+                business.working_hours.thursday.open:
+                  type: time
+                  label: PLUGIN_GOOSIALIZE_LINKS.OPENING_TIME
+                  step: 60
+            business_thursday_close_column:
+              type: column
+              fields:
+                business.working_hours.thursday.close:
+                  type: time
+                  label: PLUGIN_GOOSIALIZE_LINKS.CLOSING_TIME
+                  step: 60
+
+        business_friday_row:
+          type: columns
+          fields:
+            business_friday_label:
+              type: column
+              fields:
+                business_friday_heading:
+                  type: display
+                  content: PLUGIN_GOOSIALIZE_LINKS.FRIDAY
+            business_friday_enabled_column:
+              type: column
+              fields:
+                business.working_hours.friday.enabled:
+                  type: toggle
+                  label: PLUGIN_GOOSIALIZE_LINKS.OPEN
+                  highlight: 1
+                  default: 0
+                  options:
+                    1: PLUGIN_GOOSIALIZE_LINKS.OPEN
+                    0: PLUGIN_GOOSIALIZE_LINKS.CLOSED
+                  validate:
+                    type: bool
+            business_friday_open_column:
+              type: column
+              fields:
+                business.working_hours.friday.open:
+                  type: time
+                  label: PLUGIN_GOOSIALIZE_LINKS.OPENING_TIME
+                  step: 60
+            business_friday_close_column:
+              type: column
+              fields:
+                business.working_hours.friday.close:
+                  type: time
+                  label: PLUGIN_GOOSIALIZE_LINKS.CLOSING_TIME
+                  step: 60
+
+        business_saturday_row:
+          type: columns
+          fields:
+            business_saturday_label:
+              type: column
+              fields:
+                business_saturday_heading:
+                  type: display
+                  content: PLUGIN_GOOSIALIZE_LINKS.SATURDAY
+            business_saturday_enabled_column:
+              type: column
+              fields:
+                business.working_hours.saturday.enabled:
+                  type: toggle
+                  label: PLUGIN_GOOSIALIZE_LINKS.OPEN
+                  highlight: 1
+                  default: 0
+                  options:
+                    1: PLUGIN_GOOSIALIZE_LINKS.OPEN
+                    0: PLUGIN_GOOSIALIZE_LINKS.CLOSED
+                  validate:
+                    type: bool
+            business_saturday_open_column:
+              type: column
+              fields:
+                business.working_hours.saturday.open:
+                  type: time
+                  label: PLUGIN_GOOSIALIZE_LINKS.OPENING_TIME
+                  step: 60
+            business_saturday_close_column:
+              type: column
+              fields:
+                business.working_hours.saturday.close:
+                  type: time
+                  label: PLUGIN_GOOSIALIZE_LINKS.CLOSING_TIME
+                  step: 60
+
+        business_sunday_row:
+          type: columns
+          fields:
+            business_sunday_label:
+              type: column
+              fields:
+                business_sunday_heading:
+                  type: display
+                  content: PLUGIN_GOOSIALIZE_LINKS.SUNDAY
+            business_sunday_enabled_column:
+              type: column
+              fields:
+                business.working_hours.sunday.enabled:
+                  type: toggle
+                  label: PLUGIN_GOOSIALIZE_LINKS.OPEN
+                  highlight: 1
+                  default: 0
+                  options:
+                    1: PLUGIN_GOOSIALIZE_LINKS.OPEN
+                    0: PLUGIN_GOOSIALIZE_LINKS.CLOSED
+                  validate:
+                    type: bool
+            business_sunday_open_column:
+              type: column
+              fields:
+                business.working_hours.sunday.open:
+                  type: time
+                  label: PLUGIN_GOOSIALIZE_LINKS.OPENING_TIME
+                  step: 60
+            business_sunday_close_column:
+              type: column
+              fields:
+                business.working_hours.sunday.close:
+                  type: time
+                  label: PLUGIN_GOOSIALIZE_LINKS.CLOSING_TIME
+                  step: 60
+
+        business.google_maps_url:
+          type: url
+          label: PLUGIN_GOOSIALIZE_LINKS.GOOGLE_MAPS_URL
+          help: PLUGIN_GOOSIALIZE_LINKS.GOOGLE_MAPS_URL_HELP
+          placeholder: https://www.google.com/maps/...
+
     appearance_section:
       type: fieldset
       title: PLUGIN_GOOSIALIZE_LINKS.APPEARANCE_SECTION

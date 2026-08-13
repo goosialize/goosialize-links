@@ -21,6 +21,26 @@ ICU:
     PROFILE_DESCRIPTION_HELP: A short introduction displayed on the public page.
     PROFILE_WEBSITE_URL: Website URL
     PROFILE_WEBSITE_URL_HELP: An optional link to the primary website.
+    BUSINESS_INFORMATION_SECTION: Business Information
+    BUSINESS_INFORMATION_HELP: Configure business hours and the public Directions link.
+    WORKING_HOURS: Working Hours
+    ENABLE_WORKING_HOURS: Enable Working Hours
+    WORKING_HOURS_HELP: Enable this to configure and display your business opening hours.
+    MONDAY: Monday
+    TUESDAY: Tuesday
+    WEDNESDAY: Wednesday
+    THURSDAY: Thursday
+    FRIDAY: Friday
+    SATURDAY: Saturday
+    SUNDAY: Sunday
+    OPEN: Open
+    CLOSED: Closed
+    OPENING_TIME: Opening time
+    CLOSING_TIME: Closing time
+    GOOGLE_MAPS_URL: Google Maps URL
+    GOOGLE_MAPS_URL_HELP: Paste the Google Maps link visitors should open for directions.
+    WORKING_HOURS_INVALID: Enter valid opening and closing times. Open days require 24-hour HH:MM values with opening earlier than closing.
+    MAPS_URL_INVALID: Enter a supported HTTPS Google Maps URL.
     APPEARANCE_SECTION: Appearance
     APPEARANCE_SECTION_HELP: Choose the visual style used across all language versions of your public profile.
     THEME: Theme

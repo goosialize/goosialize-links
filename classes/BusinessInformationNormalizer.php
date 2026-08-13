@@ -8,6 +8,10 @@ use InvalidArgumentException;
 
 final class BusinessInformationNormalizer
 {
+    public const ERROR_WORKING_HOURS = 1101;
+
+    public const ERROR_MAPS_URL = 1102;
+
     public const DIRECTIONS_ACTION_ID =
         'action_d1ec710000000000';
 
@@ -92,7 +96,7 @@ final class BusinessInformationNormalizer
 
         $unknownDays = array_diff(
             array_keys($workingHours),
-            self::DAYS
+            [...self::DAYS, 'configured']
         );
 
         if ($unknownDays !== []) {
@@ -104,10 +108,19 @@ final class BusinessInformationNormalizer
             );
         }
 
-        $configured = $workingHours !== [];
+        $configured = $this->normalizeBoolean(
+            $workingHours['configured'] ?? false,
+            'Working Hours configured'
+        );
         $days = [];
 
         foreach (self::DAYS as $day) {
+            if (!$configured) {
+                $days[$day] = $this->closedDay();
+
+                continue;
+            }
+
             $days[$day] = $this->normalizeDay(
                 $day,
                 $workingHours[$day] ?? [],
@@ -122,7 +135,8 @@ final class BusinessInformationNormalizer
         if ($mapsUrl !== '' && !$this->isGoogleMapsUrl($mapsUrl)) {
             if ($strict) {
                 throw new InvalidArgumentException(
-                    'Google Maps URL is invalid or unsupported.'
+                    'Google Maps URL is invalid or unsupported.',
+                    self::ERROR_MAPS_URL
                 );
             }
 
@@ -159,11 +173,7 @@ final class BusinessInformationNormalizer
         );
 
         if (!$enabled) {
-            return [
-                'enabled' => false,
-                'open' => '',
-                'close' => '',
-            ];
+            return $this->closedDay();
         }
 
         $open = trim((string) ($value['open'] ?? ''));
@@ -178,15 +188,12 @@ final class BusinessInformationNormalizer
                     sprintf(
                         '%s Working Hours require a valid same-day interval.',
                         ucfirst($day)
-                    )
+                    ),
+                    self::ERROR_WORKING_HOURS
                 );
             }
 
-            return [
-                'enabled' => false,
-                'open' => '',
-                'close' => '',
-            ];
+            return $this->closedDay();
         }
 
         return [
@@ -215,6 +222,16 @@ final class BusinessInformationNormalizer
         throw new InvalidArgumentException(
             sprintf('%s enabled state is invalid.', ucfirst($day))
         );
+    }
+
+    /** @return array{enabled: false, open: string, close: string} */
+    private function closedDay(): array
+    {
+        return [
+            'enabled' => false,
+            'open' => '',
+            'close' => '',
+        ];
     }
 
     private function isTime(string $value): bool

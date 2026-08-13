@@ -21,6 +21,26 @@ ICU:
     PROFILE_DESCRIPTION_HELP: Μία σύντομη εισαγωγή για τη δημόσια σελίδα.
     PROFILE_WEBSITE_URL: URL ιστοσελίδας
     PROFILE_WEBSITE_URL_HELP: Προαιρετικός σύνδεσμος προς την κύρια ιστοσελίδα.
+    BUSINESS_INFORMATION_SECTION: Επιχειρηματικές Πληροφορίες
+    BUSINESS_INFORMATION_HELP: Ρυθμίστε το ωράριο λειτουργίας και τον δημόσιο σύνδεσμο Οδηγιών.
+    WORKING_HOURS: Ωράριο Λειτουργίας
+    ENABLE_WORKING_HOURS: Ενεργοποίηση Ωραρίου
+    WORKING_HOURS_HELP: Ενεργοποιήστε το για να ορίσετε και να εμφανίσετε το ωράριο λειτουργίας της επιχείρησης.
+    MONDAY: Δευτέρα
+    TUESDAY: Τρίτη
+    WEDNESDAY: Τετάρτη
+    THURSDAY: Πέμπτη
+    FRIDAY: Παρασκευή
+    SATURDAY: Σάββατο
+    SUNDAY: Κυριακή
+    OPEN: Ανοιχτά
+    CLOSED: Κλειστά
+    OPENING_TIME: Ώρα έναρξης
+    CLOSING_TIME: Ώρα λήξης
+    GOOGLE_MAPS_URL: Google Maps URL
+    GOOGLE_MAPS_URL_HELP: Επικολλήστε τον σύνδεσμο Google Maps που θα ανοίγουν οι επισκέπτες για οδηγίες.
+    WORKING_HOURS_INVALID: Εισαγάγετε έγκυρες ώρες έναρξης και λήξης. Οι ανοιχτές ημέρες απαιτούν τιμές 24ώρου HH:MM με την έναρξη πριν από τη λήξη.
+    MAPS_URL_INVALID: Εισαγάγετε ένα υποστηριζόμενο HTTPS URL του Google Maps.
     APPEARANCE_SECTION: Εμφάνιση
     APPEARANCE_SECTION_HELP: Επιλέξτε την εμφάνιση που χρησιμοποιείται σε όλες τις γλωσσικές εκδόσεις του δημόσιου προφίλ.
     THEME: Theme

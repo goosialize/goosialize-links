@@ -6,11 +6,13 @@ namespace Grav\Plugin;
 
 use Grav\Common\Page\Page;
 use Grav\Common\Plugin;
+use Grav\Common\Data\ValidationException;
 use Grav\Framework\Acl\PermissionsReader;
 use Grav\Framework\Acl\PermissionsRegisterEvent;
 use Grav\Framework\Psr7\Response;
 use Goosialize\Links\AnalyticsReportAggregator;
 use Goosialize\Links\AnalyticsStore;
+use Goosialize\Links\BusinessInformationNormalizer;
 use Goosialize\Links\EditorPreviewController;
 use Goosialize\Links\QrAdminController;
 use Goosialize\Links\QrCodeGenerator;
@@ -127,6 +129,10 @@ final class GoosializeLinksPlugin extends Plugin
                 'onApiGenerateReports',
                 0,
             ],
+            'onAdminSave' => [
+                'onAdminSave',
+                1000,
+            ],
             'onGetPageBlueprints' => ['onGetPageBlueprints', 0],
             'onGetPageTemplates' => ['onGetPageBlueprints', 0],
             'onPluginsInitialized' => [
@@ -138,6 +144,48 @@ final class GoosializeLinksPlugin extends Plugin
                 0,
             ],
         ];
+    }
+
+    public function onAdminSave(Event $event): void
+    {
+        $admin = $this->grav['admin'] ?? null;
+
+        if (
+            !is_object($admin) ||
+            !property_exists($admin, 'route') ||
+            $admin->route !== '/plugins/goosialize-links'
+        ) {
+            return;
+        }
+
+        $object = $event['object'] ?? null;
+
+        if (!is_object($object) || !method_exists($object, 'toArray')) {
+            return;
+        }
+
+        $config = $object->toArray();
+
+        if (!is_array($config)) {
+            return;
+        }
+
+        try {
+            (new BusinessInformationNormalizer())->validate(
+                $config['business'] ?? []
+            );
+        } catch (InvalidArgumentException $exception) {
+            $key = $exception->getCode() ===
+                BusinessInformationNormalizer::ERROR_MAPS_URL
+                ? 'ICU.PLUGIN_GOOSIALIZE_LINKS.MAPS_URL_INVALID'
+                : 'ICU.PLUGIN_GOOSIALIZE_LINKS.WORKING_HOURS_INVALID';
+            $message = (string) $this->grav['language']->translate($key);
+
+            throw (new ValidationException('', 422, $exception))
+                ->setMessages([
+                    'business' => [$message],
+                ]);
+        }
     }
 
 
