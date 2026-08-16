@@ -82,7 +82,7 @@ blueprint = payloads["goosialize-links/blueprints.yaml"].decode()
 composer_json = json.loads(payloads["goosialize-links/composer.json"])
 license_text = payloads["goosialize-links/LICENSE"].decode()
 
-if "version: 1.0.0" not in blueprint:
+if "version: 1.0.1" not in blueprint:
     raise SystemExit("Unexpected packaged release-candidate version")
 
 if composer_json.get("license") != "MIT":
@@ -206,6 +206,45 @@ print("Production vendor        = PASS")
 print("Packaged QR classes      = PASS")
 print("Package secret scan      = PASS")
 print("Development files absent = PASS")
+PY
+
+python3 - \
+  "$PACKAGE" \
+  "$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)" <<'PY'
+from pathlib import Path
+import hashlib
+import sys
+import zipfile
+
+package = Path(sys.argv[1])
+root = Path(sys.argv[2])
+source = root / "vendor"
+
+source_files = {
+    path.relative_to(source).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
+    for path in source.rglob("*")
+    if path.is_file()
+}
+
+with zipfile.ZipFile(package) as archive:
+    packaged_files = {
+        name.removeprefix("goosialize-links/vendor/"): hashlib.sha256(archive.read(name)).hexdigest()
+        for name in archive.namelist()
+        if name.startswith("goosialize-links/vendor/") and not name.endswith("/")
+    }
+
+if source_files != packaged_files:
+    missing = sorted(source_files.keys() - packaged_files.keys())
+    extra = sorted(packaged_files.keys() - source_files.keys())
+    changed = sorted(
+        name for name in source_files.keys() & packaged_files.keys()
+        if source_files[name] != packaged_files[name]
+    )
+    raise SystemExit(
+        f"Source/package vendor mismatch; missing={missing}, extra={extra}, changed={changed}"
+    )
+
+print("Source/package vendor parity = PASS")
 PY
 
 echo "PACKAGE CONTENT CONTRACT = PASS"

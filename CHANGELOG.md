@@ -1,5 +1,14 @@
 # Changelog
 
+# 1.0.1
+## 08/16/2026
+
+1. [](#improved)
+   * Made the released Git source directly installable by Grav GPM by including
+     the exact production Composer dependencies locked for QR generation.
+   * Added deterministic tag-source installation, committed-vendor safety, and
+     source/package parity release gates without changing plugin behavior.
+
 # 1.0.0
 ## 08/12/2026
 

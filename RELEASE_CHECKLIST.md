@@ -1,6 +1,6 @@
-# Goosialize Links FREE v1 Release Checklist
+# Goosialize Links FREE 1.0.1 Release Checklist
 
-Stable release prepared: `1.0.0`
+Maintenance release prepared: `1.0.1`
 
 - [x] Public `1.0.0-rc.1` prerelease published and independently verified
 - [x] Stable dependency floors proven and documented
@@ -11,17 +11,22 @@ Stable release prepared: `1.0.0`
 - [x] Native EN/EL Pages, realtime preview, profile image, QR and analytics pass
 - [x] Deterministic stable package reproduced independently
 - [x] Clean stable-package installation and permissions verified
-- [ ] Stable preparation commit closure completed
+- [x] Stable `1.0.0` release remains immutable
+- [x] Maintenance branch starts from the exact stable tag target
+- [x] Production Composer dependencies are committed from the unchanged lock
+- [x] GPM-style tag-source installation passes without running Composer
+- [x] Source/package vendor parity and deterministic packaging pass
+- [ ] 1.0.1 preparation commit closure completed
 
-## Stable publication pending
+## 1.0.1 publication pending
 
-- [ ] Stable metadata commit pushed to `main`
-- [ ] Tag `1.0.0` created and pushed
-- [ ] GitHub stable release `1.0.0` created
-- [ ] Asset `goosialize-links-1.0.0.zip` and checksum sidecar attached
-- [ ] Public stable asset SHA-256 independently verified
+- [ ] Maintenance branch pushed
+- [ ] Tag `1.0.1` created and pushed
+- [ ] GitHub maintenance release `1.0.1` created
+- [ ] Asset `goosialize-links-1.0.1.zip` and checksum sidecar attached
+- [ ] Public 1.0.1 asset SHA-256 independently verified
 - [ ] Grav GPM `[add-resource]` submission completed
 - [ ] goosialize.com product-page URL approved and page published
 
-The final stable checksum is generated after packaged documentation is frozen
-and published externally as `goosialize-links-1.0.0.zip.sha256`.
+The final maintenance checksum is generated after packaged documentation is
+frozen and published externally as `goosialize-links-1.0.1.zip.sha256`.

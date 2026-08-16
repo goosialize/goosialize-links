@@ -67,6 +67,7 @@ directories=(
     languages
     pages
     templates
+    vendor
 )
 
 files=(
@@ -99,30 +100,6 @@ done
 
 echo "Approved source copy = PASS"
 
-echo
-echo "--- install locked production dependencies ---"
-
-docker run \
-  --rm \
-  --user "$(id -u):$(id -g)" \
-  --entrypoint sh \
-  -v "$STAGE:/plugin" \
-  "$IMAGE" \
-  -lc '
-      set -e
-
-      export COMPOSER_HOME=/tmp/goosialize-links-composer
-
-      cd /plugin
-
-      composer install \
-        --no-dev \
-        --prefer-dist \
-        --no-interaction \
-        --no-progress \
-        --classmap-authoritative
-  '
-
 test -f \
   "$STAGE/vendor/autoload.php"
 
@@ -135,7 +112,7 @@ test -d \
 test -d \
   "$STAGE/vendor/dasprid/enum"
 
-echo "Production vendor graph = PASS"
+echo "Committed production vendor graph = PASS"
 
 echo
 echo "--- create deterministic package inventory ---"

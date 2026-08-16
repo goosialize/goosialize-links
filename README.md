@@ -5,7 +5,7 @@ creates one mobile-first public link page on your own website, with tracked
 links and actions, privacy-preserving aggregate analytics, and one tracked QR
 code.
 
-Stable release: `1.0.0`.
+Maintenance release: `1.0.1`.
 
 - Source: <https://github.com/goosialize/goosialize-links>
 - Releases: <https://github.com/goosialize/goosialize-links/releases>
@@ -29,8 +29,8 @@ Compatibility claims are limited to these tested minimums.
 1. Extract the release archive so the plugin is located at
    `user/plugins/goosialize-links/`.
 2. Confirm that `user/plugins/goosialize-links/vendor/autoload.php` exists.
-   Official release packages include the locked QR dependencies; a source
-   checkout does not include generated `vendor/` files.
+   Official release packages and tagged source include the locked production
+   QR dependencies required at runtime.
 3. Clear the Grav cache with `php bin/grav clearcache` from the Grav root.
 4. Sign in to Admin2 and enable **Goosialize Links** under Plugins, or set
    `enabled: true` in `user/config/plugins/goosialize-links.yaml`.

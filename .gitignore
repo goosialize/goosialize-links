@@ -16,7 +16,6 @@ Thumbs.db
 *.local
 
 # Dependencies and build output
-vendor/
 node_modules/
 build/
 dist/

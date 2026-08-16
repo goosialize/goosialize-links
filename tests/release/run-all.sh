@@ -116,8 +116,10 @@ echo "===== E. EXTRACT PACKAGE ====="
 mkdir -p \
   "$PLUGIN_EXTRACT"
 
+INSTALL_ARCHIVE="${GPM_SOURCE_ARCHIVE:-$PACKAGE}"
+
 python3 - \
-  "$PACKAGE" \
+  "$INSTALL_ARCHIVE" \
   "$PLUGIN_EXTRACT" <<'PY'
 from pathlib import Path
 import sys
@@ -131,6 +133,10 @@ with zipfile.ZipFile(package) as archive:
 
 print("Package extraction = PASS")
 PY
+
+if [ -n "${GPM_SOURCE_ARCHIVE:-}" ]; then
+    echo "GPM tracked-source archive selected = PASS"
+fi
 
 PLUGIN="$PLUGIN_EXTRACT/goosialize-links"
 
@@ -734,6 +740,12 @@ echo "SHA256=$(
     sha256sum "$PACKAGE" |
     awk '{print $1}'
 )"
+
+if [ "${GOOSIALIZE_SKIP_GPM_SOURCE:-0}" != "1" ]; then
+    echo
+    echo "===== N. GPM TAG-SOURCE INSTALL ====="
+    tests/release/gpm-source-install.sh
+fi
 
 echo
 echo "=================================================="

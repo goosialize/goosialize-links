@@ -35,6 +35,7 @@ required=(
     admin-next/pages/goosialize-links.js
     admin-next/fields/goosialize-links-preview.js
     classes/EditorPreviewController.php
+    vendor/autoload.php
 )
 
 for file in "${required[@]}"; do
@@ -143,7 +144,6 @@ echo
 echo "--- forbidden repository content ---"
 
 for path in \
-    vendor \
     node_modules \
     user \
     .recovery \
@@ -214,7 +214,7 @@ if bp.get("slug") != "goosialize-links":
 if bp.get("type") != "plugin":
     raise SystemExit("Invalid package type")
 
-if bp.get("version") != "1.0.0":
+if bp.get("version") != "1.0.1":
     raise SystemExit("Unexpected release-candidate version")
 
 if bp.get("license") != "MIT":
@@ -265,7 +265,7 @@ if support.get("docs") != repository + "#readme":
 changelog = Path("CHANGELOG.md").read_text()
 
 for marker in (
-    "# 1.0.0",
+    "# 1.0.1",
     "## 08/12/2026",
     "[](#new)",
     "[](#improved)",
@@ -274,7 +274,7 @@ for marker in (
         raise SystemExit(f"Missing Grav changelog marker: {marker}")
 
 for path in (
-    "docs/RELEASE_NOTES_1.0.0.md",
+    "docs/RELEASE_NOTES_1.0.1.md",
     "docs/PUBLIC_DISTRIBUTION_HANDOFF.md",
 ):
     if not Path(path).is_file():
@@ -314,7 +314,7 @@ if dependencies != expected_dependencies:
     raise SystemExit("Stable dependency contract mismatch")
 
 print("Plugin identity       = PASS")
-print("Stable version        = 1.0.0")
+print("Maintenance version   = 1.0.1")
 print("Dependency contract   = PASS")
 print("FREE core license     = MIT")
 print("Public repository     = LOCKED")
@@ -359,6 +359,77 @@ if lock.get("packages-dev"):
     )
 
 print("Production dependency graph = PASS")
+PY
+
+echo
+echo "--- committed production vendor safety ---"
+
+python3 - <<'PY'
+from pathlib import Path
+import json
+import re
+
+vendor = Path("vendor")
+installed = json.loads((vendor / "composer/installed.json").read_text())
+packages = {
+    package["name"]: package["version"]
+    for package in installed.get("packages", [])
+}
+expected = {
+    "endroid/qr-code": "6.0.9",
+    "bacon/bacon-qr-code": "v3.1.1",
+    "dasprid/enum": "1.0.7",
+}
+
+if packages != expected:
+    raise SystemExit(f"Unexpected installed vendor graph: {packages}")
+
+required = (
+    vendor / "autoload.php",
+    vendor / "endroid/qr-code/LICENSE",
+    vendor / "bacon/bacon-qr-code/LICENSE",
+    vendor / "dasprid/enum/LICENSE",
+)
+for path in required:
+    if not path.is_file():
+        raise SystemExit(f"Missing vendor file: {path}")
+
+files = sorted(path for path in vendor.rglob("*") if path.is_file())
+links = sorted(path for path in vendor.rglob("*") if path.is_symlink())
+executables = sorted(path for path in files if path.stat().st_mode & 0o111)
+forbidden_dirs = {
+    "test", "tests", "example", "examples", "doc", "docs",
+    ".git", ".github", "cache", "tmp",
+}
+forbidden = sorted(
+    path for path in vendor.rglob("*")
+    if path.is_dir() and path.name.lower() in forbidden_dirs
+)
+
+if links:
+    raise SystemExit(f"Unexpected vendor symlinks: {links}")
+if executables:
+    raise SystemExit(f"Unexpected executable vendor files: {executables}")
+if forbidden:
+    raise SystemExit(f"Unexpected vendor development directories: {forbidden}")
+
+signatures = [
+    re.compile(b"BEGIN " + rb"(?:RSA |OPENSSH |EC )?" + b"PRIVATE KEY"),
+    re.compile(b"SENDPULSE_" + rb"(?:CLIENT_SECRET|API_KEY)"),
+    re.compile(b"SMTP_" + b"PASSWORD"),
+    re.compile(rb"(?:^|[^A-Za-z])" + b"sk-" + rb"[A-Za-z0-9_-]{20,}"),
+]
+for path in files:
+    payload = path.read_bytes()
+    if any(pattern.search(payload) for pattern in signatures):
+        raise SystemExit(f"Secret-sensitive material in vendor: {path}")
+
+print(f"Committed vendor files = {len(files)}")
+print(f"Committed vendor bytes = {sum(path.stat().st_size for path in files)}")
+print("Installed vendor graph = PASS")
+print("Vendor licenses        = PASS")
+print("Vendor secret scan     = PASS")
+print("Vendor filesystem      = PASS")
 PY
 
 echo
