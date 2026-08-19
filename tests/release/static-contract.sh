@@ -93,6 +93,26 @@ assert "header.goosialize_links.links" in page_blueprint["form"]["fields"]
 assert "header.goosialize_links.actions" in page_blueprint["form"]["fields"]
 assert "NativePageProvisioner" in plugin
 assert "NativePageContentResolver" in plugin
+
+# Grav #4245 R2-A: normal plugin boot must never provision content.
+assert "$this->provisionNativePage();" not in plugin
+assert "private function provisionNativePage" in plugin
+
+# Physical Page discovery is allowed to fail locally without taking down
+# the frontend.  Configuration normalization remains a separate fail-closed
+# boundary and the already-normalized configured route is retained.
+locator_start = plugin.index("$nativeRoute = (new NativePageLocator(")
+locator_end = plugin.index(
+    "if (\n            !($normalizedConfig['enabled'] ?? false)",
+    locator_start,
+)
+locator_block = plugin[locator_start:locator_end]
+
+assert "catch (Throwable $exception)" in locator_block
+assert (
+    "public Page resolution failed; using configured route:"
+    in locator_block
+)
 assert "editor-preview/state" in plugin
 assert "method: 'POST'" in preview
 assert "method: 'DELETE'" in preview

@@ -427,8 +427,6 @@ $routes->get(
 
     public function onPluginsInitialized(): void
     {
-        $this->provisionNativePage();
-
         if ($this->isAdmin()) {
             return;
         }
@@ -460,20 +458,29 @@ $routes->get(
                         $rawConfig,
                         $baseConfig
                     );
-
-            $nativeRoute = (new NativePageLocator(
-                GRAV_ROOT . '/user/pages'
-            ))->route($this->defaultLanguage());
-            if ($nativeRoute !== null) {
-                $normalizedConfig['route'] = $nativeRoute;
-            }
-        } catch (InvalidArgumentException $exception) {
+        } catch (Throwable $exception) {
             $this->grav['log']->error(
                 'plugin.goosialize-links: ' .
                 $exception->getMessage()
             );
 
             return;
+        }
+
+        try {
+            $nativeRoute = (new NativePageLocator(
+                GRAV_ROOT . '/user/pages'
+            ))->route($this->defaultLanguage());
+
+            if ($nativeRoute !== null) {
+                $normalizedConfig['route'] = $nativeRoute;
+            }
+        } catch (Throwable $exception) {
+            $this->grav['log']->error(
+                'plugin.goosialize-links: ' .
+                'public Page resolution failed; using configured route: ' .
+                $exception->getMessage()
+            );
         }
 
         if (

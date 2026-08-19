@@ -344,6 +344,42 @@ $englishPage = $firstProvision['folder'] . '/goosialize-links.en.md';
 $greekPage = $firstProvision['folder'] . '/goosialize-links.el.md';
 check(is_file($englishPage) && is_file($greekPage), 'Native EN/EL Page creation');
 check((new NativePageLocator($nativeRoot . '/pages'))->route('en') === '/bio', 'Physical Page route discovery');
+
+$duplicateDirectory = $nativeRoot . '/pages/03.duplicate';
+mkdir($duplicateDirectory, 0775, true);
+file_put_contents(
+    $duplicateDirectory . '/goosialize-links.md',
+    "---\ntitle: Duplicate Links Page\n---\n"
+);
+expectException(
+    static fn () =>
+        (new NativePageLocator($nativeRoot . '/pages'))
+            ->route('en'),
+    'Duplicate physical Links Pages fail locally'
+);
+unlink($duplicateDirectory . '/goosialize-links.md');
+rmdir($duplicateDirectory);
+
+$englishBeforeMalformedYaml = file_get_contents($englishPage);
+file_put_contents(
+    $englishPage,
+    "---\ntitle: [broken\n---\n"
+);
+expectException(
+    static fn () =>
+        (new NativePageLocator($nativeRoot . '/pages'))
+            ->route('en'),
+    'Malformed native Page YAML fails locally'
+);
+file_put_contents(
+    $englishPage,
+    $englishBeforeMalformedYaml
+);
+check(
+    (new NativePageLocator($nativeRoot . '/pages'))
+        ->route('en') === '/bio',
+    'Native Page route recovers after malformed fixture'
+);
 check($firstProvision['backup'] !== null && is_file($firstProvision['backup']), 'Legacy configuration backup');
 check(
     ($rawLocalized['profile']['translations'][0]['language'] ?? null) === 'el' &&
