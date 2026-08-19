@@ -58,7 +58,12 @@ final class EditorPreviewController extends AbstractApiController
             'system.languages.include_default_lang',
             false
         );
-        $nativeRoute = (new NativePageLocator(GRAV_ROOT . '/user/pages'))->route($default);
+        $nativeRoute = (new NativePageLocator(
+            GRAV_ROOT . '/user/pages'
+        ))->route(
+            $route,
+            $default
+        );
         if ($nativeRoute !== null) {
             $route = $nativeRoute;
         }

@@ -94,6 +94,21 @@ assert "header.goosialize_links.actions" in page_blueprint["form"]["fields"]
 assert "NativePageProvisioner" in plugin
 assert "NativePageContentResolver" in plugin
 
+locator = Path("classes/NativePageLocator.php").read_text()
+
+# Grav #4245 R2-B: physical Links Page lookup must be bounded to the
+# configured route rather than recursively crawling user/pages.
+assert "RecursiveDirectoryIterator" not in locator
+assert "RecursiveIteratorIterator" not in locator
+assert "FilesystemIterator" not in locator
+assert "GLOB_ONLYDIR" in locator
+assert "childDirectory(" in locator
+assert "string $configuredRoute" in locator
+
+# Both production callers must provide the configured route.
+assert "($normalizedConfig['route'] ?? '')" in plugin
+assert "->route(\n            $route,\n            $default" in controller
+
 # Grav #4245 R2-A: normal plugin boot must never provision content.
 assert "$this->provisionNativePage();" not in plugin
 assert "private function provisionNativePage" in plugin

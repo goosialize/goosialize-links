@@ -470,7 +470,10 @@ $routes->get(
         try {
             $nativeRoute = (new NativePageLocator(
                 GRAV_ROOT . '/user/pages'
-            ))->route($this->defaultLanguage());
+            ))->route(
+                (string) ($normalizedConfig['route'] ?? ''),
+                $this->defaultLanguage()
+            );
 
             if ($nativeRoute !== null) {
                 $normalizedConfig['route'] = $nativeRoute;

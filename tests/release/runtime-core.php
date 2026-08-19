@@ -343,22 +343,21 @@ $firstProvision = $provisioner->provision($rawLocalized, ['en', 'el'], 'en', $na
 $englishPage = $firstProvision['folder'] . '/goosialize-links.en.md';
 $greekPage = $firstProvision['folder'] . '/goosialize-links.el.md';
 check(is_file($englishPage) && is_file($greekPage), 'Native EN/EL Page creation');
-check((new NativePageLocator($nativeRoot . '/pages'))->route('en') === '/bio', 'Physical Page route discovery');
+check((new NativePageLocator($nativeRoot . '/pages'))->route('/bio', 'en') === '/bio', 'Physical Page route discovery');
 
-$duplicateDirectory = $nativeRoot . '/pages/03.duplicate';
-mkdir($duplicateDirectory, 0775, true);
+$unrelatedDirectory = $nativeRoot . '/pages/03.unrelated';
+mkdir($unrelatedDirectory, 0775, true);
 file_put_contents(
-    $duplicateDirectory . '/goosialize-links.md',
-    "---\ntitle: Duplicate Links Page\n---\n"
+    $unrelatedDirectory . '/goosialize-links.md',
+    "---\ntitle: Unrelated Links Page\n---\n"
 );
-expectException(
-    static fn () =>
-        (new NativePageLocator($nativeRoot . '/pages'))
-            ->route('en'),
-    'Duplicate physical Links Pages fail locally'
+check(
+    (new NativePageLocator($nativeRoot . '/pages'))
+        ->route('/bio', 'en') === '/bio',
+    'Unrelated physical Links Page is ignored by bounded lookup'
 );
-unlink($duplicateDirectory . '/goosialize-links.md');
-rmdir($duplicateDirectory);
+unlink($unrelatedDirectory . '/goosialize-links.md');
+rmdir($unrelatedDirectory);
 
 $englishBeforeMalformedYaml = file_get_contents($englishPage);
 file_put_contents(
@@ -368,7 +367,7 @@ file_put_contents(
 expectException(
     static fn () =>
         (new NativePageLocator($nativeRoot . '/pages'))
-            ->route('en'),
+            ->route('/bio', 'en'),
     'Malformed native Page YAML fails locally'
 );
 file_put_contents(
@@ -377,9 +376,140 @@ file_put_contents(
 );
 check(
     (new NativePageLocator($nativeRoot . '/pages'))
-        ->route('en') === '/bio',
+        ->route('/bio', 'en') === '/bio',
     'Native Page route recovers after malformed fixture'
 );
+echo "\n--- bounded native Page location ---\n";
+
+$boundedLocator = new NativePageLocator(
+    $nativeRoot . '/pages'
+);
+
+check(
+    $boundedLocator->route('/bio', 'en') === '/bio',
+    'Numbered configured route lookup'
+);
+
+$directRoot =
+    sys_get_temp_dir() .
+    '/goosialize-links-direct-' .
+    bin2hex(random_bytes(6));
+
+mkdir(
+    $directRoot . '/pages/bio',
+    0775,
+    true
+);
+
+file_put_contents(
+    $directRoot . '/pages/bio/goosialize-links.en.md',
+    "---\ntitle: Direct Links Page\n---\n"
+);
+
+check(
+    (new NativePageLocator($directRoot . '/pages'))
+        ->route('/bio', 'en') === '/bio',
+    'Unnumbered configured route lookup'
+);
+
+$nestedRoot =
+    sys_get_temp_dir() .
+    '/goosialize-links-nested-' .
+    bin2hex(random_bytes(6));
+
+mkdir(
+    $nestedRoot . '/pages/01.company/02.team',
+    0775,
+    true
+);
+
+file_put_contents(
+    $nestedRoot .
+    '/pages/01.company/02.team/goosialize-links.en.md',
+    "---\ntitle: Team Links\n---\n"
+);
+
+check(
+    (new NativePageLocator($nestedRoot . '/pages'))
+        ->route('/company/team', 'en') === '/company/team',
+    'Nested configured route lookup'
+);
+
+$overrideFile =
+    $directRoot .
+    '/pages/bio/goosialize-links.en.md';
+
+file_put_contents(
+    $overrideFile,
+    "---\nroutes:\n  default: /links-home\n---\n"
+);
+
+check(
+    (new NativePageLocator($directRoot . '/pages'))
+        ->route('/bio', 'en') === '/links-home',
+    'Native routes.default override'
+);
+
+file_put_contents(
+    $overrideFile,
+    "---\nslug: my-links\n---\n"
+);
+
+check(
+    (new NativePageLocator($directRoot . '/pages'))
+        ->route('/bio', 'en') === '/my-links',
+    'Native slug override'
+);
+
+file_put_contents(
+    $overrideFile,
+    "---\ntitle: Direct Links Page\n---\n"
+);
+
+mkdir(
+    $directRoot . '/pages/01.unrelated/deep/nested',
+    0775,
+    true
+);
+
+file_put_contents(
+    $directRoot .
+    '/pages/01.unrelated/deep/nested/goosialize-links.en.md',
+    "---\ntitle: Unrelated deep Links file\n---\n"
+);
+
+check(
+    (new NativePageLocator($directRoot . '/pages'))
+        ->route('/bio', 'en') === '/bio',
+    'Deep unrelated Links file is not recursively scanned'
+);
+
+mkdir(
+    $directRoot . '/pages/02.bio',
+    0775,
+    true
+);
+
+expectException(
+    static fn () =>
+        (new NativePageLocator($directRoot . '/pages'))
+            ->route('/bio', 'en'),
+    'Duplicate immediate route directory rejected'
+);
+
+check(
+    (new NativePageLocator($directRoot . '/pages'))
+        ->route('/missing', 'en') === null,
+    'Missing configured route returns null'
+);
+
+expectException(
+    static fn () =>
+        (new NativePageLocator($directRoot . '/pages'))
+            ->route('/Unsafe Route', 'en'),
+    'Unsafe configured route rejected'
+);
+
 check($firstProvision['backup'] !== null && is_file($firstProvision['backup']), 'Legacy configuration backup');
 check(
     ($rawLocalized['profile']['translations'][0]['language'] ?? null) === 'el' &&
