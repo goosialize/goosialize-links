@@ -10,5 +10,6 @@ appearance:
   theme: light
   accent: yellow
   button_shape: rounded
+  powered_by: true
 actions: []
 links: []

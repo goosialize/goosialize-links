@@ -247,6 +247,95 @@ check(
     'Button shape normalization'
 );
 
+check(
+    $normalized['appearance']['powered_by']
+        === true,
+    'Powered-by defaults enabled'
+);
+
+$poweredByDisabled =
+    $experience->normalize(
+        [
+            'profile' => [
+                'image' => [],
+            ],
+            'appearance' => [
+                'theme' => 'light',
+                'accent' => 'yellow',
+                'button_shape' => 'rounded',
+                'powered_by' => false,
+            ],
+            'actions' => [],
+        ],
+        $base
+    );
+
+check(
+    $poweredByDisabled['appearance']['powered_by']
+        === false,
+    'Powered-by explicit disable normalization'
+);
+
+$poweredByStringFalse =
+    $experience->normalize(
+        [
+            'profile' => [
+                'image' => [],
+            ],
+            'appearance' => [
+                'powered_by' => 'false',
+            ],
+            'actions' => [],
+        ],
+        $base
+    );
+
+check(
+    $poweredByStringFalse['appearance']['powered_by']
+        === false,
+    'Powered-by serialized false normalization'
+);
+
+$poweredByFactory =
+    new PublicPageViewModelFactory();
+
+$poweredByDefaultView =
+    $poweredByFactory->create(
+        $normalized,
+        'en'
+    );
+
+check(
+    ($poweredByDefaultView['powered_by']['enabled'] ?? null)
+        === true,
+    'Powered-by default view model enabled'
+);
+
+$poweredByDisabledView =
+    $poweredByFactory->create(
+        $poweredByDisabled,
+        'en'
+    );
+
+check(
+    ($poweredByDisabledView['powered_by']['enabled'] ?? null)
+        === false,
+    'Powered-by disabled view model'
+);
+
+expectException(
+    static fn () =>
+        $experience->normalize(
+            [
+                'appearance' => [
+                    'powered_by' => 'maybe',
+                ],
+            ],
+            $base
+        ),
+    'Invalid powered-by value rejected'
+);
+
 expectException(
     static fn () =>
         $experience->normalize(

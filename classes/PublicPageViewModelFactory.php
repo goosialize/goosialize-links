@@ -189,6 +189,10 @@ final class PublicPageViewModelFactory
             'actions' => $actions,
             'links' => $links,
             'powered_by' => [
+                'enabled' => (bool) (
+                    $appearance['powered_by']
+                    ?? true
+                ),
                 'label' =>
                     'Powered by Goosialize Links',
                 'url' => 'https://goosialize.com',

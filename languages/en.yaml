@@ -40,6 +40,8 @@ ICU:
     BUTTON_SQUARE: Square
     BUTTON_ROUNDED: Rounded
     BUTTON_PILL: Pill
+    POWERED_BY: Powered by credit
+    POWERED_BY_HELP: Show or hide the “Powered by Goosialize Links” credit on the public page.
     ACTIONS_SECTION: Social and contact actions
     ACTIONS_SECTION_HELP: Add social profiles and direct contact methods such as email, phone and messaging.
     ACTIONS: Actions

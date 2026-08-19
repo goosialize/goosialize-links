@@ -104,6 +104,12 @@ final class PublicPageExperienceNormalizer
             )
         );
 
+        $poweredBy =
+            $this->normalizeBoolean(
+                $rawAppearance['powered_by'] ?? true,
+                true
+            );
+
         $this->assertAllowed(
             $theme,
             self::THEMES,
@@ -128,6 +134,7 @@ final class PublicPageExperienceNormalizer
             'theme' => $theme,
             'accent' => $accent,
             'button_shape' => $buttonShape,
+            'powered_by' => $poweredBy,
         ];
 
         $baseConfig['actions'] =
@@ -155,6 +162,39 @@ final class PublicPageExperienceNormalizer
         }
 
         return $image;
+    }
+
+    private function normalizeBoolean(
+        mixed $value,
+        bool $default
+    ): bool {
+        if ($value === null || $value === '') {
+            return $default;
+        }
+
+        if (is_bool($value)) {
+            return $value;
+        }
+
+        if (
+            $value === 1 ||
+            $value === '1' ||
+            $value === 'true'
+        ) {
+            return true;
+        }
+
+        if (
+            $value === 0 ||
+            $value === '0' ||
+            $value === 'false'
+        ) {
+            return false;
+        }
+
+        throw new InvalidArgumentException(
+            'Powered-by setting must be a boolean.'
+        );
     }
 
     /**

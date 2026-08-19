@@ -134,6 +134,16 @@ form:
             rounded: PLUGIN_GOOSIALIZE_LINKS.BUTTON_ROUNDED
             pill: PLUGIN_GOOSIALIZE_LINKS.BUTTON_PILL
 
+        appearance.powered_by:
+          type: toggle
+          label: PLUGIN_GOOSIALIZE_LINKS.POWERED_BY
+          help: PLUGIN_GOOSIALIZE_LINKS.POWERED_BY_HELP
+          default: true
+          highlight: true
+          options:
+            true: PLUGIN_ADMIN.ENABLED
+            false: PLUGIN_ADMIN.DISABLED
+
     actions_section:
       type: fieldset
       title: PLUGIN_GOOSIALIZE_LINKS.ACTIONS_SECTION

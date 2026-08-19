@@ -72,6 +72,26 @@ assert fields["route"]["type"] == "hidden"
 assert fields["profile_section"]["fields"]["profile.translations"]["type"] == "hidden"
 assert fields["actions_section"]["fields"]["actions"]["fields"][".translations"]["type"] == "hidden"
 assert fields["links_section"]["fields"]["links"]["fields"][".translations"]["type"] == "hidden"
+powered = fields["appearance_section"]["fields"]["appearance.powered_by"]
+assert powered["type"] == "toggle"
+assert powered["default"] is True
+assert powered["highlight"] is True
+assert powered["options"][True] == "PLUGIN_ADMIN.ENABLED"
+assert powered["options"][False] == "PLUGIN_ADMIN.DISABLED"
+
+defaults = yaml.safe_load(Path("goosialize-links.yaml").read_text())
+assert defaults["appearance"]["powered_by"] is True
+
+experience = Path("classes/PublicPageExperienceNormalizer.php").read_text()
+view_model = Path("classes/PublicPageViewModelFactory.php").read_text()
+template = Path("templates/goosialize-links.html.twig").read_text()
+
+assert "$rawAppearance['powered_by'] ?? true" in experience
+assert "'powered_by' => $poweredBy" in experience
+assert "'enabled' => (bool)" in view_model
+assert "$appearance['powered_by']" in view_model
+assert "{% if goosialize_links.powered_by.enabled %}" in template
+
 assert fields["editor_preview"]["type"] == "goosialize-links-preview"
 assert fields["editor_preview"]["label"] == "PLUGIN_GOOSIALIZE_LINKS.LIVE_PREVIEW"
 assert fields["profile_section"]["fields"]["profile.image"]["destination"] == "user://media/goosialize-links/profile"
@@ -139,6 +159,8 @@ assert "PREVIEW_IMAGE_AFTER_SAVE" in controller
 for language in ("en", "el"):
     translations = yaml.safe_load(Path(f"languages/{language}.yaml").read_text())
     owned = translations["ICU"]["PLUGIN_GOOSIALIZE_LINKS"]
+    assert owned["POWERED_BY"]
+    assert owned["POWERED_BY_HELP"]
     for key in (
         "PREVIEW", "LIVE_PREVIEW", "PREVIEW_LANGUAGE", "REFRESH_PREVIEW",
         "OPEN_PUBLIC_PAGE", "PUBLIC_WEBSITE", "PUBLIC_ACTIONS", "PUBLIC_LINKS",

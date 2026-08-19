@@ -139,17 +139,19 @@
             </nav>
         {% endif %}
 
-        <footer class="goosialize-links__footer">
-            <a
-                class="goosialize-links__powered"
-                data-goosialize-links-powered-by
-                href="{{ goosialize_links.powered_by.url|e('html_attr') }}"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                {{ goosialize_links.powered_by.label|e }}
-            </a>
-        </footer>
+        {% if goosialize_links.powered_by.enabled %}
+            <footer class="goosialize-links__footer">
+                <a
+                    class="goosialize-links__powered"
+                    data-goosialize-links-powered-by
+                    href="{{ goosialize_links.powered_by.url|e('html_attr') }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    {{ goosialize_links.powered_by.label|e }}
+                </a>
+            </footer>
+        {% endif %}
     </main>
 </body>
 </html>

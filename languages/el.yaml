@@ -40,6 +40,8 @@ ICU:
     BUTTON_SQUARE: Τετράγωνα
     BUTTON_ROUNDED: Στρογγυλεμένα
     BUTTON_PILL: Pill
+    POWERED_BY: Ένδειξη Powered by
+    POWERED_BY_HELP: Εμφανίστε ή αποκρύψτε την ένδειξη «Powered by Goosialize Links» στη δημόσια σελίδα.
     ACTIONS_SECTION: Social και contact actions
     ACTIONS_SECTION_HELP: Προσθέστε social profiles και άμεσους τρόπους επικοινωνίας όπως email, τηλέφωνο και messaging.
     ACTIONS: Actions
