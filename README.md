@@ -12,6 +12,52 @@ Maintenance release: `1.0.1`.
 - Documentation: <https://github.com/goosialize/goosialize-links#readme>
 - Product page: pending; no goosialize.com product-page slug has been approved
 
+## Documentation
+
+Complete product documentation is available in the
+[Documentation Index](docs/DOCUMENTATION_INDEX.md).
+
+### Get started
+
+- [Quick Start](docs/QUICK_START.md)
+- [Installation](docs/INSTALLATION.md)
+- [Configuration Reference](docs/CONFIGURATION.md)
+- [Admin Guide](docs/ADMIN_GUIDE.md)
+
+### Public experience
+
+- [Public Page](docs/PUBLIC_PAGE.md)
+- [Live Preview](docs/LIVE_PREVIEW.md)
+- [Actions](docs/ACTIONS.md)
+- [Links](docs/LINKS.md)
+- [Appearance](docs/APPEARANCE.md)
+- [Multilingual Content](docs/MULTILINGUAL.md)
+
+### QR, analytics and privacy
+
+- [QR Code](docs/QR_CODE.md)
+- [Analytics](docs/ANALYTICS.md)
+- [Privacy](docs/PRIVACY.md)
+- [Permissions](docs/PERMISSIONS.md)
+- [Security](docs/SECURITY.md)
+- [Data Storage](docs/DATA_STORAGE.md)
+
+### Operations
+
+- [Compatibility](docs/COMPATIBILITY.md)
+- [Upgrade](docs/UPGRADE.md)
+- [Uninstall and Data Retention](docs/UNINSTALL_DATA_RETENTION.md)
+- [Troubleshooting](docs/TROUBLESHOOTING.md)
+- [FAQ](docs/FAQ.md)
+- [Examples](docs/EXAMPLES.md)
+
+### Maintainer and release references
+
+- [Developer Reference](docs/DEVELOPER_REFERENCE.md)
+- [Manual Browser Acceptance Checklist](docs/MANUAL_BROWSER_ACCEPTANCE_CHECKLIST.md)
+- [Release Verification](docs/RELEASE_VERIFICATION.md)
+- [Terminology](docs/TERMINOLOGY.md)
+
 ## Requirements
 
 - Grav 2.0.12

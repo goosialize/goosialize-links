@@ -60,6 +60,9 @@ echo "===== A. STATIC CONTRACT ====="
 
 tests/release/static-contract.sh
 
+echo "===== A2. DOCUMENTATION CONTRACT ====="
+tests/release/documentation-contract.sh
+
 echo
 echo "===== B. PHP SOURCE SYNTAX ON GRAV 2.0.12 ====="
 
@@ -243,6 +246,75 @@ EOF
       /app/www/public/cache
 
 '
+
+echo
+echo "===== G0. CLEAN GRAV READINESS ====="
+
+CLEAN_GRAV_READY=0
+
+for attempt in $(seq 1 90); do
+    if docker exec --user abc "$CONTAINER" sh -lc '
+        ROOT="/app/www/public"
+
+        test -f "$ROOT/user/plugins/form/vendor/autoload.php" &&
+        test -f "$ROOT/user/plugins/form/classes/Captcha/CaptchaManager.php" &&
+        test -f "$ROOT/user/plugins/error/vendor/autoload.php" &&
+        test -d "$ROOT/logs" &&
+        test -d "$ROOT/cache" &&
+        test -d "$ROOT/user/config" &&
+        test -w "$ROOT/logs" &&
+        test -w "$ROOT/cache" &&
+        test -w "$ROOT/user/config" &&
+        php -r "\
+            require \"/app/www/public/user/plugins/form/vendor/autoload.php\"; \
+            exit(class_exists(\"Grav\\\\Plugin\\\\Form\\\\Captcha\\\\CaptchaManager\") ? 0 : 1);"
+    ' >/dev/null 2>&1
+    then
+        CLEAN_GRAV_READY=1
+        break
+    fi
+
+    sleep 1
+done
+
+if [ "$CLEAN_GRAV_READY" != "1" ]; then
+    echo "CLEAN_GRAV_READINESS = FAIL"
+
+    docker exec "$CONTAINER" sh -lc '
+        ROOT="/app/www/public"
+
+        echo "--- readiness filesystem ---"
+
+        for path in \
+          "$ROOT/user/plugins/form/vendor/autoload.php" \
+          "$ROOT/user/plugins/form/classes/Captcha/CaptchaManager.php" \
+          "$ROOT/user/plugins/error/vendor/autoload.php"
+        do
+            if [ -e "$path" ]; then
+                ls -ld "$path"
+            else
+                echo "MISSING=$path"
+            fi
+        done
+
+        echo
+        echo "--- runtime directories ---"
+
+        for path in \
+          "$ROOT/logs" \
+          "$ROOT/cache" \
+          "$ROOT/user/config"
+        do
+            ls -ld "$path" 2>/dev/null || echo "MISSING=$path"
+        done
+    ' || true
+
+    docker logs "$CONTAINER" 2>&1 | tail -120 || true
+
+    exit 1
+fi
+
+echo "CLEAN_GRAV_READINESS = PASS"
 
 docker exec --user abc "$CONTAINER" sh -lc '
     cd /app/www/public
