@@ -336,7 +336,7 @@ if bp.get("slug") != "goosialize-links":
 if bp.get("type") != "plugin":
     raise SystemExit("Invalid package type")
 
-if bp.get("version") != "1.0.1":
+if bp.get("version") != "1.0.2":
     raise SystemExit("Unexpected release-candidate version")
 
 if bp.get("license") != "MIT":
@@ -387,7 +387,7 @@ if support.get("docs") != repository + "#readme":
 changelog = Path("CHANGELOG.md").read_text()
 
 for marker in (
-    "# 1.0.1",
+    "# 1.0.2",
     "## 08/12/2026",
     "[](#new)",
     "[](#improved)",
@@ -396,7 +396,7 @@ for marker in (
         raise SystemExit(f"Missing Grav changelog marker: {marker}")
 
 for path in (
-    "docs/RELEASE_NOTES_1.0.1.md",
+    "docs/RELEASE_NOTES_1.0.2.md",
     "docs/PUBLIC_DISTRIBUTION_HANDOFF.md",
 ):
     if not Path(path).is_file():
@@ -436,7 +436,7 @@ if dependencies != expected_dependencies:
     raise SystemExit("Stable dependency contract mismatch")
 
 print("Plugin identity       = PASS")
-print("Maintenance version   = 1.0.1")
+print("Maintenance version   = 1.0.2")
 print("Dependency contract   = PASS")
 print("FREE core license     = MIT")
 print("Public repository     = LOCKED")

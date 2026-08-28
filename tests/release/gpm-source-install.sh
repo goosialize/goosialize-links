@@ -11,7 +11,7 @@ ROOT="$(
 )"
 
 BUILD_DIR="$(mktemp -d /tmp/goosialize-links-gpm-source.XXXXXX)"
-ARCHIVE="$BUILD_DIR/goosialize-links-1.0.1-source.zip"
+ARCHIVE="$BUILD_DIR/goosialize-links-1.0.2-source.zip"
 BEFORE="$BUILD_DIR/status.before"
 AFTER="$BUILD_DIR/status.after"
 

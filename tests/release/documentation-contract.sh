@@ -355,34 +355,33 @@ fi
 echo
 echo "--- release-status truth ---"
 
-if grep -RniE \
-  --include='*.md' \
-  'current release[^0-9]*1\.0\.2|maintenance release[^0-9]*1\.0\.2|released version[^0-9]*1\.0\.2|1\.0\.2 is released|1\.0\.2 has been released' \
-  README.md docs
+grep -Fq \
+  'Maintenance release: `1.0.2`.' \
+  README.md \
+  && echo "Maintenance release status = PASS" \
+  || {
+      echo "Maintenance release status = FAIL"
+      FAIL=1
+  }
+
+grep -Fq \
+  'Goosialize Links 1.0.2 maintenance release' \
+  docs/DOCUMENTATION_INDEX.md \
+  && echo "Documentation release status = PASS" \
+  || {
+      echo "Documentation release status = FAIL"
+      FAIL=1
+  }
+
+if grep -Fq \
+  'package metadata may still report version 1.0.1' \
+  docs/DOCUMENTATION_INDEX.md
 then
-    echo "False 1.0.2 release claim = FAIL"
+    echo "Obsolete pre-bump version note = FAIL"
     FAIL=1
 else
-    echo "False 1.0.2 release claim = ABSENT"
+    echo "Obsolete pre-bump version note = ABSENT"
 fi
-
-grep -Fq \
-  'Maintenance release: `1.0.1`.' \
-  README.md \
-  && echo "Public release status = PASS" \
-  || {
-      echo "Public release status = FAIL"
-      FAIL=1
-  }
-
-grep -Fq \
-  'targeting Goosialize Links 1.0.2' \
-  docs/DOCUMENTATION_INDEX.md \
-  && echo "Maintenance target status = PASS" \
-  || {
-      echo "Maintenance target status = FAIL"
-      FAIL=1
-  }
 
 echo
 echo "--- compatibility truth ---"

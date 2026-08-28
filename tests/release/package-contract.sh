@@ -82,7 +82,7 @@ blueprint = payloads["goosialize-links/blueprints.yaml"].decode()
 composer_json = json.loads(payloads["goosialize-links/composer.json"])
 license_text = payloads["goosialize-links/LICENSE"].decode()
 
-if "version: 1.0.1" not in blueprint:
+if "version: 1.0.2" not in blueprint:
     raise SystemExit("Unexpected packaged release-candidate version")
 
 if composer_json.get("license") != "MIT":

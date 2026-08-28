@@ -5,7 +5,7 @@ creates one mobile-first public link page on your own website, with tracked
 links and actions, privacy-preserving aggregate analytics, and one tracked QR
 code.
 
-Maintenance release: `1.0.1`.
+Maintenance release: `1.0.2`.
 
 - Source: <https://github.com/goosialize/goosialize-links>
 - Releases: <https://github.com/goosialize/goosialize-links/releases>

@@ -7,9 +7,8 @@ and maintainer documentation.
 
 > **Release status**
 >
-> This documentation is being prepared against the current `release/1.0.x`
-> maintenance code targeting Goosialize Links 1.0.2. Until the final release
-> version bump is made, package metadata may still report version 1.0.1.
+> This documentation describes the Goosialize Links 1.0.2 maintenance release
+> source and its supported FREE product behavior.
 
 ## Start here
 

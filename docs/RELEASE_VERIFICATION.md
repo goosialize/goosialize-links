@@ -457,8 +457,8 @@ The cumulative development package SHA at that checkpoint was:
 9aa8d72cce41fa4536fcd05101198d1131e3417db3b5608d1b5d638309ab9cb3
 ~~~
 
-This hash is not automatically the checksum of a future final 1.0.2 release
-asset.
+This hash is not automatically the checksum of the final public 1.0.2
+release asset.
 
 ## Final release evidence template
 

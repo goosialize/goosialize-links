@@ -1,5 +1,26 @@
 # Changelog
 
+# 1.0.2
+## 08/28/2026
+
+1. [](#improved)
+   * Made public Page resolution fail safely when configured Page lookup fails,
+     while keeping normal plugin boot free of automatic Page writes.
+   * Replaced recursive public Page discovery with bounded lookup along the
+     configured route.
+   * Added a backwards-compatible `powered_by` configuration toggle so the
+     public Goosialize credit can be disabled explicitly.
+   * Scoped Admin2 realtime preview behavior to the Links editor instead of
+     replacing global `window.fetch` behavior or observing the entire document.
+   * Reworked public analytics persistence to use append-only daily event
+     journals, avoiding full YAML rewrites and per-hit `fsync()` calls while
+     preserving aggregate reporting and legacy YAML compatibility.
+   * Added complete public, administrator, privacy, security, analytics,
+     troubleshooting, developer, and release documentation with a permanent
+     documentation regression contract.
+   * Hardened clean-Grav release acceptance with an explicit runtime readiness
+     gate for bundled plugin autoload and writable runtime paths.
+
 # 1.0.1
 ## 08/16/2026
 
