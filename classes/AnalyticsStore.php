@@ -23,6 +23,8 @@ final class AnalyticsStore
 
     private const EVENT_QR_VISIT = 'qr_visit';
 
+    private const JOURNAL_SUFFIX = '.events';
+
     public function __construct(
         private readonly string $directory
     ) {
@@ -109,19 +111,111 @@ final class AnalyticsStore
     {
         $this->assertDate($date);
 
-        $path = $this->dataPath($date);
-
-        if (!is_file($path)) {
+        if (!is_dir($this->directory)) {
             return $this->emptyData(
                 $date,
                 $date . 'T00:00:00+00:00'
             );
         }
 
-        return $this->readData(
-            $path,
-            $date
+        $path = $this->dataPath($date);
+        $journalPath = $this->journalPath($date);
+
+        if (
+            !is_file($path) &&
+            !is_file($journalPath)
+        ) {
+            return $this->emptyData(
+                $date,
+                $date . 'T00:00:00+00:00'
+            );
+        }
+
+        $lockHandle = $this->openLock();
+
+        try {
+            if (!flock($lockHandle, LOCK_SH)) {
+                throw new RuntimeException(
+                    'Unable to acquire analytics read lock.'
+                );
+            }
+
+            $data = is_file($path)
+                ? $this->readData($path, $date)
+                : $this->emptyData(
+                    $date,
+                    $date . 'T00:00:00+00:00'
+                );
+
+            if (is_file($journalPath)) {
+                $data = $this->mergeJournal(
+                    $data,
+                    $journalPath,
+                    $date
+                );
+            }
+
+            return $data;
+        } finally {
+            flock(
+                $lockHandle,
+                LOCK_UN
+            );
+
+            fclose($lockHandle);
+        }
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function dates(): array
+    {
+        if (!is_dir($this->directory)) {
+            return [];
+        }
+
+        $paths = glob(
+            rtrim($this->directory, '/') . '/*'
         );
+
+        if ($paths === false) {
+            throw new RuntimeException(
+                'Unable to list analytics files.'
+            );
+        }
+
+        $dates = [];
+
+        foreach ($paths as $path) {
+            if (!is_file($path) || is_link($path)) {
+                continue;
+            }
+
+            $filename = basename($path);
+
+            if (
+                preg_match(
+                    '/^(\d{4}-\d{2}-\d{2})(?:\.yaml|\.events)$/D',
+                    $filename,
+                    $matches
+                ) !== 1
+            ) {
+                continue;
+            }
+
+            $this->assertDate($matches[1]);
+            $dates[$matches[1]] = true;
+        }
+
+        $dates = array_keys($dates);
+
+        sort(
+            $dates,
+            SORT_STRING
+        );
+
+        return $dates;
     }
 
     private function record(
@@ -135,6 +229,36 @@ final class AnalyticsStore
 
         $this->ensureDirectory();
 
+        $lockHandle = $this->openLock();
+
+        try {
+            if (!flock($lockHandle, LOCK_EX)) {
+                throw new RuntimeException(
+                    'Unable to acquire analytics write lock.'
+                );
+            }
+
+            $this->appendJournalEvent(
+                $this->journalPath($date),
+                $event,
+                $id,
+                $now
+            );
+        } finally {
+            flock(
+                $lockHandle,
+                LOCK_UN
+            );
+
+            fclose($lockHandle);
+        }
+    }
+
+    /**
+     * @return resource
+     */
+    private function openLock()
+    {
         $lockPath =
             $this->directory .
             '/.analytics.lock';
@@ -155,91 +279,254 @@ final class AnalyticsStore
             0640
         );
 
-        try {
-            if (!flock($lockHandle, LOCK_EX)) {
-                throw new RuntimeException(
-                    'Unable to acquire analytics lock.'
-                );
-            }
+        return $lockHandle;
+    }
 
-            $path = $this->dataPath($date);
+    private function appendJournalEvent(
+        string $journalPath,
+        string $event,
+        ?string $id,
+        DateTimeImmutable $now
+    ): void {
+        $line = implode(
+            "\t",
+            [
+                $now->format(DATE_ATOM),
+                $event,
+                $id ?? '-',
+            ]
+        ) . "\n";
 
-            $data = is_file($path)
-                ? $this->readData($path, $date)
-                : $this->emptyData(
-                    $date,
-                    $now->format(DATE_ATOM)
-                );
+        $handle = fopen(
+            $journalPath,
+            'ab'
+        );
 
-            if ($event === self::EVENT_PAGE_VIEW) {
-                $data['totals']['page_views'] =
-                    $this->increment(
-                        $data['totals']['page_views']
-                    );
-            } elseif (
-                $event === self::EVENT_LINK_CLICK &&
-                $id !== null
-            ) {
-                $data['totals']['link_clicks'] =
-                    $this->increment(
-                        $data['totals']['link_clicks']
-                    );
-
-                $data['links'][$id] =
-                    $this->increment(
-                        $data['links'][$id] ?? 0
-                    );
-            } elseif (
-                $event === self::EVENT_ACTION_CLICK &&
-                $id !== null
-            ) {
-                $data['totals']['action_clicks'] =
-                    $this->increment(
-                        $data['totals']['action_clicks']
-                    );
-
-                $data['actions'][$id] =
-                    $this->increment(
-                        $data['actions'][$id] ?? 0
-                    );
-            } elseif (
-                $event === self::EVENT_QR_VISIT &&
-                $id !== null
-            ) {
-                $data['totals']['qr_visits'] =
-                    $this->increment(
-                        $data['totals']['qr_visits']
-                    );
-
-                $data['qrs'][$id] =
-                    $this->increment(
-                        $data['qrs'][$id] ?? 0
-                    );
-            } else {
-                throw new InvalidArgumentException(
-                    'Unsupported analytics event.'
-                );
-            }
-
-            $data['updated_at'] =
-                $now->format(DATE_ATOM);
-
-            ksort($data['links']);
-            ksort($data['actions']);
-            ksort($data['qrs']);
-
-            $this->writeAtomically(
-                $path,
-                $data
+        if ($handle === false) {
+            throw new RuntimeException(
+                'Unable to open analytics journal.'
             );
-        } finally {
-            flock(
-                $lockHandle,
-                LOCK_UN
-            );
-
-            fclose($lockHandle);
         }
+
+        try {
+            $remaining = $line;
+
+            while ($remaining !== '') {
+                $written = fwrite(
+                    $handle,
+                    $remaining
+                );
+
+                if (
+                    $written === false ||
+                    $written === 0
+                ) {
+                    throw new RuntimeException(
+                        'Unable to append analytics event.'
+                    );
+                }
+
+                $remaining = substr(
+                    $remaining,
+                    $written
+                );
+            }
+        } finally {
+            fclose($handle);
+        }
+
+        @chmod(
+            $journalPath,
+            0640
+        );
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
+     */
+    private function mergeJournal(
+        array $data,
+        string $journalPath,
+        string $expectedDate
+    ): array {
+        $handle = fopen(
+            $journalPath,
+            'rb'
+        );
+
+        if ($handle === false) {
+            throw new RuntimeException(
+                'Unable to read analytics journal.'
+            );
+        }
+
+        try {
+            while (($line = fgets($handle)) !== false) {
+                $line = rtrim(
+                    $line,
+                    "\r\n"
+                );
+
+                if ($line === '') {
+                    continue;
+                }
+
+                $parts = explode(
+                    "\t",
+                    $line
+                );
+
+                if (count($parts) !== 3) {
+                    throw new RuntimeException(
+                        'Analytics journal entry is malformed.'
+                    );
+                }
+
+                [
+                    $timestamp,
+                    $event,
+                    $rawId,
+                ] = $parts;
+
+                try {
+                    $eventTime =
+                        new DateTimeImmutable($timestamp);
+                } catch (Throwable $exception) {
+                    throw new RuntimeException(
+                        'Analytics journal timestamp is invalid.',
+                        0,
+                        $exception
+                    );
+                }
+
+                if (
+                    $eventTime->format('Y-m-d') !==
+                    $expectedDate
+                ) {
+                    throw new RuntimeException(
+                        'Analytics journal date does not match filename.'
+                    );
+                }
+
+                $id =
+                    $rawId === '-'
+                        ? null
+                        : $rawId;
+
+                $data = $this->applyEvent(
+                    $data,
+                    $event,
+                    $id
+                );
+
+                $data['updated_at'] =
+                    $eventTime->format(DATE_ATOM);
+            }
+
+            if (!feof($handle)) {
+                throw new RuntimeException(
+                    'Unable to finish reading analytics journal.'
+                );
+            }
+        } finally {
+            fclose($handle);
+        }
+
+        ksort($data['links']);
+        ksort($data['actions']);
+        ksort($data['qrs']);
+
+        return $data;
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
+     */
+    private function applyEvent(
+        array $data,
+        string $event,
+        ?string $id
+    ): array {
+        if (
+            $event === self::EVENT_PAGE_VIEW &&
+            $id === null
+        ) {
+            $data['totals']['page_views'] =
+                $this->increment(
+                    $data['totals']['page_views']
+                );
+
+            return $data;
+        }
+
+        if (
+            $event === self::EVENT_LINK_CLICK &&
+            $id !== null
+        ) {
+            $this->assertId(
+                $id,
+                'link'
+            );
+
+            $data['totals']['link_clicks'] =
+                $this->increment(
+                    $data['totals']['link_clicks']
+                );
+
+            $data['links'][$id] =
+                $this->increment(
+                    $data['links'][$id] ?? 0
+                );
+
+            return $data;
+        }
+
+        if (
+            $event === self::EVENT_ACTION_CLICK &&
+            $id !== null
+        ) {
+            $this->assertId(
+                $id,
+                'action'
+            );
+
+            $data['totals']['action_clicks'] =
+                $this->increment(
+                    $data['totals']['action_clicks']
+                );
+
+            $data['actions'][$id] =
+                $this->increment(
+                    $data['actions'][$id] ?? 0
+                );
+
+            return $data;
+        }
+
+        if (
+            $event === self::EVENT_QR_VISIT &&
+            $id !== null
+        ) {
+            $this->assertQrId($id);
+
+            $data['totals']['qr_visits'] =
+                $this->increment(
+                    $data['totals']['qr_visits']
+                );
+
+            $data['qrs'][$id] =
+                $this->increment(
+                    $data['qrs'][$id] ?? 0
+                );
+
+            return $data;
+        }
+
+        throw new InvalidArgumentException(
+            'Unsupported analytics event.'
+        );
     }
 
     private function ensureDirectory(): void
@@ -264,103 +551,6 @@ final class AnalyticsStore
         @chmod(
             $this->directory,
             0750
-        );
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     */
-    private function writeAtomically(
-        string $path,
-        array $data
-    ): void {
-        try {
-            $suffix = bin2hex(
-                random_bytes(8)
-            );
-        } catch (Throwable $exception) {
-            throw new RuntimeException(
-                'Unable to create analytics temporary file.',
-                0,
-                $exception
-            );
-        }
-
-        $temporaryPath =
-            $path .
-            '.tmp.' .
-            $suffix;
-
-        $yaml = Yaml::dump(
-            $data,
-            6,
-            2
-        );
-
-        $handle = fopen(
-            $temporaryPath,
-            'xb'
-        );
-
-        if ($handle === false) {
-            throw new RuntimeException(
-                'Unable to open analytics temporary file.'
-            );
-        }
-
-        try {
-            $remaining = $yaml;
-
-            while ($remaining !== '') {
-                $written = fwrite(
-                    $handle,
-                    $remaining
-                );
-
-                if (
-                    $written === false ||
-                    $written === 0
-                ) {
-                    throw new RuntimeException(
-                        'Unable to write analytics data.'
-                    );
-                }
-
-                $remaining = substr(
-                    $remaining,
-                    $written
-                );
-            }
-
-            if (!fflush($handle)) {
-                throw new RuntimeException(
-                    'Unable to flush analytics data.'
-                );
-            }
-
-            if (function_exists('fsync')) {
-                fsync($handle);
-            }
-        } finally {
-            fclose($handle);
-        }
-
-        @chmod(
-            $temporaryPath,
-            0640
-        );
-
-        if (!rename($temporaryPath, $path)) {
-            @unlink($temporaryPath);
-
-            throw new RuntimeException(
-                'Unable to publish analytics data.'
-            );
-        }
-
-        @chmod(
-            $path,
-            0640
         );
     }
 
@@ -649,6 +839,19 @@ final class AnalyticsStore
                 '/'
             ),
             $date
+        );
+    }
+
+    private function journalPath(string $date): string
+    {
+        return sprintf(
+            '%s/%s%s',
+            rtrim(
+                $this->directory,
+                '/'
+            ),
+            $date,
+            self::JOURNAL_SUFFIX
         );
     }
 

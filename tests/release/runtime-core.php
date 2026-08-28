@@ -752,6 +752,27 @@ $store->recordActionClick(
     $now
 );
 
+check(
+    !is_file(
+        $tmp . '/2026-08-11.yaml'
+    ),
+    'Analytics hit path does not create daily YAML'
+);
+
+check(
+    is_file(
+        $tmp . '/2026-08-11.events'
+    ),
+    'Analytics journal is created'
+);
+
+check(
+    (fileperms(
+        $tmp . '/2026-08-11.events'
+    ) & 0777) === 0640,
+    'Analytics journal permissions'
+);
+
 $day =
     $store->readDate(
         '2026-08-11'
@@ -805,6 +826,203 @@ check(
     $report['links']['link_aaaaaaaaaaaaaaaa'] === 1 &&
     $report['actions']['action_bbbbbbbbbbbbbbbb'] === 1,
     'Link/action analytics aggregation'
+);
+
+
+echo "\n--- analytics journal compatibility ---\n";
+
+$legacyDate = '2026-08-12';
+
+file_put_contents(
+    $tmp . '/' . $legacyDate . '.yaml',
+    <<<YAML
+version: 2
+date: '2026-08-12'
+updated_at: '2026-08-12T08:00:00+00:00'
+totals:
+  page_views: 10
+  link_clicks: 2
+  action_clicks: 3
+  qr_visits: 4
+links:
+  link_aaaaaaaaaaaaaaaa: 2
+actions:
+  action_bbbbbbbbbbbbbbbb: 3
+qrs:
+  qr_primary: 4
+YAML
+);
+
+$legacyNow =
+    new DateTimeImmutable(
+        '2026-08-12T12:00:00+00:00'
+    );
+
+$store->recordPageView(
+    $legacyNow
+);
+
+$store->recordLinkClick(
+    'link_aaaaaaaaaaaaaaaa',
+    $legacyNow
+);
+
+$store->recordActionClick(
+    'action_bbbbbbbbbbbbbbbb',
+    $legacyNow
+);
+
+$store->recordQrVisit(
+    'qr_primary',
+    $legacyNow
+);
+
+$mergedDay =
+    $store->readDate(
+        $legacyDate
+    );
+
+check(
+    $mergedDay['totals']['page_views'] === 11 &&
+    $mergedDay['totals']['link_clicks'] === 3 &&
+    $mergedDay['totals']['action_clicks'] === 4 &&
+    $mergedDay['totals']['qr_visits'] === 5,
+    'Legacy YAML and pending journal totals merge'
+);
+
+check(
+    $mergedDay['links']['link_aaaaaaaaaaaaaaaa'] === 3 &&
+    $mergedDay['actions']['action_bbbbbbbbbbbbbbbb'] === 4 &&
+    $mergedDay['qrs']['qr_primary'] === 5,
+    'Legacy YAML and pending journal identities merge'
+);
+
+check(
+    file_get_contents(
+        $tmp . '/' . $legacyDate . '.yaml'
+    ) ===
+    <<<YAML
+version: 2
+date: '2026-08-12'
+updated_at: '2026-08-12T08:00:00+00:00'
+totals:
+  page_views: 10
+  link_clicks: 2
+  action_clicks: 3
+  qr_visits: 4
+links:
+  link_aaaaaaaaaaaaaaaa: 2
+actions:
+  action_bbbbbbbbbbbbbbbb: 3
+qrs:
+  qr_primary: 4
+YAML,
+    'Public hits do not rewrite legacy YAML baseline'
+);
+
+$journalOnlyDate = '2026-08-13';
+$journalOnlyNow =
+    new DateTimeImmutable(
+        '2026-08-13T12:00:00+00:00'
+    );
+
+$store->recordQrVisit(
+    'qr_primary',
+    $journalOnlyNow
+);
+
+check(
+    in_array(
+        $journalOnlyDate,
+        $store->dates(),
+        true
+    ),
+    'Journal-only analytics date discovery'
+);
+
+$journalReport =
+    (
+        new AnalyticsReportAggregator(
+            $tmp
+        )
+    )->aggregate();
+
+check(
+    $journalReport['qr_visits'] === 7,
+    'Journal-only day is visible to analytics aggregation'
+);
+
+echo "\n--- analytics journal high volume ---\n";
+
+$volumeDate = '2026-08-14';
+$volumeNow =
+    new DateTimeImmutable(
+        '2026-08-14T12:00:00+00:00'
+    );
+
+for ($index = 0; $index < 2000; $index++) {
+    $store->recordPageView(
+        $volumeNow
+    );
+}
+
+check(
+    !is_file(
+        $tmp . '/' . $volumeDate . '.yaml'
+    ),
+    'High-volume recording does not create YAML'
+);
+
+$volumeDay =
+    $store->readDate(
+        $volumeDate
+    );
+
+check(
+    $volumeDay['totals']['page_views'] === 2000,
+    'High-volume journal exact page-view count'
+);
+
+$volumeLines =
+    file(
+        $tmp . '/' . $volumeDate . '.events',
+        FILE_IGNORE_NEW_LINES
+    );
+
+check(
+    is_array($volumeLines) &&
+    count($volumeLines) === 2000,
+    'High-volume journal exact event count'
+);
+
+echo "\n--- malformed analytics journal ---\n";
+
+$malformedDate = '2026-08-15';
+
+file_put_contents(
+    $tmp . '/' . $malformedDate . '.events',
+    "malformed-event-line\n"
+);
+
+expectException(
+    static fn () =>
+        $store->readDate(
+            $malformedDate
+        ),
+    'Malformed analytics journal fails locally'
+);
+
+$dates = $store->dates();
+
+check(
+    $dates === [
+        '2026-08-11',
+        '2026-08-12',
+        '2026-08-13',
+        '2026-08-14',
+        '2026-08-15',
+    ],
+    'Analytics date discovery deduplicates YAML and journal days'
 );
 
 echo "\n--- tracking routes ---\n";

@@ -304,40 +304,7 @@ final class AnalyticsReportAggregator
             );
         }
 
-        $files = glob(
-            rtrim($this->directory, '/') .
-            '/*.yaml'
-        );
-
-        if ($files === false) {
-            throw new RuntimeException(
-                'Unable to list analytics files.'
-            );
-        }
-
-        sort(
-            $files,
-            SORT_STRING
-        );
-
-        foreach ($files as $path) {
-            $filename = basename($path);
-
-            if (
-                preg_match(
-                    '/^(\d{4}-\d{2}-\d{2})\.yaml$/',
-                    $filename,
-                    $matches
-                ) !== 1
-            ) {
-                $skippedFiles[] =
-                    $filename;
-
-                continue;
-            }
-
-            $date = $matches[1];
-
+        foreach ($this->store->dates() as $date) {
             try {
                 $data =
                     $this->store->readDate($date);
@@ -351,7 +318,7 @@ final class AnalyticsReportAggregator
                 $dates[] = $date;
             } catch (Throwable) {
                 $skippedFiles[] =
-                    $filename;
+                    $date;
             }
         }
 

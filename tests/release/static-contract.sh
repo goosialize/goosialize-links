@@ -602,6 +602,33 @@ for event in (
 
 print("FREE design boundary   = PASS")
 print("FREE analytics boundary = PASS")
+
+analytics_store = Path("classes/AnalyticsStore.php").read_text()
+analytics_report = Path("classes/AnalyticsReportAggregator.php").read_text()
+qr_controller = Path("classes/QrAdminController.php").read_text()
+
+assert "JOURNAL_SUFFIX = '.events'" in analytics_store
+assert "fopen(\n            $journalPath,\n            'ab'" in analytics_store
+assert "LOCK_EX" in analytics_store
+assert "LOCK_SH" in analytics_store
+assert "public function dates(): array" in analytics_store
+assert "mergeJournal(" in analytics_store
+assert "appendJournalEvent(" in analytics_store
+
+# Grav #4245 R2-E: public analytics hits must not parse/dump and
+# durably rewrite the full daily YAML aggregate on every request.
+assert "Yaml::dump" not in analytics_store
+assert "writeAtomically" not in analytics_store
+assert "fsync(" not in analytics_store
+
+# Both report surfaces must discover journal-only dates through
+# AnalyticsStore rather than enumerating only *.yaml files.
+assert "$this->store->dates()" in analytics_report
+assert "$store->dates()" in qr_controller
+
+print("Analytics append-only journal = PASS")
+print("Analytics full-rewrite path absent = PASS")
+print("Analytics journal date discovery = PASS")
 PY
 
 echo

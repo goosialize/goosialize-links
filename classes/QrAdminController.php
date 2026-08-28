@@ -682,27 +682,9 @@ final class QrAdminController extends AbstractApiController
         $store = new AnalyticsStore($directory);
         $total = 0;
 
-        foreach (new DirectoryIterator($directory) as $file) {
-            if (
-                $file->isDot() ||
-                !$file->isFile() ||
-                $file->isLink()
-            ) {
-                continue;
-            }
-
-            if (
-                preg_match(
-                    '/^(\d{4}-\d{2}-\d{2})\.yaml$/D',
-                    $file->getFilename(),
-                    $matches
-                ) !== 1
-            ) {
-                continue;
-            }
-
+        foreach ($store->dates() as $date) {
             try {
-                $data = $store->readDate($matches[1]);
+                $data = $store->readDate($date);
                 $value =
                     $data['qrs'][self::QR_ID] ?? 0;
 
