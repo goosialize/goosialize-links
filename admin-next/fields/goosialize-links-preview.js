@@ -40,14 +40,13 @@
       this.load().then(async () => {
         await this.installCollectionLabels();
         this.installRealtimePreview();
+        this.installScopedSaveState();
       });
-      this.installSaveRefresh();
     }
 
     disconnectedCallback() {
-      this.restoreFetch?.();
       this.collectionObserver?.disconnect();
-      this.formObserver?.disconnect();
+      this.saveStateObserver?.disconnect();
       clearTimeout(this.previewDebounce);
       this.removeRealtimeListeners?.();
       this.clearPreviewState(true);
@@ -56,14 +55,25 @@
     render() {
       this.innerHTML = `
         <style>
-          .gl-preview-host{display:block!important}
+          .gl-preview-host{display:block!important;width:100%}
           .gl-preview-host>div:first-child{display:none}
-          .gl-preview-frame{display:block;width:100%;max-width:420px;height:700px;margin-inline:auto;background:#fff}
-          @media(min-width:1024px){[data-goosialize-links-editor-layout]{display:grid!important;grid-template-columns:minmax(300px,1fr) minmax(0,2fr);gap:1.5rem;align-items:start}[data-goosialize-links-editor-layout]>*{grid-column:2}[data-goosialize-links-editor-layout]>.gl-preview-host{grid-column:1;grid-row:1/span 30;position:sticky;top:5rem}}
-          @media(max-width:1023px){.gl-preview-frame{height:620px}}
-          @media(max-width:480px){.gl-preview-frame{height:540px}}
+          .gl-preview-shell{display:block}
+          .gl-preview-frame{display:block;width:100%;max-width:360px;height:500px;margin-inline:auto;background:#fff}
+          [data-goosialize-links-editor-layout]{display:grid!important;grid-template-columns:minmax(300px,380px) minmax(0,1fr);gap:1rem 1.25rem;align-items:start}
+          [data-goosialize-links-editor-layout]>[data-gl-role="notice"]{grid-column:1/-1}
+          [data-goosialize-links-editor-layout]>[data-gl-role="preview"]{grid-column:1;grid-row:2/span 2}
+          [data-goosialize-links-editor-layout]>[data-gl-role="profile"]{grid-column:2;grid-row:2}
+          [data-goosialize-links-editor-layout]>[data-gl-role="appearance"]{grid-column:2;grid-row:3}
+          [data-goosialize-links-editor-layout]>[data-gl-role="actions"],
+          [data-goosialize-links-editor-layout]>[data-gl-role="links"]{grid-column:1/-1}
+          @media(max-width:1023px){
+            [data-goosialize-links-editor-layout]{display:block!important}
+            [data-goosialize-links-editor-layout]>*+*{margin-top:1rem}
+            .gl-preview-frame{max-width:360px;height:460px}
+          }
+          @media(max-width:480px){.gl-preview-frame{height:420px}}
         </style>
-        <section class="rounded-lg border border-border bg-card p-4 shadow-sm space-y-4" aria-labelledby="gl-preview-title">
+        <section class="gl-preview-shell rounded-lg border border-border bg-card p-4 shadow-sm space-y-4" aria-labelledby="gl-preview-title">
           <header class="space-y-1">
             <h2 id="gl-preview-title" class="text-sm font-semibold text-foreground" data-i18n="LIVE_PREVIEW">${t('LIVE_PREVIEW')}</h2>
             <p class="text-xs text-muted-foreground" data-i18n="PREVIEW_HELP">${t('PREVIEW_HELP')}</p>
@@ -72,14 +82,14 @@
             <label class="text-sm font-medium text-foreground" for="gl-preview-language" data-i18n="PREVIEW_LANGUAGE">${t('PREVIEW_LANGUAGE')}</label>
             <select class="flex h-9 w-full rounded-md border border-border bg-background px-3 py-1 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" id="gl-preview-language" data-language></select>
           </div>
-          <div class="flex flex-wrap items-center gap-2">
+          <div class="flex flex-wrap items-center gap-2" data-preview-actions>
             <button class="inline-flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-md border border-border bg-background px-3 text-xs font-medium text-foreground shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" type="button" data-refresh data-i18n="REFRESH_PREVIEW">${t('REFRESH_PREVIEW')}</button>
             <a class="inline-flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-md border border-border bg-background px-3 text-xs font-medium text-foreground no-underline shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" data-open target="_blank" rel="noopener noreferrer">
               <span data-i18n="OPEN_PUBLIC_PAGE">${t('OPEN_PUBLIC_PAGE')}</span>
               <svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M10 14 21 3M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"/></svg>
             </a>
           </div>
-          <div class="overflow-hidden rounded-md border border-border bg-muted/30 p-2">
+          <div class="overflow-hidden rounded-md border border-border bg-muted/30 p-2" data-preview-frame-wrap>
             <iframe class="gl-preview-frame rounded-md border-0" data-frame title="${t('PREVIEW')}" sandbox="allow-same-origin allow-scripts allow-forms"></iframe>
           </div>
           <p class="text-xs text-muted-foreground" data-status role="status" data-i18n="PREVIEW_LOADING">${t('PREVIEW_LOADING')}</p>
@@ -107,6 +117,35 @@
       if (!layout) return;
       node.classList.add('gl-preview-host');
       layout.dataset.goosializeLinksEditorLayout = '';
+      this.editorRoot = layout;
+
+      const children = [...layout.children];
+      const previewIndex = children.indexOf(node);
+
+      if (
+        previewIndex >= 1
+        && children.length >= previewIndex + 5
+      ) {
+        children[previewIndex - 1].dataset.glRole = 'notice';
+        children[previewIndex].dataset.glRole = 'preview';
+        children[previewIndex + 1].dataset.glRole = 'profile';
+        children[previewIndex + 2].dataset.glRole = 'appearance';
+        children[previewIndex + 3].dataset.glRole = 'actions';
+        children[previewIndex + 4].dataset.glRole = 'links';
+      }
+
+      let pageRoot = layout;
+      while (pageRoot.parentElement) {
+        pageRoot = pageRoot.parentElement;
+        if (pageRoot.tagName === 'BODY') break;
+
+        const saveButton = this.findSaveButton(pageRoot);
+        if (saveButton) {
+          this.pageRoot = pageRoot;
+          this.saveButton = saveButton;
+          break;
+        }
+      }
     }
 
     async load() {
@@ -179,8 +218,11 @@
           if (link.id) this.collectionLabels.set(String(link.id), label);
         }
 
+        const root = this.editorRoot;
+        if (!root) return;
+
         const synchronize = () => {
-          const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+          const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
           let node;
           while ((node = walker.nextNode())) {
             const id = String(node.nodeValue || '').trim();
@@ -194,8 +236,9 @@
         };
 
         synchronize();
+        this.collectionObserver?.disconnect();
         this.collectionObserver = new MutationObserver(synchronize);
-        this.collectionObserver.observe(document.body, {childList: true, subtree: true});
+        this.collectionObserver.observe(root, {childList: true, subtree: true});
       } catch {
         // The form remains usable if presentation metadata cannot be loaded.
       }
@@ -237,34 +280,6 @@
       this.frame.src = url.href;
     }
 
-    installSaveRefresh() {
-      if (window.__GOOSIALIZE_LINKS_FETCH_WRAPPED) return;
-      const original = window.fetch.bind(window);
-      window.__GOOSIALIZE_LINKS_FETCH_WRAPPED = true;
-      window.fetch = async (...args) => {
-        const response = await original(...args);
-        const request = args[0];
-        const options = args[1] || {};
-        const url = String(request?.url || request || '');
-        const method = String(options.method || request?.method || 'GET').toUpperCase();
-        if (response.ok && method === 'PATCH' && url.includes('/plugins/goosialize-links')) {
-          const preview = document.querySelector(TAG);
-          await preview?.clearPreviewState();
-          if (preview) {
-            preview.hasUnsavedPreview = false;
-            preview.status.textContent = preview.translate('PREVIEW_READY');
-            await preview.installCollectionLabels();
-            preview.applyLanguage();
-          }
-        }
-        return response;
-      };
-      this.restoreFetch = () => {
-        window.fetch = original;
-        window.__GOOSIALIZE_LINKS_FETCH_WRAPPED = false;
-      };
-    }
-
     installRealtimePreview() {
       const schedule = (event) => {
         if (event.target instanceof HTMLInputElement && event.target.type === 'file') {
@@ -278,12 +293,87 @@
         this.status.textContent = this.translate('PREVIEW_UPDATING');
         this.previewDebounce = setTimeout(() => this.updatePreview(), 350);
       };
-      document.addEventListener('input', schedule, true);
-      document.addEventListener('change', schedule, true);
+      const root = this.editorRoot;
+      if (!root) return;
+
+      root.addEventListener('input', schedule, true);
+      root.addEventListener('change', schedule, true);
       this.removeRealtimeListeners = () => {
-        document.removeEventListener('input', schedule, true);
-        document.removeEventListener('change', schedule, true);
+        root.removeEventListener('input', schedule, true);
+        root.removeEventListener('change', schedule, true);
       };
+    }
+
+    findSaveButton(root) {
+      if (!(root instanceof Element)) return null;
+
+      const translated = String(
+        I18N?.t?.('PLUGIN_ADMIN.SAVE') || ''
+      ).trim();
+
+      const labels = new Set(
+        ['Save', translated].filter(Boolean)
+      );
+
+      return [...root.querySelectorAll('button')].find((button) => {
+        const aria = String(
+          button.getAttribute('aria-label') || ''
+        ).trim();
+
+        const title = String(
+          button.getAttribute('title') || ''
+        ).trim();
+
+        const text = String(
+          button.textContent || ''
+        ).trim();
+
+        return labels.has(aria)
+          || labels.has(title)
+          || labels.has(text);
+      }) || null;
+    }
+
+    installScopedSaveState() {
+      const pageRoot = this.pageRoot;
+      const saveButton =
+        this.saveButton
+        || this.findSaveButton(pageRoot);
+
+      if (
+        !pageRoot
+        || !saveButton
+        || !pageRoot.contains(saveButton)
+      ) return;
+
+      this.saveButton = saveButton;
+
+      let wasDisabled = saveButton.disabled;
+
+      const synchronize = async () => {
+        const isDisabled = saveButton.disabled;
+
+        if (
+          this.hasUnsavedPreview
+          && !wasDisabled
+          && isDisabled
+        ) {
+          await this.clearPreviewState();
+          this.hasUnsavedPreview = false;
+          this.status.textContent = this.translate('PREVIEW_READY');
+          await this.installCollectionLabels();
+          this.applyLanguage();
+        }
+
+        wasDisabled = isDisabled;
+      };
+
+      this.saveStateObserver?.disconnect();
+      this.saveStateObserver = new MutationObserver(synchronize);
+      this.saveStateObserver.observe(saveButton, {
+        attributes: true,
+        attributeFilter: ['disabled', 'aria-disabled', 'class'],
+      });
     }
 
     fieldPath(field) {
@@ -336,9 +426,13 @@
     }
 
     fieldSection(field, title) {
+      const root = this.editorRoot;
+      if (!root || !root.contains(field)) return null;
+
       let node = field.parentElement;
-      while (node && node !== document.body) {
+      while (node && root.contains(node)) {
         if (node.classList.contains('rounded-xl') && String(node.innerText || '').trim().startsWith(title)) return node;
+        if (node === root) break;
         node = node.parentElement;
       }
       return null;

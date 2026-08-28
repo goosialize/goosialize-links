@@ -156,6 +156,71 @@ assert "SESSION_KEY" in controller
 assert "PREVIEW_UPDATING" in controller and "PREVIEW_UNSAVED" in controller
 assert "PREVIEW_IMAGE_AFTER_SAVE" in controller
 
+# Grav #4245 R2-D: the custom field must remain isolated to the
+# Goosialize Links editor subtree. It must not monkey-patch Admin2's
+# global fetch implementation or observe/listen across document.body.
+assert "document.createTreeWalker(document.body" not in preview
+assert ".observe(document.body" not in preview
+assert "document.addEventListener('input'" not in preview
+assert "document.addEventListener('change'" not in preview
+assert "document.removeEventListener('input'" not in preview
+assert "document.removeEventListener('change'" not in preview
+assert "window.fetch =" not in preview
+assert "__GOOSIALIZE_LINKS_FETCH_WRAPPED" not in preview
+assert "document.querySelector(TAG)" not in preview
+assert "installSaveRefresh()" not in preview
+
+assert "this.editorRoot = layout" in preview
+assert "document.createTreeWalker(root, NodeFilter.SHOW_TEXT)" in preview
+assert "this.collectionObserver.observe(root, {childList: true, subtree: true})" in preview
+assert "root.addEventListener('input', schedule, true)" in preview
+assert "root.addEventListener('change', schedule, true)" in preview
+assert "root.removeEventListener('input', schedule, true)" in preview
+assert "root.removeEventListener('change', schedule, true)" in preview
+assert "!root || !root.contains(field)" in preview
+assert "installScopedSaveState()" in preview
+assert "this.saveStateObserver.observe(saveButton" in preview
+assert "this.pageRoot = pageRoot" in preview
+assert "this.saveButton = saveButton" in preview
+assert "findSaveButton(root)" in preview
+assert "this.findSaveButton(pageRoot)" in preview
+assert "!pageRoot" in preview
+assert "!pageRoot.contains(saveButton)" in preview
+assert "document.querySelector" not in preview
+assert "position:sticky" not in preview
+
+# R2-D UX refinement: desktop uses a bounded workspace layout while
+# all actual configuration controls remain native Admin2 blueprint fields.
+assert "gl-preview-shell" in preview
+assert "max-width:360px;height:500px" in preview
+assert "grid-template-columns:minmax(300px,380px) minmax(0,1fr)" in preview
+assert "children[previewIndex].dataset.glRole = 'preview'" in preview
+assert "children[previewIndex + 1].dataset.glRole = 'profile'" in preview
+assert "children[previewIndex + 2].dataset.glRole = 'appearance'" in preview
+assert "children[previewIndex + 3].dataset.glRole = 'actions'" in preview
+assert "children[previewIndex + 4].dataset.glRole = 'links'" in preview
+assert '[data-gl-role="actions"]' in preview
+assert '[data-gl-role="links"]' in preview
+
+for role in (
+    "notice",
+    "preview",
+    "profile",
+    "appearance",
+    "actions",
+    "links",
+):
+    selector = (
+        '[data-goosialize-links-editor-layout]'
+        f'>[data-gl-role="{role}"]'
+    )
+    broken = (
+        '[data-goosialize-links-editor-layout]'
+        f'>data-gl-role="{role}"]'
+    )
+    assert selector in preview
+    assert broken not in preview
+
 for language in ("en", "el"):
     translations = yaml.safe_load(Path(f"languages/{language}.yaml").read_text())
     owned = translations["ICU"]["PLUGIN_GOOSIALIZE_LINKS"]
