@@ -192,3 +192,13 @@ codes, and scheduled daily, weekly, or monthly analytics email reports.
 Goosialize Links FREE core in this repository is distributed under the MIT
 License. See `LICENSE`. Future paid addons are separate products and are not
 granted or licensed by this repository's FREE core license.
+
+## Support and feedback
+
+For installation problems and reproducible bugs, first review the documentation and troubleshooting notes, then use the structured feedback channels:
+
+- [Report a bug](https://github.com/goosialize/goosialize-links/issues/new?template=bug_report.yml)
+- [Request a feature](https://github.com/goosialize/goosialize-links/issues/new?template=feature_request.yml)
+- [Support and feedback guide](SUPPORT.md)
+
+Please do not post passwords, API keys, access tokens, personal data, customer data, private production URLs, or security-sensitive exploit details in a public issue.
